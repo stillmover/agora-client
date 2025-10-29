@@ -1,0 +1,178 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "warn",
+    "pedantic": "warn",
+    "style": "warn"
+  },
+
+  "plugins": [
+    "react",
+    "import",
+    "jsx-a11y",
+    "promise",
+    "typescript",
+    "unicorn",
+    "oxc"
+  ],
+
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "node": true
+  },
+
+  "settings": {
+    "react": { "version": "detect" }
+  },
+
+  "rules": {
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "no-alert": "error",
+    "no-debugger": "error",
+    "no-constant-condition": ["error", { "checkLoops": false }],
+    "no-unused-vars": "off",
+    "eqeqeq": ["error", "smart"],
+    "curly": ["error", "all"],
+    "no-param-reassign": "warn",
+    "no-return-await": "error",
+    "import/no-unassigned-import": "off",
+
+    "typescript/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
+    ],
+    "typescript/no-explicit-any": "warn",
+    "typescript/consistent-type-imports": [
+      "warn",
+      { "prefer": "type-imports" }
+    ],
+    "typescript/no-unsafe-assignment": "warn",
+    "typescript/no-floating-promises": "error",
+
+    "react/jsx-no-undef": "error",
+    "react/jsx-key": ["error", { "checkFragmentShorthand": true }],
+    "react/no-unstable-nested-components": "warn",
+    "react/no-array-index-key": "warn",
+    "react/no-danger": "warn",
+    "react/no-direct-mutation-state": "error",
+    "react/no-unknown-property": "error",
+    "react/self-closing-comp": "warn",
+    "react/react-in-jsx-scope": "off",
+
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": ["warn", {}],
+
+    "jsx-a11y/alt-text": "error",
+    "jsx-a11y/anchor-is-valid": "error",
+    "jsx-a11y/no-redundant-roles": "warn",
+    "jsx-a11y/label-has-associated-control": "error",
+    "jsx-a11y/iframe-has-title": "error",
+
+    "import/no-unresolved": "error",
+    "import/no-absolute-path": "error",
+    "import/no-duplicates": "error",
+    "import/newline-after-import": "warn",
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          ["builtin", "external"],
+          "internal",
+          ["parent", "sibling", "index"]
+        ],
+        "newlines-between": "always",
+        "alphabetize": { "order": "asc", "caseInsensitive": true }
+      }
+    ],
+    "import/no-default-export": "off",
+    "import/prefer-named-export": "off",
+    "import/prefer-default-export": "off",
+    "import/no-named-export": "off",
+    "sort-imports": "off",
+
+    "promise/always-return": "warn",
+    "promise/no-return-wrap": "error",
+    "promise/no-nesting": "warn",
+    "promise/no-new-statics": "error",
+
+    "unicorn/filename-case": [
+      "warn",
+      { "cases": { "kebabCase": true, "pascalCase": true } }
+    ],
+    "unicorn/prefer-optional-catch-binding": "warn",
+    "unicorn/no-for-loop": "warn",
+
+    "oxc/iframe-missing-sandbox": "error"
+  },
+
+  "overrides": [
+    {
+      "files": [
+        "scripts/**/*.{js,ts}",
+        "*.config.{js,ts}",
+        "**/*.{js,ts}",
+        "!src/**/*.{js,ts,tsx}"
+      ],
+      "rules": {
+        "no-console": "off",
+        "import/no-default-export": "off",
+        "import/prefer-named-export": "off",
+        "import/prefer-default-export": "off",
+        "import/no-named-export": "off",
+        "sort-imports": "off"
+      }
+    },
+    {
+      "files": ["src/**/*.{ts,tsx}"],
+      "plugins": ["typescript"],
+      "rules": {
+        "import/no-default-export": "off",
+        "import/prefer-named-export": "off",
+        "import/prefer-default-export": "off",
+        "import/no-named-export": "off",
+        "sort-imports": "off"
+      }
+    },
+    {
+      "files": ["**/*.{test,spec}.{js,jsx,ts,tsx}", "**/__tests__/**/*"],
+      "plugins": ["jest", "vitest"],
+      "env": { "node": true },
+      "rules": {
+        "no-console": "off",
+        "jest/no-disabled-tests": "warn",
+        "jest/no-focused-tests": "error",
+        "vitest/no-focused-tests": "error",
+        "import/no-default-export": "off",
+        "import/prefer-named-export": "off",
+        "import/prefer-default-export": "off",
+        "import/no-named-export": "off",
+        "sort-imports": "off"
+      }
+    },
+    {
+      "files": ["**/*.stories.{js,jsx,ts,tsx}"],
+      "rules": {
+        "no-console": "off",
+        "jsx-a11y/no-autofocus": "off",
+        "import/no-default-export": "off",
+        "import/prefer-named-export": "off",
+        "import/prefer-default-export": "off",
+        "import/no-named-export": "off",
+        "sort-imports": "off"
+      }
+    }
+  ],
+
+  "ignorePatterns": [
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    ".next",
+    "storybook-static"
+  ]
+}
