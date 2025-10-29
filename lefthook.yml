@@ -8,7 +8,11 @@ pre-commit:
       glob: "*.{js,jsx,ts,tsx,vue}"
       run: |
         echo "🔍 Linting code..."
-        bun run lint {staged_files}
+        output=$(bun run lint {staged_files} 2>&1)
+        echo "$output"
+        if echo "$output" | grep -qE "Found [0-9]+ warnings and [1-9][0-9]* errors|Found [1-9][0-9]* errors"; then
+          exit 1
+        fi
       skip: [merge, rebase]
 
     format:
