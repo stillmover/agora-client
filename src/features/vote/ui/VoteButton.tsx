@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { Button } from "@/shared/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib/utils";
 import { calculateVoteChange } from "@/shared/services";
 import {
   VOTE_BUTTON_SIZES,
