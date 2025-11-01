@@ -15,6 +15,7 @@ import {
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
 import { User, LogOut, Settings, Plus } from "lucide-react";
 import { getInitials } from "@/shared/utils";
+import { AuthModal } from "@/features/auth/ui/AuthModal";
 
 export const Header = () => {
   const isAuthenticated = useIsAuthenticated();
@@ -27,7 +28,7 @@ export const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-40 border-b border-border bg-background">
       <div className="container mx-auto flex items-center gap-3 px-4 py-3">
         <Link
           to={ROUTES.HOME}
@@ -97,11 +98,7 @@ export const Header = () => {
             </>
           ) : (
             <>
-              <Link to="/login" search={{ redirect: undefined }}>
-                <Button variant="ghost" size="sm">
-                  Login
-                </Button>
-              </Link>
+              <AuthModal />
               <Link to="/register">
                 <Button size="sm">Register</Button>
               </Link>
