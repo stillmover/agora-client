@@ -15,7 +15,7 @@ import {
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
 import { User, LogOut, Settings, Plus } from "lucide-react";
 import { getInitials } from "@/shared/utils";
-import { AuthModal } from "@/features/auth/ui/AuthModal";
+import { AuthModal } from "@/widgets/auth-modal";
 
 export const Header = () => {
   const isAuthenticated = useIsAuthenticated();
@@ -97,12 +97,7 @@ export const Header = () => {
               </DropdownMenu>
             </>
           ) : (
-            <>
-              <AuthModal />
-              <Link to="/register">
-                <Button size="sm">Register</Button>
-              </Link>
-            </>
+            <AuthModal />
           )}
         </div>
       </div>

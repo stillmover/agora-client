@@ -3,10 +3,15 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/shared/ui/button";
+import { LoginForm } from "@/features/auth/ui/LoginForm";
+import { RegisterForm } from "@/features/auth/ui/RegisterForm";
+import { ResetForm } from "@/features/auth/ui/ResetForm";
+import OAuthButtons from "@/features/auth/ui/OAuthButtons";
+import Divider from "@/features/auth/ui/Divider";
 
 export const AuthModal = () => {
   const [open, setOpen] = useState(false);
-  const [view, setView] = useState<"login" | "register">("login");
+  const [view, setView] = useState<"login" | "register" | "reset">("login");
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -54,9 +59,23 @@ export const AuthModal = () => {
                     </button>
                   </Dialog.Close>
 
-                  {view === "login" ? (
+                  {view === "login" && (
                     <div className="text-center space-y-4">
                       <h2 className="text-xl font-semibold">Log In</h2>
+                      <p>
+                        By continuing, you agree to our User Agreement and
+                        acknowledge that you understand the Privacy Policy.{" "}
+                      </p>
+                      <OAuthButtons showEmailLink />
+                      <Divider text="OR" />
+                      <LoginForm />
+
+                      <button
+                        onClick={() => setView("reset")}
+                        className="text-sm text-blue-600 hover:underline cursor-pointer"
+                      >
+                        Forgot password?
+                      </button>
                       <p className="text-sm text-gray-600">
                         New to Reddit?{" "}
                         <button
@@ -67,9 +86,17 @@ export const AuthModal = () => {
                         </button>
                       </p>
                     </div>
-                  ) : (
+                  )}
+                  {view === "register" && (
                     <div className="text-center space-y-4">
                       <h2 className="text-xl font-semibold">Sign Up</h2>
+                      <p>
+                        By continuing, you agree to our User Agreement and
+                        acknowledge that you understand the Privacy Policy.{" "}
+                      </p>
+                      <OAuthButtons />
+                      <Divider text="OR" />
+                      <RegisterForm />
                       <p className="text-sm text-gray-600">
                         Already have an account?{" "}
                         <button
@@ -79,6 +106,27 @@ export const AuthModal = () => {
                           Log In
                         </button>
                       </p>
+                    </div>
+                  )}
+
+                  {view === "reset" && (
+                    <div className="text-center space-y-4">
+                      <button
+                        onClick={() => setView("login")}
+                        aria-label="Back"
+                        className="absolute left-4 top-4 text-gray-500 hover:text-gray-300 transition"
+                      >
+                        ←
+                      </button>
+                      <h2 className="text-xl font-semibold">
+                        Reset your password
+                      </h2>
+                      <p className="text-gray-400 text-sm">
+                        Enter your email address or username and we’ll send you
+                        a link to reset your password.
+                      </p>
+                      <ResetForm />
+                      <p className="text-sm text-gray-600">Need help? </p>
                     </div>
                   )}
                 </div>
