@@ -1,5 +1,4 @@
 colors: true
-skip_output: [meta, success]
 
 pre-commit:
   parallel: true
@@ -35,6 +34,16 @@ pre-commit:
         echo "🐛 Checking for debug code..."
         grep -nE "console\\.log|debugger" {staged_files} && echo "⚠️ Debug code detected!" && exit 1 || true
 
+    codegen:
+      glob: "*.{yml,yaml,ts}"
+      run: |
+        echo "🔧 Running codegen..."
+        if git diff --cached --name-only | grep -E 'codegen\.(graphql|yml)|orval\.config\.ts'; then
+          echo "📝 Codegen config changed, regenerating..."
+          bun run codegen
+        fi
+      skip: [merge, rebase]
+
 commit-msg:
   parallel: true
   commands:
@@ -42,6 +51,7 @@ commit-msg:
       run: |
         echo "📝 Validating commit message..."
         npx --no-install commitlint --edit "$1"
+
 
 post-merge:
   commands:

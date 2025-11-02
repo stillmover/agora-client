@@ -1,0 +1,6 @@
+schema: http://localhost:5555/graphql
+generates:
+  src/shared/api/gql/index.ts:
+    plugins:
+      - "typescript"
+    config:
