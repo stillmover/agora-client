@@ -8,8 +8,6 @@ export const ResetForm = () => {
     defaultValues: { username: "" },
     validators: {
       onSubmit: resetSchema,
-      onChange: resetSchema,
-      onBlur: resetSchema,
     },
     onSubmit: async ({ value }) => {
       console.log("Password reset request for:", value.username);

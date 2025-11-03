@@ -1,27 +1,53 @@
 import { useForm } from "@tanstack/react-form";
-// import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { authActions } from "@/features/auth";
+import { uiActions } from "../model/ui.store";
 import { FloatingInput } from "@/shared/ui/floating-input";
 import { Button } from "@/shared/ui/button";
 import { loginSchema } from "@/features/auth/lib/schemas";
+import {
+  usePostApiLogin,
+  type PostApiLoginMutationResponse,
+} from "@/shared/api/endpoints/authentication/authentication";
 
 export const LoginForm = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   // const search = useSearch({ from: "/_auth/login" }) as { redirect?: string };
 
+  const loginMutation = usePostApiLogin({
+    mutation: {
+      onSuccess: ({
+        usernameOrEmail,
+        password,
+      }: PostApiLoginMutationResponse) => {
+        authActions.login({
+          id: crypto.randomUUID(),
+          usernameOrEmail,
+          password,
+        });
+        uiActions.closeModal();
+        navigate({ to: "/" });
+      },
+      onError: (error) => {
+        console.error("Login failed: ", error);
+      },
+    },
+  });
+
   const form = useForm({
-    defaultValues: { username: "", password: "" },
+    defaultValues: { usernameOrEmail: "", password: "" },
 
     validators: {
       onSubmit: loginSchema,
-      onChange: loginSchema,
-      onBlur: loginSchema,
     },
 
     onSubmit: async ({ value }) => {
-      console.log(value);
-      authActions.login({ id: crypto.randomUUID(), name: value.username });
-      // navigate({ to: search.redirect || "/" });
+      loginMutation.mutate({
+        data: {
+          usernameOrEmail: value.usernameOrEmail,
+          password: value.password,
+        },
+      });
     },
   });
 
@@ -34,7 +60,7 @@ export const LoginForm = () => {
         }}
         className="space-y-4"
       >
-        <form.Field name="username">
+        <form.Field name="usernameOrEmail">
           {(field) => (
             <FloatingInput
               id={field.name}

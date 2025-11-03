@@ -1,7 +1,17 @@
 import { z } from "zod";
-
-export const loginSchema = z.object({
-  username: z.string().trim().nonempty("Please fill in this field."),
+export const registerSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .email("Please enter an email address.")
+    .nonempty("Please fill in this field."),
+  username: z
+    .string()
+    .min(3)
+    .max(30)
+    .regex(/^[a-zA-Z0-9_]+$/)
+    .trim()
+    .nonempty("Please fill in this field."),
   password: z
     .string()
     .trim()
@@ -9,11 +19,13 @@ export const loginSchema = z.object({
     .min(6, "Password must be at least 6 characters"),
 });
 
-export const registerSchema = z.object({
-  email: z
+export const loginSchema = z.object({
+  usernameOrEmail: z.string().trim().nonempty("Please fill in this field."),
+  password: z
     .string()
-    .email("Please enter an email address.")
-    .nonempty("Please fill in this field."),
+    .trim()
+    .nonempty("Please fill in this field.")
+    .min(6, "Password must be at least 6 characters"),
 });
 
 export const resetSchema = z.object({

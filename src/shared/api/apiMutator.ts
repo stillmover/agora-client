@@ -5,7 +5,7 @@ export const apiMutator = async <T>(
   url: string,
   options: RequestInit = {},
 ): Promise<T> => {
-  const baseUrl = url.startsWith("http") ? undefined : env.API_BASE_URL;
+  const baseUrl = env.BACKEND_URL;
   const urlObj = new URL(url, baseUrl);
 
   const requestHeaders: HeadersInit = {

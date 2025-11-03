@@ -1,9 +1,9 @@
-import { Store } from "@tanstack/store";
-import { useStore } from "@tanstack/react-store";
+import { Store, useStore } from "@tanstack/react-store";
 
 export type AuthUser = {
   id: string;
-  name: string;
+  usernameOrEmail: string;
+  password: string;
 };
 
 export type AuthState = {
@@ -26,5 +26,5 @@ export const authActions = {
 
 export const useAuth = () => useStore(authStore);
 export const useIsAuthenticated = () =>
-  useStore(authStore, (s: AuthState) => s.isAuthenticated);
-export const useAuthUser = () => useStore(authStore, (s: AuthState) => s.user);
+  useStore(authStore, (s) => s.isAuthenticated);
+export const useAuthUser = () => useStore(authStore, (s) => s.user);

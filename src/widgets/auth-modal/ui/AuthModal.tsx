@@ -61,15 +61,18 @@ export const AuthModal = () => {
 
                   {view === "login" && (
                     <div className="text-center space-y-4">
-                      <h2 className="text-xl font-semibold">Log In</h2>
-                      <p>
+                      <Dialog.Title className="text-xl font-semibold">
+                        Log In
+                      </Dialog.Title>
+
+                      <Dialog.Description>
                         By continuing, you agree to our User Agreement and
-                        acknowledge that you understand the Privacy Policy.{" "}
-                      </p>
+                        acknowledge that you understand the Privacy Policy.
+                      </Dialog.Description>
+
                       <OAuthButtons showEmailLink />
                       <Divider text="OR" />
                       <LoginForm />
-
                       <button
                         onClick={() => setView("reset")}
                         className="text-sm text-blue-600 hover:underline cursor-pointer"
@@ -87,13 +90,16 @@ export const AuthModal = () => {
                       </p>
                     </div>
                   )}
+
                   {view === "register" && (
                     <div className="text-center space-y-4">
-                      <h2 className="text-xl font-semibold">Sign Up</h2>
-                      <p>
+                      <Dialog.Title className="text-xl font-semibold">
+                        Sign Up
+                      </Dialog.Title>
+                      <Dialog.Description>
                         By continuing, you agree to our User Agreement and
-                        acknowledge that you understand the Privacy Policy.{" "}
-                      </p>
+                        acknowledge that you understand the Privacy Policy.
+                      </Dialog.Description>
                       <OAuthButtons />
                       <Divider text="OR" />
                       <RegisterForm />
@@ -110,7 +116,7 @@ export const AuthModal = () => {
                   )}
 
                   {view === "reset" && (
-                    <div className="text-center space-y-4">
+                    <>
                       <button
                         onClick={() => setView("login")}
                         aria-label="Back"
@@ -118,16 +124,19 @@ export const AuthModal = () => {
                       >
                         ←
                       </button>
-                      <h2 className="text-xl font-semibold">
-                        Reset your password
-                      </h2>
-                      <p className="text-gray-400 text-sm">
+                      <Dialog.Title className="text-xl font-semibold">
+                        Reset Password
+                      </Dialog.Title>
+
+                      <Dialog.Description className="text-gray-400 text-sm">
                         Enter your email address or username and we’ll send you
-                        a link to reset your password.
-                      </p>
-                      <ResetForm />
-                      <p className="text-sm text-gray-600">Need help? </p>
-                    </div>
+                        a link to reset your password
+                      </Dialog.Description>
+                      <div className="text-center space-y-4">
+                        <ResetForm />
+                        <p className="text-sm text-gray-600">Need help?</p>
+                      </div>
+                    </>
                   )}
                 </div>
               </motion.div>
