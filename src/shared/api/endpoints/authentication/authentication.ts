@@ -21,7 +21,13 @@ import type {
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { PostApiLoginBodyOne, PostApiRegisterBodyOne } from "../../models";
+import type {
+  GetApiMe200One,
+  GetApiMe401One,
+  GetApiMe500One,
+  PostApiLoginBodyOne,
+  PostApiRegisterBodyOne,
+} from "../../models";
 
 import { apiMutator } from "../../apiMutator";
 
@@ -319,14 +325,31 @@ export const usePostApiLogout = <TError = unknown, TContext = unknown>(
  * @summary Get current user
  */
 export type getApiMeResponse200 = {
-  data: void;
+  data: GetApiMe200One;
   status: 200;
+};
+
+export type getApiMeResponse401 = {
+  data: GetApiMe401One;
+  status: 401;
+};
+
+export type getApiMeResponse500 = {
+  data: GetApiMe500One;
+  status: 500;
 };
 
 export type getApiMeResponseSuccess = getApiMeResponse200 & {
   headers: Headers;
 };
-export type getApiMeResponse = getApiMeResponseSuccess;
+export type getApiMeResponseError = (
+  | getApiMeResponse401
+  | getApiMeResponse500
+) & {
+  headers: Headers;
+};
+
+export type getApiMeResponse = getApiMeResponseSuccess | getApiMeResponseError;
 
 export const getGetApiMeUrl = () => {
   return `/api/me`;
@@ -347,7 +370,7 @@ export const getGetApiMeQueryKey = () => {
 
 export const getGetApiMeQueryOptions = <
   TData = Awaited<ReturnType<typeof getApiMe>>,
-  TError = unknown,
+  TError = GetApiMe401One | GetApiMe500One,
 >(options?: {
   query?: Partial<
     UseQueryOptions<Awaited<ReturnType<typeof getApiMe>>, TError, TData>
@@ -372,11 +395,11 @@ export const getGetApiMeQueryOptions = <
 export type GetApiMeQueryResult = NonNullable<
   Awaited<ReturnType<typeof getApiMe>>
 >;
-export type GetApiMeQueryError = unknown;
+export type GetApiMeQueryError = GetApiMe401One | GetApiMe500One;
 
 export function useGetApiMe<
   TData = Awaited<ReturnType<typeof getApiMe>>,
-  TError = unknown,
+  TError = GetApiMe401One | GetApiMe500One,
 >(
   options: {
     query: Partial<
@@ -398,7 +421,7 @@ export function useGetApiMe<
 };
 export function useGetApiMe<
   TData = Awaited<ReturnType<typeof getApiMe>>,
-  TError = unknown,
+  TError = GetApiMe401One | GetApiMe500One,
 >(
   options?: {
     query?: Partial<
@@ -420,7 +443,7 @@ export function useGetApiMe<
 };
 export function useGetApiMe<
   TData = Awaited<ReturnType<typeof getApiMe>>,
-  TError = unknown,
+  TError = GetApiMe401One | GetApiMe500One,
 >(
   options?: {
     query?: Partial<
@@ -438,7 +461,7 @@ export function useGetApiMe<
 
 export function useGetApiMe<
   TData = Awaited<ReturnType<typeof getApiMe>>,
-  TError = unknown,
+  TError = GetApiMe401One | GetApiMe500One,
 >(
   options?: {
     query?: Partial<

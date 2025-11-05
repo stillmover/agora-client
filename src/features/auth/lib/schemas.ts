@@ -29,7 +29,7 @@ export const loginSchema = z.object({
 });
 
 export const resetSchema = z.object({
-  username: z.string().trim().nonempty("Please fill in this field."),
+  usernameOrEmail: z.string().trim().nonempty("Please fill in this field."),
 });
 
 export type LoginValues = z.infer<typeof loginSchema>;

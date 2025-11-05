@@ -2,8 +2,7 @@ import { Store, useStore } from "@tanstack/react-store";
 
 export type AuthUser = {
   id: string;
-  usernameOrEmail: string;
-  password: string;
+  username: string;
 };
 
 export type AuthState = {

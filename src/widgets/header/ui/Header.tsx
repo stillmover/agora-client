@@ -1,9 +1,9 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import { useIsAuthenticated, useAuthUser, authActions } from "@/features/auth";
-import { ROUTES } from "@/shared/config";
-import { ThemeToggle } from "@/features/theme-toggle";
-import { Button } from "@/shared/ui/button";
-import { Input } from "@/shared/ui/input";
+import { Link, useNavigate } from '@tanstack/react-router';
+import { useIsAuthenticated, useAuthUser, authActions } from '@/features/auth';
+import { ROUTES } from '@/shared/config';
+import { ThemeToggle } from '@/features/theme-toggle';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,21 +11,32 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/shared/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
-import { User, LogOut, Settings, Plus } from "lucide-react";
-import { getInitials } from "@/shared/utils";
-import { AuthModal } from "@/widgets/auth-modal";
+} from '@/shared/ui/dropdown-menu';
+import { Avatar, AvatarFallback } from '@/shared/ui/avatar';
+import { User, LogOut, Settings, Plus } from 'lucide-react';
+import { getInitials } from '@/shared/utils';
+import { AuthModal } from '@/widgets/auth-modal';
+import { useAuthSync } from '@/features/auth/lib/useAuthSync';
+import { usePostApiLogout } from '@/shared/api/endpoints/authentication/authentication';
 
 export const Header = () => {
+  const { isLoading } = useAuthSync();
   const isAuthenticated = useIsAuthenticated();
   const user = useAuthUser();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    authActions.logout();
-    navigate({ to: ROUTES.HOME });
-  };
+  const logoutMutation = usePostApiLogout({
+    mutation: {
+      onSuccess: () => {
+        authActions.logout();
+        navigate({ to: ROUTES.HOME });
+      },
+    },
+  });
+
+  const handleLogout = () => logoutMutation.mutate();
+
+  if (isLoading) return null; 
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background">
@@ -59,7 +70,7 @@ export const Header = () => {
                   >
                     <Avatar className="h-8 w-8">
                       <AvatarFallback className="text-xs">
-                        {getInitials(user?.name || "U")}
+                        {getInitials(user?.username || 'U')}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
@@ -67,9 +78,9 @@ export const Header = () => {
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium">{user?.name}</p>
+                      <p className="text-sm font-medium">{user?.username}</p>
                       <p className="text-xs text-muted-foreground">
-                        @{user?.name}
+                        @{user?.username}
                       </p>
                     </div>
                   </DropdownMenuLabel>
