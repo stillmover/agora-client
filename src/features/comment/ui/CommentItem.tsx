@@ -6,12 +6,8 @@ import { Card, CardContent } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Textarea } from "@/shared/ui/textarea";
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
-import {
-  formatRelativeTime,
-  formatReplyCount,
-  getInitials,
-  logger,
-} from "@/shared/utils";
+import { formatRelativeTime, getInitials } from "@/shared/lib";
+import { logger } from "@/shared/services";
 import {
   MAX_COMMENT_DEPTH,
   REPLY_FORM_PLACEHOLDER,
@@ -20,6 +16,10 @@ import {
   type VoteDirection,
 } from "@/shared/constants";
 import { MessageSquare } from "lucide-react";
+
+const formatReplyCount = (count: number): string => {
+  return `${count} ${count === 1 ? UI_TEXT.COMMENT.REPLY_SINGULAR : UI_TEXT.COMMENT.REPLY_PLURAL}`;
+};
 
 type CommentItemProps = {
   comment: Comment;

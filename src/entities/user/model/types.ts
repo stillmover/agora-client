@@ -1,5 +1,15 @@
-export type User = {
+interface User {
   id: string;
-  name: string;
+  username: string;
+  email?: string;
   avatarUrl?: string;
-};
+  createdAt?: Date | string;
+}
+
+interface UserFilters {
+  search?: string;
+  limit?: number;
+  offset?: number;
+}
+
+export type { User, UserFilters };

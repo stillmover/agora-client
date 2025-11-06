@@ -7,8 +7,8 @@
  */
 
 export type GetApiMe200DataUser = {
-  id?: number;
-  username?: string;
-  email?: string;
+  id: number;
+  username: string;
+  email: string;
   createdAt?: string;
 };

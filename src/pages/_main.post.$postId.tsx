@@ -5,7 +5,7 @@ import type { Comment } from "@/entities/comment";
 import { fetchPost, fetchComments, createComment } from "@/shared/api";
 import { VoteButton } from "@/features/vote";
 import { CommentItem, CommentForm } from "@/features/comment";
-import { useAuthUser } from "@/features/auth";
+import { useSessionUser } from "@/entities/session";
 import { Card, CardContent, CardHeader } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
@@ -14,8 +14,8 @@ import {
   formatRelativeTime,
   formatCommentCount,
   getInitials,
-  logger,
-} from "@/shared/utils";
+} from "@/shared/lib";
+import { logger } from "@/shared/services";
 import { UI_TEXT, type VoteDirection } from "@/shared/constants";
 
 export const Route = createFileRoute("/_main/post/$postId")({
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/_main/post/$postId")({
 
 function PostDetailPage() {
   const { postId } = Route.useParams();
-  const user = useAuthUser();
+  const user = useSessionUser();
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -51,7 +51,7 @@ function PostDetailPage() {
 
     const newComment = await createComment({
       postId,
-      author: user.name,
+      author: user.username,
       content,
       parentId,
     });
@@ -158,9 +158,9 @@ function PostDetailPage() {
           <CardContent className="p-4">
             <div className="flex gap-3 mb-4">
               <Avatar className="h-8 w-8">
-                <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                <AvatarFallback>{getInitials(user.username)}</AvatarFallback>
               </Avatar>
-              <div className="text-sm font-medium">{user.name}</div>
+              <div className="text-sm font-medium">{user.username}</div>
             </div>
             <CommentForm onSubmit={(content) => handleCommentSubmit(content)} />
           </CardContent>

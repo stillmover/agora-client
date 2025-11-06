@@ -1,7 +1,7 @@
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useForm } from "@tanstack/react-form";
 import { useEffect, useState } from "react";
-import { useAuthUser, authStore } from "@/features/auth";
+import { useSessionUser } from "@/entities/session";
 import { createPost, fetchCommunities } from "@/shared/api";
 import type { Community } from "@/entities/community";
 import { Button } from "@/shared/ui/button";
@@ -15,22 +15,14 @@ import {
   CardTitle,
 } from "@/shared/ui/card";
 import { UI_TEXT } from "@/shared/constants";
-import { logger } from "@/shared/utils";
+import { logger } from "@/shared/services";
 
 export const Route = createFileRoute("/_main/submit")({
-  beforeLoad: ({ location }) => {
-    if (!authStore.state.isAuthenticated) {
-      throw redirect({
-        to: "/login",
-        search: { redirect: location.href },
-      });
-    }
-  },
   component: CreatePostPage,
 });
 
 function CreatePostPage() {
-  const user = useAuthUser();
+  const user = useSessionUser();
   const navigate = useNavigate();
   const [communities, setCommunities] = useState<Community[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,7 +48,7 @@ function CreatePostPage() {
           title: value.title,
           content: value.content,
           communityId: value.communityId,
-          author: user?.name || "Anonymous",
+          author: user?.username || "Anonymous",
         });
         navigate({
           to: "/r/$communityId",

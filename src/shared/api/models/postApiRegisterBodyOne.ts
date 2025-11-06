@@ -6,4 +6,15 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type PostApiRegisterBodyOne = { [key: string]: unknown };
+export type PostApiRegisterBodyOne = {
+  /**
+   * @minLength 3
+   * @maxLength 30
+   * @pattern ^[a-zA-Z0-9_]+$
+   */
+  username: string;
+  /** @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$ */
+  email: string;
+  /** @minLength 6 */
+  password: string;
+};

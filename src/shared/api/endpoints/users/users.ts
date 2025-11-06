@@ -5,7 +5,10 @@
  * Modern backend API built with Elysia.js, Drizzle ORM, and PostgreSQL. Provides user management, authentication, and health monitoring endpoints.
  * OpenAPI spec version: 1.0.0
  */
-import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -18,8 +21,8 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult,
-} from "@tanstack/react-query";
+  UseQueryResult
+} from '@tanstack/react-query';
 
 import type {
   DeleteUsersById200,
@@ -37,708 +40,547 @@ import type {
   PutUsersById200,
   PutUsersById400,
   PutUsersById500,
-  PutUsersByIdBodyOne,
-} from "../../models";
+  PutUsersByIdBodyOne
+} from '../../models';
 
-import { apiMutator } from "../../apiMutator";
+import { apiMutator } from '../../apiMutator';
+
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
+
 
 /**
  * Retrieves a list of all users in the system. Password hashes are excluded from the response for security.
  * @summary Get all users
  */
 export type getUsersResponse200 = {
-  data: GetUsers200;
-  status: 200;
-};
+  data: GetUsers200
+  status: 200
+}
 
 export type getUsersResponse500 = {
-  data: GetUsers500;
-  status: 500;
-};
-
-export type getUsersResponseSuccess = getUsersResponse200 & {
+  data: GetUsers500
+  status: 500
+}
+    
+export type getUsersResponseSuccess = (getUsersResponse200) & {
   headers: Headers;
 };
-export type getUsersResponseError = getUsersResponse500 & {
+export type getUsersResponseError = (getUsersResponse500) & {
   headers: Headers;
 };
 
-export type getUsersResponse = getUsersResponseSuccess | getUsersResponseError;
+export type getUsersResponse = (getUsersResponseSuccess | getUsersResponseError)
 
 export const getGetUsersUrl = () => {
-  return `/users/`;
-};
 
-export const getUsers = async (
-  options?: RequestInit,
-): Promise<getUsersResponse> => {
-  return apiMutator<getUsersResponse>(getGetUsersUrl(), {
+
+  
+
+  return `/users/`
+}
+
+export const getUsers = async ( options?: RequestInit): Promise<getUsersResponse> => {
+  
+  return apiMutator<getUsersResponse>(getGetUsersUrl(),
+  {      
     ...options,
-    method: "GET",
-  });
-};
+    method: 'GET'
+    
+    
+  }
+);}
+
+
+
+
 
 export const getGetUsersQueryKey = () => {
-  return [`/users/`] as const;
-};
+    return [
+    `/users/`
+    ] as const;
+    }
 
-export const getGetUsersQueryOptions = <
-  TData = Awaited<ReturnType<typeof getUsers>>,
-  TError = GetUsers500,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof getUsers>>, TError, TData>
-  >;
-  request?: SecondParameter<typeof apiMutator>;
-}) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
+    
+export const getGetUsersQueryOptions = <TData = Awaited<ReturnType<typeof getUsers>>, TError = GetUsers500>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsers>>, TError, TData>>, request?: SecondParameter<typeof apiMutator>}
+) => {
 
-  const queryKey = queryOptions?.queryKey ?? getGetUsersQueryKey();
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getUsers>>> = ({
-    signal,
-  }) => getUsers({ signal, ...requestOptions });
+  const queryKey =  queryOptions?.queryKey ?? getGetUsersQueryKey();
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getUsers>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type GetUsersQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getUsers>>
->;
-export type GetUsersQueryError = GetUsers500;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUsers>>> = ({ signal }) => getUsers({ signal, ...requestOptions });
 
-export function useGetUsers<
-  TData = Awaited<ReturnType<typeof getUsers>>,
-  TError = GetUsers500,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getUsers>>, TError, TData>
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getUsers>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetUsersQueryResult = NonNullable<Awaited<ReturnType<typeof getUsers>>>
+export type GetUsersQueryError = GetUsers500
+
+
+export function useGetUsers<TData = Awaited<ReturnType<typeof getUsers>>, TError = GetUsers500>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsers>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getUsers>>,
           TError,
           Awaited<ReturnType<typeof getUsers>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetUsers<
-  TData = Awaited<ReturnType<typeof getUsers>>,
-  TError = GetUsers500,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getUsers>>, TError, TData>
-    > &
-      Pick<
+        > , 'initialData'
+      >, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUsers<TData = Awaited<ReturnType<typeof getUsers>>, TError = GetUsers500>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsers>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getUsers>>,
           TError,
           Awaited<ReturnType<typeof getUsers>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetUsers<
-  TData = Awaited<ReturnType<typeof getUsers>>,
-  TError = GetUsers500,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getUsers>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUsers<TData = Awaited<ReturnType<typeof getUsers>>, TError = GetUsers500>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsers>>, TError, TData>>, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get all users
  */
 
-export function useGetUsers<
-  TData = Awaited<ReturnType<typeof getUsers>>,
-  TError = GetUsers500,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getUsers>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetUsersQueryOptions(options);
+export function useGetUsers<TData = Awaited<ReturnType<typeof getUsers>>, TError = GetUsers500>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsers>>, TError, TData>>, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetUsersQueryOptions(options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
+
 
 /**
  * Creates a new user account. The password will be hashed before storage. Username and email must be unique.
  * @summary Create a new user
  */
 export type postUsersResponse201 = {
-  data: PostUsers201;
-  status: 201;
-};
+  data: PostUsers201
+  status: 201
+}
 
 export type postUsersResponse400 = {
-  data: PostUsers400;
-  status: 400;
-};
+  data: PostUsers400
+  status: 400
+}
 
 export type postUsersResponse500 = {
-  data: PostUsers500;
-  status: 500;
-};
-
-export type postUsersResponseSuccess = postUsersResponse201 & {
+  data: PostUsers500
+  status: 500
+}
+    
+export type postUsersResponseSuccess = (postUsersResponse201) & {
   headers: Headers;
 };
-export type postUsersResponseError = (
-  | postUsersResponse400
-  | postUsersResponse500
-) & {
+export type postUsersResponseError = (postUsersResponse400 | postUsersResponse500) & {
   headers: Headers;
 };
 
-export type postUsersResponse =
-  | postUsersResponseSuccess
-  | postUsersResponseError;
+export type postUsersResponse = (postUsersResponseSuccess | postUsersResponseError)
 
 export const getPostUsersUrl = () => {
-  return `/users/`;
-};
 
-export const postUsers = async (
-  postUsersBodyOne: PostUsersBodyOne,
-  options?: RequestInit,
-): Promise<postUsersResponse> => {
-  return apiMutator<postUsersResponse>(getPostUsersUrl(), {
+
+  
+
+  return `/users/`
+}
+
+export const postUsers = async (postUsersBodyOne: PostUsersBodyOne, options?: RequestInit): Promise<postUsersResponse> => {
+  
+  return apiMutator<postUsersResponse>(getPostUsersUrl(),
+  {      
     ...options,
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(postUsersBodyOne),
-  });
-};
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      postUsersBodyOne,)
+  }
+);}
 
-export const getPostUsersMutationOptions = <
-  TError = PostUsers400 | PostUsers500,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postUsers>>,
-    TError,
-    { data: PostUsersBodyOne },
-    TContext
-  >;
-  request?: SecondParameter<typeof apiMutator>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof postUsers>>,
-  TError,
-  { data: PostUsersBodyOne },
-  TContext
-> => {
-  const mutationKey = ["postUsers"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postUsers>>,
-    { data: PostUsersBodyOne }
-  > = (props) => {
-    const { data } = props ?? {};
 
-    return postUsers(data, requestOptions);
-  };
 
-  return { mutationFn, ...mutationOptions };
-};
+export const getPostUsersMutationOptions = <TError = PostUsers400 | PostUsers500,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postUsers>>, TError,{data: PostUsersBodyOne}, TContext>, request?: SecondParameter<typeof apiMutator>}
+): UseMutationOptions<Awaited<ReturnType<typeof postUsers>>, TError,{data: PostUsersBodyOne}, TContext> => {
 
-export type PostUsersMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postUsers>>
->;
-export type PostUsersMutationBody = PostUsersBodyOne;
-export type PostUsersMutationError = PostUsers400 | PostUsers500;
+const mutationKey = ['postUsers'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
 
-/**
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postUsers>>, {data: PostUsersBodyOne}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postUsers(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostUsersMutationResult = NonNullable<Awaited<ReturnType<typeof postUsers>>>
+    export type PostUsersMutationBody = PostUsersBodyOne
+    export type PostUsersMutationError = PostUsers400 | PostUsers500
+
+    /**
  * @summary Create a new user
  */
-export const usePostUsers = <
-  TError = PostUsers400 | PostUsers500,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postUsers>>,
-      TError,
-      { data: PostUsersBodyOne },
-      TContext
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof postUsers>>,
-  TError,
-  { data: PostUsersBodyOne },
-  TContext
-> => {
-  const mutationOptions = getPostUsersMutationOptions(options);
+export const usePostUsers = <TError = PostUsers400 | PostUsers500,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postUsers>>, TError,{data: PostUsersBodyOne}, TContext>, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postUsers>>,
+        TError,
+        {data: PostUsersBodyOne},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
-/**
+      const mutationOptions = getPostUsersMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
  * Retrieves a specific user by their unique identifier. Password hash is excluded from the response.
  * @summary Get user by ID
  */
 export type getUsersByIdResponse200 = {
-  data: GetUsersById200;
-  status: 200;
-};
+  data: GetUsersById200
+  status: 200
+}
 
 export type getUsersByIdResponse400 = {
-  data: GetUsersById400;
-  status: 400;
-};
+  data: GetUsersById400
+  status: 400
+}
 
 export type getUsersByIdResponse500 = {
-  data: GetUsersById500;
-  status: 500;
-};
-
-export type getUsersByIdResponseSuccess = getUsersByIdResponse200 & {
+  data: GetUsersById500
+  status: 500
+}
+    
+export type getUsersByIdResponseSuccess = (getUsersByIdResponse200) & {
   headers: Headers;
 };
-export type getUsersByIdResponseError = (
-  | getUsersByIdResponse400
-  | getUsersByIdResponse500
-) & {
+export type getUsersByIdResponseError = (getUsersByIdResponse400 | getUsersByIdResponse500) & {
   headers: Headers;
 };
 
-export type getUsersByIdResponse =
-  | getUsersByIdResponseSuccess
-  | getUsersByIdResponseError;
+export type getUsersByIdResponse = (getUsersByIdResponseSuccess | getUsersByIdResponseError)
 
-export const getGetUsersByIdUrl = (id: string) => {
-  return `/users/${id}`;
-};
+export const getGetUsersByIdUrl = (id: string,) => {
 
-export const getUsersById = async (
-  id: string,
-  options?: RequestInit,
-): Promise<getUsersByIdResponse> => {
-  return apiMutator<getUsersByIdResponse>(getGetUsersByIdUrl(id), {
+
+  
+
+  return `/users/${id}`
+}
+
+export const getUsersById = async (id: string, options?: RequestInit): Promise<getUsersByIdResponse> => {
+  
+  return apiMutator<getUsersByIdResponse>(getGetUsersByIdUrl(id),
+  {      
     ...options,
-    method: "GET",
-  });
-};
+    method: 'GET'
+    
+    
+  }
+);}
 
-export const getGetUsersByIdQueryKey = (id?: string) => {
-  return [`/users/${id}`] as const;
-};
 
-export const getGetUsersByIdQueryOptions = <
-  TData = Awaited<ReturnType<typeof getUsersById>>,
-  TError = GetUsersById400 | GetUsersById500,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getUsersById>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
+
+
+
+export const getGetUsersByIdQueryKey = (id?: string,) => {
+    return [
+    `/users/${id}`
+    ] as const;
+    }
+
+    
+export const getGetUsersByIdQueryOptions = <TData = Awaited<ReturnType<typeof getUsersById>>, TError = GetUsersById400 | GetUsersById500>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersById>>, TError, TData>>, request?: SecondParameter<typeof apiMutator>}
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetUsersByIdQueryKey(id);
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getUsersById>>> = ({
-    signal,
-  }) => getUsersById(id, { signal, ...requestOptions });
+  const queryKey =  queryOptions?.queryKey ?? getGetUsersByIdQueryKey(id);
 
-  return {
-    queryKey,
-    queryFn,
-    enabled: !!id,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof getUsersById>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type GetUsersByIdQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getUsersById>>
->;
-export type GetUsersByIdQueryError = GetUsersById400 | GetUsersById500;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUsersById>>> = ({ signal }) => getUsersById(id, { signal, ...requestOptions });
 
-export function useGetUsersById<
-  TData = Awaited<ReturnType<typeof getUsersById>>,
-  TError = GetUsersById400 | GetUsersById500,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getUsersById>>, TError, TData>
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getUsersById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetUsersByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getUsersById>>>
+export type GetUsersByIdQueryError = GetUsersById400 | GetUsersById500
+
+
+export function useGetUsersById<TData = Awaited<ReturnType<typeof getUsersById>>, TError = GetUsersById400 | GetUsersById500>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersById>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getUsersById>>,
           TError,
           Awaited<ReturnType<typeof getUsersById>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetUsersById<
-  TData = Awaited<ReturnType<typeof getUsersById>>,
-  TError = GetUsersById400 | GetUsersById500,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getUsersById>>, TError, TData>
-    > &
-      Pick<
+        > , 'initialData'
+      >, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUsersById<TData = Awaited<ReturnType<typeof getUsersById>>, TError = GetUsersById400 | GetUsersById500>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersById>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getUsersById>>,
           TError,
           Awaited<ReturnType<typeof getUsersById>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetUsersById<
-  TData = Awaited<ReturnType<typeof getUsersById>>,
-  TError = GetUsersById400 | GetUsersById500,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getUsersById>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUsersById<TData = Awaited<ReturnType<typeof getUsersById>>, TError = GetUsersById400 | GetUsersById500>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersById>>, TError, TData>>, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get user by ID
  */
 
-export function useGetUsersById<
-  TData = Awaited<ReturnType<typeof getUsersById>>,
-  TError = GetUsersById400 | GetUsersById500,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getUsersById>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetUsersByIdQueryOptions(id, options);
+export function useGetUsersById<TData = Awaited<ReturnType<typeof getUsersById>>, TError = GetUsersById400 | GetUsersById500>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersById>>, TError, TData>>, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetUsersByIdQueryOptions(id,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
+
 
 /**
  * Updates user information (username and/or email). All fields are optional. Username and email must remain unique.
  * @summary Update user information
  */
 export type putUsersByIdResponse200 = {
-  data: PutUsersById200;
-  status: 200;
-};
+  data: PutUsersById200
+  status: 200
+}
 
 export type putUsersByIdResponse400 = {
-  data: PutUsersById400;
-  status: 400;
-};
+  data: PutUsersById400
+  status: 400
+}
 
 export type putUsersByIdResponse500 = {
-  data: PutUsersById500;
-  status: 500;
-};
-
-export type putUsersByIdResponseSuccess = putUsersByIdResponse200 & {
+  data: PutUsersById500
+  status: 500
+}
+    
+export type putUsersByIdResponseSuccess = (putUsersByIdResponse200) & {
   headers: Headers;
 };
-export type putUsersByIdResponseError = (
-  | putUsersByIdResponse400
-  | putUsersByIdResponse500
-) & {
+export type putUsersByIdResponseError = (putUsersByIdResponse400 | putUsersByIdResponse500) & {
   headers: Headers;
 };
 
-export type putUsersByIdResponse =
-  | putUsersByIdResponseSuccess
-  | putUsersByIdResponseError;
+export type putUsersByIdResponse = (putUsersByIdResponseSuccess | putUsersByIdResponseError)
 
-export const getPutUsersByIdUrl = (id: string) => {
-  return `/users/${id}`;
-};
+export const getPutUsersByIdUrl = (id: string,) => {
 
-export const putUsersById = async (
-  id: string,
-  putUsersByIdBodyOne: PutUsersByIdBodyOne,
-  options?: RequestInit,
-): Promise<putUsersByIdResponse> => {
-  return apiMutator<putUsersByIdResponse>(getPutUsersByIdUrl(id), {
+
+  
+
+  return `/users/${id}`
+}
+
+export const putUsersById = async (id: string,
+    putUsersByIdBodyOne: PutUsersByIdBodyOne, options?: RequestInit): Promise<putUsersByIdResponse> => {
+  
+  return apiMutator<putUsersByIdResponse>(getPutUsersByIdUrl(id),
+  {      
     ...options,
-    method: "PUT",
-    headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(putUsersByIdBodyOne),
-  });
-};
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      putUsersByIdBodyOne,)
+  }
+);}
 
-export const getPutUsersByIdMutationOptions = <
-  TError = PutUsersById400 | PutUsersById500,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof putUsersById>>,
-    TError,
-    { id: string; data: PutUsersByIdBodyOne },
-    TContext
-  >;
-  request?: SecondParameter<typeof apiMutator>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof putUsersById>>,
-  TError,
-  { id: string; data: PutUsersByIdBodyOne },
-  TContext
-> => {
-  const mutationKey = ["putUsersById"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof putUsersById>>,
-    { id: string; data: PutUsersByIdBodyOne }
-  > = (props) => {
-    const { id, data } = props ?? {};
 
-    return putUsersById(id, data, requestOptions);
-  };
 
-  return { mutationFn, ...mutationOptions };
-};
+export const getPutUsersByIdMutationOptions = <TError = PutUsersById400 | PutUsersById500,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putUsersById>>, TError,{id: string;data: PutUsersByIdBodyOne}, TContext>, request?: SecondParameter<typeof apiMutator>}
+): UseMutationOptions<Awaited<ReturnType<typeof putUsersById>>, TError,{id: string;data: PutUsersByIdBodyOne}, TContext> => {
 
-export type PutUsersByIdMutationResult = NonNullable<
-  Awaited<ReturnType<typeof putUsersById>>
->;
-export type PutUsersByIdMutationBody = PutUsersByIdBodyOne;
-export type PutUsersByIdMutationError = PutUsersById400 | PutUsersById500;
+const mutationKey = ['putUsersById'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
 
-/**
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putUsersById>>, {id: string;data: PutUsersByIdBodyOne}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  putUsersById(id,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PutUsersByIdMutationResult = NonNullable<Awaited<ReturnType<typeof putUsersById>>>
+    export type PutUsersByIdMutationBody = PutUsersByIdBodyOne
+    export type PutUsersByIdMutationError = PutUsersById400 | PutUsersById500
+
+    /**
  * @summary Update user information
  */
-export const usePutUsersById = <
-  TError = PutUsersById400 | PutUsersById500,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof putUsersById>>,
-      TError,
-      { id: string; data: PutUsersByIdBodyOne },
-      TContext
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof putUsersById>>,
-  TError,
-  { id: string; data: PutUsersByIdBodyOne },
-  TContext
-> => {
-  const mutationOptions = getPutUsersByIdMutationOptions(options);
+export const usePutUsersById = <TError = PutUsersById400 | PutUsersById500,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putUsersById>>, TError,{id: string;data: PutUsersByIdBodyOne}, TContext>, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof putUsersById>>,
+        TError,
+        {id: string;data: PutUsersByIdBodyOne},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
-/**
+      const mutationOptions = getPutUsersByIdMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
  * Permanently deletes a user from the system. Associated sessions will also be deleted due to cascading foreign key constraints.
  * @summary Delete a user
  */
 export type deleteUsersByIdResponse200 = {
-  data: DeleteUsersById200;
-  status: 200;
-};
+  data: DeleteUsersById200
+  status: 200
+}
 
 export type deleteUsersByIdResponse400 = {
-  data: DeleteUsersById400;
-  status: 400;
-};
+  data: DeleteUsersById400
+  status: 400
+}
 
 export type deleteUsersByIdResponse500 = {
-  data: DeleteUsersById500;
-  status: 500;
-};
-
-export type deleteUsersByIdResponseSuccess = deleteUsersByIdResponse200 & {
+  data: DeleteUsersById500
+  status: 500
+}
+    
+export type deleteUsersByIdResponseSuccess = (deleteUsersByIdResponse200) & {
   headers: Headers;
 };
-export type deleteUsersByIdResponseError = (
-  | deleteUsersByIdResponse400
-  | deleteUsersByIdResponse500
-) & {
+export type deleteUsersByIdResponseError = (deleteUsersByIdResponse400 | deleteUsersByIdResponse500) & {
   headers: Headers;
 };
 
-export type deleteUsersByIdResponse =
-  | deleteUsersByIdResponseSuccess
-  | deleteUsersByIdResponseError;
+export type deleteUsersByIdResponse = (deleteUsersByIdResponseSuccess | deleteUsersByIdResponseError)
 
-export const getDeleteUsersByIdUrl = (id: string) => {
-  return `/users/${id}`;
-};
+export const getDeleteUsersByIdUrl = (id: string,) => {
 
-export const deleteUsersById = async (
-  id: string,
-  options?: RequestInit,
-): Promise<deleteUsersByIdResponse> => {
-  return apiMutator<deleteUsersByIdResponse>(getDeleteUsersByIdUrl(id), {
+
+  
+
+  return `/users/${id}`
+}
+
+export const deleteUsersById = async (id: string, options?: RequestInit): Promise<deleteUsersByIdResponse> => {
+  
+  return apiMutator<deleteUsersByIdResponse>(getDeleteUsersByIdUrl(id),
+  {      
     ...options,
-    method: "DELETE",
-  });
-};
+    method: 'DELETE'
+    
+    
+  }
+);}
 
-export const getDeleteUsersByIdMutationOptions = <
-  TError = DeleteUsersById400 | DeleteUsersById500,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteUsersById>>,
-    TError,
-    { id: string },
-    TContext
-  >;
-  request?: SecondParameter<typeof apiMutator>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof deleteUsersById>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationKey = ["deleteUsersById"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof deleteUsersById>>,
-    { id: string }
-  > = (props) => {
-    const { id } = props ?? {};
 
-    return deleteUsersById(id, requestOptions);
-  };
 
-  return { mutationFn, ...mutationOptions };
-};
+export const getDeleteUsersByIdMutationOptions = <TError = DeleteUsersById400 | DeleteUsersById500,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteUsersById>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof apiMutator>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteUsersById>>, TError,{id: string}, TContext> => {
 
-export type DeleteUsersByIdMutationResult = NonNullable<
-  Awaited<ReturnType<typeof deleteUsersById>>
->;
+const mutationKey = ['deleteUsersById'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
 
-export type DeleteUsersByIdMutationError =
-  | DeleteUsersById400
-  | DeleteUsersById500;
+      
 
-/**
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteUsersById>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteUsersById(id,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteUsersByIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteUsersById>>>
+    
+    export type DeleteUsersByIdMutationError = DeleteUsersById400 | DeleteUsersById500
+
+    /**
  * @summary Delete a user
  */
-export const useDeleteUsersById = <
-  TError = DeleteUsersById400 | DeleteUsersById500,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof deleteUsersById>>,
-      TError,
-      { id: string },
-      TContext
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof deleteUsersById>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationOptions = getDeleteUsersByIdMutationOptions(options);
+export const useDeleteUsersById = <TError = DeleteUsersById400 | DeleteUsersById500,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteUsersById>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteUsersById>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getDeleteUsersByIdMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    

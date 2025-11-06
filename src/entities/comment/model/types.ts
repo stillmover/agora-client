@@ -1,4 +1,4 @@
-export type Comment = {
+interface Comment {
   id: string;
   postId: string;
   author: string;
@@ -7,4 +7,6 @@ export type Comment = {
   createdAt: string;
   parentId?: string;
   replies: Comment[];
-};
+}
+
+export type { Comment };

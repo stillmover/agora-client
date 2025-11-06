@@ -5,8 +5,8 @@
  * Modern backend API built with Elysia.js, Drizzle ORM, and PostgreSQL. Provides user management, authentication, and health monitoring endpoints.
  * OpenAPI spec version: 1.0.0
  */
-import type { GetApiMe200DataUser } from './getApiMe200DataUser';
+import type { PostApiLogin200DataUser } from "./postApiLogin200DataUser";
 
-export type GetApiMe200Data = {
-  user: GetApiMe200DataUser;
+export type PostApiLogin200Data = {
+  user: PostApiLogin200DataUser;
 };

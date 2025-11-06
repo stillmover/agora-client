@@ -1,9 +1,14 @@
-import { Link, useNavigate } from '@tanstack/react-router';
-import { useIsAuthenticated, useAuthUser, authActions } from '@/features/auth';
-import { ROUTES } from '@/shared/config';
-import { ThemeToggle } from '@/features/theme-toggle';
-import { Button } from '@/shared/ui/button';
-import { Input } from '@/shared/ui/input';
+import { Link, useNavigate } from "@tanstack/react-router";
+import {
+  useIsAuthenticated,
+  useSessionUser,
+  useLogoutMutation,
+  sessionActions,
+} from "@/entities/session";
+import { ROUTES } from "@/shared/config";
+import { ThemeToggle } from "@/features/theme-toggle";
+import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,32 +16,32 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/shared/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/shared/ui/avatar';
-import { User, LogOut, Settings, Plus } from 'lucide-react';
-import { getInitials } from '@/shared/utils';
-import { AuthModal } from '@/widgets/auth-modal';
-import { useAuthSync } from '@/features/auth/lib/useAuthSync';
-import { usePostApiLogout } from '@/shared/api/endpoints/authentication/authentication';
+} from "@/shared/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
+import { User, LogOut, Settings, Plus } from "lucide-react";
+import { getInitials } from "@/shared/lib";
+import { AuthModal } from "@/widgets/auth-modal";
 
 export const Header = () => {
-  const { isLoading } = useAuthSync();
   const isAuthenticated = useIsAuthenticated();
-  const user = useAuthUser();
+  const user = useSessionUser();
   const navigate = useNavigate();
+  const logoutMutation = useLogoutMutation();
 
-  const logoutMutation = usePostApiLogout({
-    mutation: {
-      onSuccess: () => {
-        authActions.logout();
-        navigate({ to: ROUTES.HOME });
-      },
-    },
-  });
+  const handleLogout = async () => {
+    try {
+      // Clear session state immediately to provide instant UI feedback
+      sessionActions.logout();
 
-  const handleLogout = () => logoutMutation.mutate();
-
-  if (isLoading) return null; 
+      // Then make the API call to clear server-side session
+      await logoutMutation.mutateAsync();
+      navigate({ to: ROUTES.HOME });
+    } catch (error) {
+      console.error("Error during logout:", error);
+      // Even if API call fails, we've already cleared the local session state
+      navigate({ to: ROUTES.HOME });
+    }
+  };
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background">
@@ -70,7 +75,7 @@ export const Header = () => {
                   >
                     <Avatar className="h-8 w-8">
                       <AvatarFallback className="text-xs">
-                        {getInitials(user?.username || 'U')}
+                        {getInitials(user?.username || "U")}
                       </AvatarFallback>
                     </Avatar>
                   </Button>

@@ -1,7 +1,7 @@
-import { useForm } from '@tanstack/react-form';
-import { FloatingInput } from '@/shared/ui/floating-input';
-import { Button } from '@/shared/ui/button';
-import { resetSchema } from '@/features/auth/lib/schemas';
+import { useForm } from "@tanstack/react-form";
+import { FloatingInput } from "@/shared/ui/floating-input";
+import { Button } from "@/shared/ui/button";
+import { resetSchema } from "@/features/auth/lib/schemas";
 
 export const ResetForm = () => {
   const isFormValid = (values: { usernameOrEmail: string }) => {
@@ -14,19 +14,18 @@ export const ResetForm = () => {
   };
 
   const form = useForm({
-    defaultValues: { usernameOrEmail: '' },
+    defaultValues: { usernameOrEmail: "" },
     validators: {
       onSubmit: resetSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log('Password reset request for:', value.usernameOrEmail);
-      // simulate API call
+      console.log("Password reset request for:", value.usernameOrEmail);
     },
   });
 
   return (
     <form
-      onSubmit={e => {
+      onSubmit={(e) => {
         e.preventDefault();
         form.handleSubmit();
       }}
@@ -34,13 +33,13 @@ export const ResetForm = () => {
     >
       <div className="flex flex-col space-y-1">
         <form.Field name="usernameOrEmail">
-          {field => (
+          {(field) => (
             <FloatingInput
               id={field.name}
               type="text"
               label="Email or username"
               value={field.state.value}
-              onChange={e => field.setValue(e.target.value)}
+              onChange={(e) => field.setValue(e.target.value)}
               required
               error={field.state.meta.errors?.[0]?.message}
             />
@@ -57,12 +56,12 @@ export const ResetForm = () => {
 
       <Button
         type="submit"
-        variant={isFormValid(form.state.values) ? 'reddit' : 'redditDisabled'}
+        variant={isFormValid(form.state.values) ? "reddit" : "redditDisabled"}
         disabled={!isFormValid(form.state.values)}
         className="w-full p-6"
       >
-        {' '}
-        Reset password{' '}
+        {" "}
+        Reset password{" "}
       </Button>
     </form>
   );

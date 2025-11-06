@@ -3,28 +3,47 @@ import {
   Outlet,
   Link,
 } from "@tanstack/react-router";
+import { useSession } from "@/entities/session";
 import type { QueryClient } from "@tanstack/react-query";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { ROUTES } from "@/shared/config";
+import type { SessionState } from "@/entities/session";
 
 interface RouterContext {
   queryClient: QueryClient;
-}
-
-if (import.meta.env.DEV) {
-  import("react-scan").then(({ scan }) => {
-    scan();
-  });
+  session: SessionState & {
+    isInitializing: boolean;
+    error: unknown;
+    refetch: () => void;
+  };
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  component: () => (
+  component: RootComponent,
+  notFoundComponent: NotFound,
+});
+
+function RootComponent() {
+  const { isInitializing } = useSession();
+
+  if (isInitializing) {
+    return (
+      <div className="flex h-screen items-center justify-center text-gray-500">
+        Checking session...
+      </div>
+    );
+  }
+
+  return (
     <div className="min-h-screen bg-background">
       <Outlet />
     </div>
-  ),
-  notFoundComponent: () => (
+  );
+}
+
+function NotFound() {
+  return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <Card className="max-w-md w-full">
         <CardContent className="p-6 text-center space-y-4">
@@ -38,5 +57,5 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         </CardContent>
       </Card>
     </div>
-  ),
-});
+  );
+}

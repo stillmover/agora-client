@@ -5,7 +5,10 @@
  * Modern backend API built with Elysia.js, Drizzle ORM, and PostgreSQL. Provides user management, authentication, and health monitoring endpoints.
  * OpenAPI spec version: 1.0.0
  */
-import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -18,1379 +21,559 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult,
-} from "@tanstack/react-query";
+  UseQueryResult
+} from '@tanstack/react-query';
 
-import { apiMutator } from "../../apiMutator";
+import { apiMutator } from '../../apiMutator';
+
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
-export type getGraphqlResponse200 = {
-  data: void;
-  status: 200;
-};
 
-export type getGraphqlResponseSuccess = getGraphqlResponse200 & {
+
+export type getGraphqlResponseDefault = {
+  data: unknown
+  status: number
+}
+    
+;
+export type getGraphqlResponseError = (getGraphqlResponseDefault) & {
   headers: Headers;
 };
-export type getGraphqlResponse = getGraphqlResponseSuccess;
+
+export type getGraphqlResponse = (getGraphqlResponseError)
 
 export const getGetGraphqlUrl = () => {
-  return `/graphql`;
-};
 
-export const getGraphql = async (
-  options?: RequestInit,
-): Promise<getGraphqlResponse> => {
-  return apiMutator<getGraphqlResponse>(getGetGraphqlUrl(), {
+
+  
+
+  return `/graphql`
+}
+
+export const getGraphql = async ( options?: RequestInit): Promise<getGraphqlResponse> => {
+  
+  return apiMutator<getGraphqlResponse>(getGetGraphqlUrl(),
+  {      
     ...options,
-    method: "GET",
-  });
-};
+    method: 'GET'
+    
+    
+  }
+);}
+
+
+
+
 
 export const getGetGraphqlQueryKey = () => {
-  return [`/graphql`] as const;
-};
+    return [
+    `/graphql`
+    ] as const;
+    }
 
-export const getGetGraphqlQueryOptions = <
-  TData = Awaited<ReturnType<typeof getGraphql>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof getGraphql>>, TError, TData>
-  >;
-  request?: SecondParameter<typeof apiMutator>;
-}) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
+    
+export const getGetGraphqlQueryOptions = <TData = Awaited<ReturnType<typeof getGraphql>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getGraphql>>, TError, TData>>, request?: SecondParameter<typeof apiMutator>}
+) => {
 
-  const queryKey = queryOptions?.queryKey ?? getGetGraphqlQueryKey();
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getGraphql>>> = ({
-    signal,
-  }) => getGraphql({ signal, ...requestOptions });
+  const queryKey =  queryOptions?.queryKey ?? getGetGraphqlQueryKey();
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getGraphql>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type GetGraphqlQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getGraphql>>
->;
-export type GetGraphqlQueryError = unknown;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getGraphql>>> = ({ signal }) => getGraphql({ signal, ...requestOptions });
 
-export function useGetGraphql<
-  TData = Awaited<ReturnType<typeof getGraphql>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getGraphql>>, TError, TData>
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getGraphql>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetGraphqlQueryResult = NonNullable<Awaited<ReturnType<typeof getGraphql>>>
+export type GetGraphqlQueryError = unknown
+
+
+export function useGetGraphql<TData = Awaited<ReturnType<typeof getGraphql>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getGraphql>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getGraphql>>,
           TError,
           Awaited<ReturnType<typeof getGraphql>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetGraphql<
-  TData = Awaited<ReturnType<typeof getGraphql>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getGraphql>>, TError, TData>
-    > &
-      Pick<
+        > , 'initialData'
+      >, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetGraphql<TData = Awaited<ReturnType<typeof getGraphql>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getGraphql>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getGraphql>>,
           TError,
           Awaited<ReturnType<typeof getGraphql>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetGraphql<
-  TData = Awaited<ReturnType<typeof getGraphql>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getGraphql>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetGraphql<TData = Awaited<ReturnType<typeof getGraphql>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getGraphql>>, TError, TData>>, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useGetGraphql<
-  TData = Awaited<ReturnType<typeof getGraphql>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getGraphql>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetGraphqlQueryOptions(options);
+export function useGetGraphql<TData = Awaited<ReturnType<typeof getGraphql>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getGraphql>>, TError, TData>>, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetGraphqlQueryOptions(options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
 
-export type postGraphqlResponse200 = {
-  data: void;
-  status: 200;
-};
 
-export type postGraphqlResponseSuccess = postGraphqlResponse200 & {
+
+
+export type postGraphqlResponseDefault = {
+  data: unknown
+  status: number
+}
+    
+;
+export type postGraphqlResponseError = (postGraphqlResponseDefault) & {
   headers: Headers;
 };
-export type postGraphqlResponse = postGraphqlResponseSuccess;
+
+export type postGraphqlResponse = (postGraphqlResponseError)
 
 export const getPostGraphqlUrl = () => {
-  return `/graphql`;
-};
 
-export const postGraphql = async (
-  options?: RequestInit,
-): Promise<postGraphqlResponse> => {
-  return apiMutator<postGraphqlResponse>(getPostGraphqlUrl(), {
+
+  
+
+  return `/graphql`
+}
+
+export const postGraphql = async ( options?: RequestInit): Promise<postGraphqlResponse> => {
+  
+  return apiMutator<postGraphqlResponse>(getPostGraphqlUrl(),
+  {      
     ...options,
-    method: "POST",
-  });
-};
+    method: 'POST'
+    
+    
+  }
+);}
 
-export const getPostGraphqlMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postGraphql>>,
-    TError,
-    void,
-    TContext
-  >;
-  request?: SecondParameter<typeof apiMutator>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof postGraphql>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationKey = ["postGraphql"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postGraphql>>,
-    void
-  > = () => {
-    return postGraphql(requestOptions);
-  };
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type PostGraphqlMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postGraphql>>
->;
+export const getPostGraphqlMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postGraphql>>, TError,void, TContext>, request?: SecondParameter<typeof apiMutator>}
+): UseMutationOptions<Awaited<ReturnType<typeof postGraphql>>, TError,void, TContext> => {
 
-export type PostGraphqlMutationError = unknown;
+const mutationKey = ['postGraphql'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
 
-export const usePostGraphql = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postGraphql>>,
-      TError,
-      void,
-      TContext
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof postGraphql>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationOptions = getPostGraphqlMutationOptions(options);
+      
 
-  return useMutation(mutationOptions, queryClient);
-};
-export type getHealthResponse200 = {
-  data: void;
-  status: 200;
-};
 
-export type getHealthResponseSuccess = getHealthResponse200 & {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postGraphql>>, void> = () => {
+          
+
+          return  postGraphql(requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostGraphqlMutationResult = NonNullable<Awaited<ReturnType<typeof postGraphql>>>
+    
+    export type PostGraphqlMutationError = unknown
+
+    export const usePostGraphql = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postGraphql>>, TError,void, TContext>, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postGraphql>>,
+        TError,
+        void,
+        TContext
+      > => {
+
+      const mutationOptions = getPostGraphqlMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    export type allHealthResponseDefault = {
+  data: unknown
+  status: number
+}
+    
+;
+export type allHealthResponseError = (allHealthResponseDefault) & {
   headers: Headers;
 };
-export type getHealthResponse = getHealthResponseSuccess;
 
-export const getGetHealthUrl = () => {
-  return `/health`;
-};
+export type allHealthResponse = (allHealthResponseError)
 
-export const getHealth = async (
-  options?: RequestInit,
-): Promise<getHealthResponse> => {
-  return apiMutator<getHealthResponse>(getGetHealthUrl(), {
+export const getAllHealthUrl = () => {
+
+
+  
+
+  return `/health`
+}
+
+export const allHealth = async ( options?: RequestInit): Promise<allHealthResponse> => {
+  
+  return apiMutator<allHealthResponse>(getAllHealthUrl(),
+  {      
     ...options,
-    method: "GET",
-  });
+    method: 'HEAD'
+    
+    
+  }
+);}
+
+
+
+
+export const getAllHealthMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof allHealth>>, TError,void, TContext>, request?: SecondParameter<typeof apiMutator>}
+): UseMutationOptions<Awaited<ReturnType<typeof allHealth>>, TError,void, TContext> => {
+
+const mutationKey = ['allHealth'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof allHealth>>, void> = () => {
+          
+
+          return  allHealth(requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AllHealthMutationResult = NonNullable<Awaited<ReturnType<typeof allHealth>>>
+    
+    export type AllHealthMutationError = unknown
+
+    export const useAllHealth = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof allHealth>>, TError,void, TContext>, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof allHealth>>,
+        TError,
+        void,
+        TContext
+      > => {
+
+      const mutationOptions = getAllHealthMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    export type allIndexResponseDefault = {
+  data: unknown
+  status: number
+}
+    
+;
+export type allIndexResponseError = (allIndexResponseDefault) & {
+  headers: Headers;
 };
 
-export const getGetHealthQueryKey = () => {
-  return [`/health`] as const;
+export type allIndexResponse = (allIndexResponseError)
+
+export const getAllIndexUrl = () => {
+
+
+  
+
+  return `/`
+}
+
+export const allIndex = async ( options?: RequestInit): Promise<allIndexResponse> => {
+  
+  return apiMutator<allIndexResponse>(getAllIndexUrl(),
+  {      
+    ...options,
+    method: 'HEAD'
+    
+    
+  }
+);}
+
+
+
+
+export const getAllIndexMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof allIndex>>, TError,void, TContext>, request?: SecondParameter<typeof apiMutator>}
+): UseMutationOptions<Awaited<ReturnType<typeof allIndex>>, TError,void, TContext> => {
+
+const mutationKey = ['allIndex'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof allIndex>>, void> = () => {
+          
+
+          return  allIndex(requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AllIndexMutationResult = NonNullable<Awaited<ReturnType<typeof allIndex>>>
+    
+    export type AllIndexMutationError = unknown
+
+    export const useAllIndex = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof allIndex>>, TError,void, TContext>, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof allIndex>>,
+        TError,
+        void,
+        TContext
+      > => {
+
+      const mutationOptions = getAllIndexMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    export type getApiAuthGoogleResponseDefault = {
+  data: unknown
+  status: number
+}
+    
+;
+export type getApiAuthGoogleResponseError = (getApiAuthGoogleResponseDefault) & {
+  headers: Headers;
 };
 
-export const getGetHealthQueryOptions = <
-  TData = Awaited<ReturnType<typeof getHealth>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>
-  >;
-  request?: SecondParameter<typeof apiMutator>;
-}) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
+export type getApiAuthGoogleResponse = (getApiAuthGoogleResponseError)
 
-  const queryKey = queryOptions?.queryKey ?? getGetHealthQueryKey();
+export const getGetApiAuthGoogleUrl = () => {
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getHealth>>> = ({
-    signal,
-  }) => getHealth({ signal, ...requestOptions });
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getHealth>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type GetHealthQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getHealth>>
->;
-export type GetHealthQueryError = unknown;
+  return `/api/auth/google/`
+}
 
-export function useGetHealth<
-  TData = Awaited<ReturnType<typeof getHealth>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>
-    > &
-      Pick<
+export const getApiAuthGoogle = async ( options?: RequestInit): Promise<getApiAuthGoogleResponse> => {
+  
+  return apiMutator<getApiAuthGoogleResponse>(getGetApiAuthGoogleUrl(),
+  {      
+    ...options,
+    method: 'GET'
+    
+    
+  }
+);}
+
+
+
+
+
+export const getGetApiAuthGoogleQueryKey = () => {
+    return [
+    `/api/auth/google/`
+    ] as const;
+    }
+
+    
+export const getGetApiAuthGoogleQueryOptions = <TData = Awaited<ReturnType<typeof getApiAuthGoogle>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGoogle>>, TError, TData>>, request?: SecondParameter<typeof apiMutator>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiAuthGoogleQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAuthGoogle>>> = ({ signal }) => getApiAuthGoogle({ signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGoogle>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiAuthGoogleQueryResult = NonNullable<Awaited<ReturnType<typeof getApiAuthGoogle>>>
+export type GetApiAuthGoogleQueryError = unknown
+
+
+export function useGetApiAuthGoogle<TData = Awaited<ReturnType<typeof getApiAuthGoogle>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGoogle>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getHealth>>,
+          Awaited<ReturnType<typeof getApiAuthGoogle>>,
           TError,
-          Awaited<ReturnType<typeof getHealth>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetHealth<
-  TData = Awaited<ReturnType<typeof getHealth>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>
-    > &
-      Pick<
+          Awaited<ReturnType<typeof getApiAuthGoogle>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiAuthGoogle<TData = Awaited<ReturnType<typeof getApiAuthGoogle>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGoogle>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getHealth>>,
+          Awaited<ReturnType<typeof getApiAuthGoogle>>,
           TError,
-          Awaited<ReturnType<typeof getHealth>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetHealth<
-  TData = Awaited<ReturnType<typeof getHealth>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+          Awaited<ReturnType<typeof getApiAuthGoogle>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiAuthGoogle<TData = Awaited<ReturnType<typeof getApiAuthGoogle>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGoogle>>, TError, TData>>, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useGetHealth<
-  TData = Awaited<ReturnType<typeof getHealth>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetHealthQueryOptions(options);
+export function useGetApiAuthGoogle<TData = Awaited<ReturnType<typeof getApiAuthGoogle>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGoogle>>, TError, TData>>, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetApiAuthGoogleQueryOptions(options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
 
-export type putHealthResponse200 = {
-  data: void;
-  status: 200;
-};
 
-export type putHealthResponseSuccess = putHealthResponse200 & {
+
+
+export type getApiAuthGoogleCallbackResponseDefault = {
+  data: unknown
+  status: number
+}
+    
+;
+export type getApiAuthGoogleCallbackResponseError = (getApiAuthGoogleCallbackResponseDefault) & {
   headers: Headers;
 };
-export type putHealthResponse = putHealthResponseSuccess;
 
-export const getPutHealthUrl = () => {
-  return `/health`;
-};
+export type getApiAuthGoogleCallbackResponse = (getApiAuthGoogleCallbackResponseError)
 
-export const putHealth = async (
-  options?: RequestInit,
-): Promise<putHealthResponse> => {
-  return apiMutator<putHealthResponse>(getPutHealthUrl(), {
+export const getGetApiAuthGoogleCallbackUrl = () => {
+
+
+  
+
+  return `/api/auth/google/callback`
+}
+
+export const getApiAuthGoogleCallback = async ( options?: RequestInit): Promise<getApiAuthGoogleCallbackResponse> => {
+  
+  return apiMutator<getApiAuthGoogleCallbackResponse>(getGetApiAuthGoogleCallbackUrl(),
+  {      
     ...options,
-    method: "PUT",
-  });
-};
+    method: 'GET'
+    
+    
+  }
+);}
 
-export const getPutHealthMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof putHealth>>,
-    TError,
-    void,
-    TContext
-  >;
-  request?: SecondParameter<typeof apiMutator>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof putHealth>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationKey = ["putHealth"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof putHealth>>,
-    void
-  > = () => {
-    return putHealth(requestOptions);
-  };
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type PutHealthMutationResult = NonNullable<
-  Awaited<ReturnType<typeof putHealth>>
->;
 
-export type PutHealthMutationError = unknown;
+export const getGetApiAuthGoogleCallbackQueryKey = () => {
+    return [
+    `/api/auth/google/callback`
+    ] as const;
+    }
 
-export const usePutHealth = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof putHealth>>,
-      TError,
-      void,
-      TContext
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof putHealth>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationOptions = getPutHealthMutationOptions(options);
+    
+export const getGetApiAuthGoogleCallbackQueryOptions = <TData = Awaited<ReturnType<typeof getApiAuthGoogleCallback>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGoogleCallback>>, TError, TData>>, request?: SecondParameter<typeof apiMutator>}
+) => {
 
-  return useMutation(mutationOptions, queryClient);
-};
-export type postHealthResponse200 = {
-  data: void;
-  status: 200;
-};
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-export type postHealthResponseSuccess = postHealthResponse200 & {
-  headers: Headers;
-};
-export type postHealthResponse = postHealthResponseSuccess;
+  const queryKey =  queryOptions?.queryKey ?? getGetApiAuthGoogleCallbackQueryKey();
 
-export const getPostHealthUrl = () => {
-  return `/health`;
-};
+  
 
-export const postHealth = async (
-  options?: RequestInit,
-): Promise<postHealthResponse> => {
-  return apiMutator<postHealthResponse>(getPostHealthUrl(), {
-    ...options,
-    method: "POST",
-  });
-};
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAuthGoogleCallback>>> = ({ signal }) => getApiAuthGoogleCallback({ signal, ...requestOptions });
 
-export const getPostHealthMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postHealth>>,
-    TError,
-    void,
-    TContext
-  >;
-  request?: SecondParameter<typeof apiMutator>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof postHealth>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationKey = ["postHealth"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
+      
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postHealth>>,
-    void
-  > = () => {
-    return postHealth(requestOptions);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGoogleCallback>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
 
-export type PostHealthMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postHealth>>
->;
+export type GetApiAuthGoogleCallbackQueryResult = NonNullable<Awaited<ReturnType<typeof getApiAuthGoogleCallback>>>
+export type GetApiAuthGoogleCallbackQueryError = unknown
 
-export type PostHealthMutationError = unknown;
 
-export const usePostHealth = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postHealth>>,
-      TError,
-      void,
-      TContext
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof postHealth>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationOptions = getPostHealthMutationOptions(options);
-
-  return useMutation(mutationOptions, queryClient);
-};
-export type deleteHealthResponse200 = {
-  data: void;
-  status: 200;
-};
-
-export type deleteHealthResponseSuccess = deleteHealthResponse200 & {
-  headers: Headers;
-};
-export type deleteHealthResponse = deleteHealthResponseSuccess;
-
-export const getDeleteHealthUrl = () => {
-  return `/health`;
-};
-
-export const deleteHealth = async (
-  options?: RequestInit,
-): Promise<deleteHealthResponse> => {
-  return apiMutator<deleteHealthResponse>(getDeleteHealthUrl(), {
-    ...options,
-    method: "DELETE",
-  });
-};
-
-export const getDeleteHealthMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteHealth>>,
-    TError,
-    void,
-    TContext
-  >;
-  request?: SecondParameter<typeof apiMutator>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof deleteHealth>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationKey = ["deleteHealth"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof deleteHealth>>,
-    void
-  > = () => {
-    return deleteHealth(requestOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type DeleteHealthMutationResult = NonNullable<
-  Awaited<ReturnType<typeof deleteHealth>>
->;
-
-export type DeleteHealthMutationError = unknown;
-
-export const useDeleteHealth = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof deleteHealth>>,
-      TError,
-      void,
-      TContext
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof deleteHealth>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationOptions = getDeleteHealthMutationOptions(options);
-
-  return useMutation(mutationOptions, queryClient);
-};
-export type headHealthResponse200 = {
-  data: void;
-  status: 200;
-};
-
-export type headHealthResponseSuccess = headHealthResponse200 & {
-  headers: Headers;
-};
-export type headHealthResponse = headHealthResponseSuccess;
-
-export const getHeadHealthUrl = () => {
-  return `/health`;
-};
-
-export const headHealth = async (
-  options?: RequestInit,
-): Promise<headHealthResponse> => {
-  return apiMutator<headHealthResponse>(getHeadHealthUrl(), {
-    ...options,
-    method: "HEAD",
-  });
-};
-
-export const getHeadHealthMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof headHealth>>,
-    TError,
-    void,
-    TContext
-  >;
-  request?: SecondParameter<typeof apiMutator>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof headHealth>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationKey = ["headHealth"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof headHealth>>,
-    void
-  > = () => {
-    return headHealth(requestOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type HeadHealthMutationResult = NonNullable<
-  Awaited<ReturnType<typeof headHealth>>
->;
-
-export type HeadHealthMutationError = unknown;
-
-export const useHeadHealth = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof headHealth>>,
-      TError,
-      void,
-      TContext
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof headHealth>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationOptions = getHeadHealthMutationOptions(options);
-
-  return useMutation(mutationOptions, queryClient);
-};
-export type patchHealthResponse200 = {
-  data: void;
-  status: 200;
-};
-
-export type patchHealthResponseSuccess = patchHealthResponse200 & {
-  headers: Headers;
-};
-export type patchHealthResponse = patchHealthResponseSuccess;
-
-export const getPatchHealthUrl = () => {
-  return `/health`;
-};
-
-export const patchHealth = async (
-  options?: RequestInit,
-): Promise<patchHealthResponse> => {
-  return apiMutator<patchHealthResponse>(getPatchHealthUrl(), {
-    ...options,
-    method: "PATCH",
-  });
-};
-
-export const getPatchHealthMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof patchHealth>>,
-    TError,
-    void,
-    TContext
-  >;
-  request?: SecondParameter<typeof apiMutator>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof patchHealth>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationKey = ["patchHealth"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof patchHealth>>,
-    void
-  > = () => {
-    return patchHealth(requestOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type PatchHealthMutationResult = NonNullable<
-  Awaited<ReturnType<typeof patchHealth>>
->;
-
-export type PatchHealthMutationError = unknown;
-
-export const usePatchHealth = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof patchHealth>>,
-      TError,
-      void,
-      TContext
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof patchHealth>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationOptions = getPatchHealthMutationOptions(options);
-
-  return useMutation(mutationOptions, queryClient);
-};
-export type getIndexResponse200 = {
-  data: void;
-  status: 200;
-};
-
-export type getIndexResponseSuccess = getIndexResponse200 & {
-  headers: Headers;
-};
-export type getIndexResponse = getIndexResponseSuccess;
-
-export const getGetIndexUrl = () => {
-  return `/`;
-};
-
-export const getIndex = async (
-  options?: RequestInit,
-): Promise<getIndexResponse> => {
-  return apiMutator<getIndexResponse>(getGetIndexUrl(), {
-    ...options,
-    method: "GET",
-  });
-};
-
-export const getGetIndexQueryKey = () => {
-  return [`/`] as const;
-};
-
-export const getGetIndexQueryOptions = <
-  TData = Awaited<ReturnType<typeof getIndex>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof getIndex>>, TError, TData>
-  >;
-  request?: SecondParameter<typeof apiMutator>;
-}) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getGetIndexQueryKey();
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getIndex>>> = ({
-    signal,
-  }) => getIndex({ signal, ...requestOptions });
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getIndex>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type GetIndexQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getIndex>>
->;
-export type GetIndexQueryError = unknown;
-
-export function useGetIndex<
-  TData = Awaited<ReturnType<typeof getIndex>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getIndex>>, TError, TData>
-    > &
-      Pick<
+export function useGetApiAuthGoogleCallback<TData = Awaited<ReturnType<typeof getApiAuthGoogleCallback>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGoogleCallback>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getIndex>>,
+          Awaited<ReturnType<typeof getApiAuthGoogleCallback>>,
           TError,
-          Awaited<ReturnType<typeof getIndex>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetIndex<
-  TData = Awaited<ReturnType<typeof getIndex>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getIndex>>, TError, TData>
-    > &
-      Pick<
+          Awaited<ReturnType<typeof getApiAuthGoogleCallback>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiAuthGoogleCallback<TData = Awaited<ReturnType<typeof getApiAuthGoogleCallback>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGoogleCallback>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getIndex>>,
+          Awaited<ReturnType<typeof getApiAuthGoogleCallback>>,
           TError,
-          Awaited<ReturnType<typeof getIndex>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetIndex<
-  TData = Awaited<ReturnType<typeof getIndex>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getIndex>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+          Awaited<ReturnType<typeof getApiAuthGoogleCallback>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiAuthGoogleCallback<TData = Awaited<ReturnType<typeof getApiAuthGoogleCallback>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGoogleCallback>>, TError, TData>>, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useGetIndex<
-  TData = Awaited<ReturnType<typeof getIndex>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getIndex>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetIndexQueryOptions(options);
+export function useGetApiAuthGoogleCallback<TData = Awaited<ReturnType<typeof getApiAuthGoogleCallback>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGoogleCallback>>, TError, TData>>, request?: SecondParameter<typeof apiMutator>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetApiAuthGoogleCallbackQueryOptions(options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
 
-export type putIndexResponse200 = {
-  data: void;
-  status: 200;
-};
 
-export type putIndexResponseSuccess = putIndexResponse200 & {
-  headers: Headers;
-};
-export type putIndexResponse = putIndexResponseSuccess;
 
-export const getPutIndexUrl = () => {
-  return `/`;
-};
 
-export const putIndex = async (
-  options?: RequestInit,
-): Promise<putIndexResponse> => {
-  return apiMutator<putIndexResponse>(getPutIndexUrl(), {
-    ...options,
-    method: "PUT",
-  });
-};
-
-export const getPutIndexMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof putIndex>>,
-    TError,
-    void,
-    TContext
-  >;
-  request?: SecondParameter<typeof apiMutator>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof putIndex>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationKey = ["putIndex"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof putIndex>>,
-    void
-  > = () => {
-    return putIndex(requestOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type PutIndexMutationResult = NonNullable<
-  Awaited<ReturnType<typeof putIndex>>
->;
-
-export type PutIndexMutationError = unknown;
-
-export const usePutIndex = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof putIndex>>,
-      TError,
-      void,
-      TContext
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof putIndex>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationOptions = getPutIndexMutationOptions(options);
-
-  return useMutation(mutationOptions, queryClient);
-};
-export type postIndexResponse200 = {
-  data: void;
-  status: 200;
-};
-
-export type postIndexResponseSuccess = postIndexResponse200 & {
-  headers: Headers;
-};
-export type postIndexResponse = postIndexResponseSuccess;
-
-export const getPostIndexUrl = () => {
-  return `/`;
-};
-
-export const postIndex = async (
-  options?: RequestInit,
-): Promise<postIndexResponse> => {
-  return apiMutator<postIndexResponse>(getPostIndexUrl(), {
-    ...options,
-    method: "POST",
-  });
-};
-
-export const getPostIndexMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postIndex>>,
-    TError,
-    void,
-    TContext
-  >;
-  request?: SecondParameter<typeof apiMutator>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof postIndex>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationKey = ["postIndex"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postIndex>>,
-    void
-  > = () => {
-    return postIndex(requestOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type PostIndexMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postIndex>>
->;
-
-export type PostIndexMutationError = unknown;
-
-export const usePostIndex = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postIndex>>,
-      TError,
-      void,
-      TContext
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof postIndex>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationOptions = getPostIndexMutationOptions(options);
-
-  return useMutation(mutationOptions, queryClient);
-};
-export type deleteIndexResponse200 = {
-  data: void;
-  status: 200;
-};
-
-export type deleteIndexResponseSuccess = deleteIndexResponse200 & {
-  headers: Headers;
-};
-export type deleteIndexResponse = deleteIndexResponseSuccess;
-
-export const getDeleteIndexUrl = () => {
-  return `/`;
-};
-
-export const deleteIndex = async (
-  options?: RequestInit,
-): Promise<deleteIndexResponse> => {
-  return apiMutator<deleteIndexResponse>(getDeleteIndexUrl(), {
-    ...options,
-    method: "DELETE",
-  });
-};
-
-export const getDeleteIndexMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteIndex>>,
-    TError,
-    void,
-    TContext
-  >;
-  request?: SecondParameter<typeof apiMutator>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof deleteIndex>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationKey = ["deleteIndex"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof deleteIndex>>,
-    void
-  > = () => {
-    return deleteIndex(requestOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type DeleteIndexMutationResult = NonNullable<
-  Awaited<ReturnType<typeof deleteIndex>>
->;
-
-export type DeleteIndexMutationError = unknown;
-
-export const useDeleteIndex = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof deleteIndex>>,
-      TError,
-      void,
-      TContext
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof deleteIndex>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationOptions = getDeleteIndexMutationOptions(options);
-
-  return useMutation(mutationOptions, queryClient);
-};
-export type headIndexResponse200 = {
-  data: void;
-  status: 200;
-};
-
-export type headIndexResponseSuccess = headIndexResponse200 & {
-  headers: Headers;
-};
-export type headIndexResponse = headIndexResponseSuccess;
-
-export const getHeadIndexUrl = () => {
-  return `/`;
-};
-
-export const headIndex = async (
-  options?: RequestInit,
-): Promise<headIndexResponse> => {
-  return apiMutator<headIndexResponse>(getHeadIndexUrl(), {
-    ...options,
-    method: "HEAD",
-  });
-};
-
-export const getHeadIndexMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof headIndex>>,
-    TError,
-    void,
-    TContext
-  >;
-  request?: SecondParameter<typeof apiMutator>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof headIndex>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationKey = ["headIndex"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof headIndex>>,
-    void
-  > = () => {
-    return headIndex(requestOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type HeadIndexMutationResult = NonNullable<
-  Awaited<ReturnType<typeof headIndex>>
->;
-
-export type HeadIndexMutationError = unknown;
-
-export const useHeadIndex = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof headIndex>>,
-      TError,
-      void,
-      TContext
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof headIndex>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationOptions = getHeadIndexMutationOptions(options);
-
-  return useMutation(mutationOptions, queryClient);
-};
-export type patchIndexResponse200 = {
-  data: void;
-  status: 200;
-};
-
-export type patchIndexResponseSuccess = patchIndexResponse200 & {
-  headers: Headers;
-};
-export type patchIndexResponse = patchIndexResponseSuccess;
-
-export const getPatchIndexUrl = () => {
-  return `/`;
-};
-
-export const patchIndex = async (
-  options?: RequestInit,
-): Promise<patchIndexResponse> => {
-  return apiMutator<patchIndexResponse>(getPatchIndexUrl(), {
-    ...options,
-    method: "PATCH",
-  });
-};
-
-export const getPatchIndexMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof patchIndex>>,
-    TError,
-    void,
-    TContext
-  >;
-  request?: SecondParameter<typeof apiMutator>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof patchIndex>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationKey = ["patchIndex"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof patchIndex>>,
-    void
-  > = () => {
-    return patchIndex(requestOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type PatchIndexMutationResult = NonNullable<
-  Awaited<ReturnType<typeof patchIndex>>
->;
-
-export type PatchIndexMutationError = unknown;
-
-export const usePatchIndex = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof patchIndex>>,
-      TError,
-      void,
-      TContext
-    >;
-    request?: SecondParameter<typeof apiMutator>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof patchIndex>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationOptions = getPatchIndexMutationOptions(options);
-
-  return useMutation(mutationOptions, queryClient);
-};

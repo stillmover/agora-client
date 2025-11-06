@@ -1,16 +1,18 @@
-import { OAuthButton } from '@/shared/ui/oauth-button';
-import phoneIcon from '@/shared/assets/phone.svg';
-import googleIcon from '@/shared/assets/google.svg';
-import appleIcon from '@/shared/assets/apple.svg';
-import linkIcon from '@/shared/assets/link.svg';
+import { OAuthButton } from "@/shared/ui/oauth-button";
+import phoneIcon from "@/shared/assets/phone.svg";
+import googleIcon from "@/shared/assets/google.svg";
+import appleIcon from "@/shared/assets/apple.svg";
+import linkIcon from "@/shared/assets/link.svg";
+import { useGoogleOAuth } from "@/shared/services/google-auth";
 
-type OAuthButtonsProps = {
+interface OAuthButtonsProps {
   showEmailLink?: boolean;
-};
+}
 
 export default function OAuthButtons({
   showEmailLink = false,
 }: OAuthButtonsProps) {
+  const { initiateGoogleOAuth } = useGoogleOAuth();
   return (
     <div className="flex flex-col gap-2">
       <OAuthButton
@@ -28,6 +30,7 @@ export default function OAuthButtons({
           </div>
         }
         text="Continue with Google"
+        onClick={initiateGoogleOAuth}
       />
       <OAuthButton
         icon={

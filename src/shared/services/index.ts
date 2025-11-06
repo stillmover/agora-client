@@ -1,3 +1,7 @@
+/**
+ * Shared Services Public API
+ */
+
 export { logger, type ILogger } from "./logger";
 export {
   calculateVoteChange,

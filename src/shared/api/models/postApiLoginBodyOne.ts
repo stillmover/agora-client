@@ -6,4 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type PostApiLoginBodyOne = { [key: string]: unknown };
+export type PostApiLoginBodyOne = {
+  /** @minLength 3 */
+  usernameOrEmail: string;
+  /** @minLength 6 */
+  password: string;
+};

@@ -21,6 +21,9 @@ const envSchema = z.object({
     .url()
     .default("http://localhost:5173/auth/callback"),
 
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_REDIRECT_URI: z.string().url().default("http://localhost:5173"),
+
   ENABLE_ANALYTICS: z.coerce.boolean().default(false),
   ENABLE_ERROR_REPORTING: z.coerce.boolean().default(true),
   ENABLE_DEBUG_MODE: z.coerce.boolean().default(true),

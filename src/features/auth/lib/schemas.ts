@@ -1,5 +1,10 @@
 import { z } from "zod";
-export const registerSchema = z.object({
+
+const USERNAME_MIN_LENGTH = 3;
+const USERNAME_MAX_LENGTH = 30;
+const PASSWORD_MIN_LENGTH = 6;
+
+const registerSchema = z.object({
   email: z
     .string()
     .trim()
@@ -7,8 +12,8 @@ export const registerSchema = z.object({
     .nonempty("Please fill in this field."),
   username: z
     .string()
-    .min(3)
-    .max(30)
+    .min(USERNAME_MIN_LENGTH)
+    .max(USERNAME_MAX_LENGTH)
     .regex(/^[a-zA-Z0-9_]+$/)
     .trim()
     .nonempty("Please fill in this field."),
@@ -16,22 +21,25 @@ export const registerSchema = z.object({
     .string()
     .trim()
     .nonempty("Please fill in this field.")
-    .min(6, "Password must be at least 6 characters"),
+    .min(PASSWORD_MIN_LENGTH, "Password must be at least 6 characters"),
 });
 
-export const loginSchema = z.object({
+const loginSchema = z.object({
   usernameOrEmail: z.string().trim().nonempty("Please fill in this field."),
   password: z
     .string()
     .trim()
     .nonempty("Please fill in this field.")
-    .min(6, "Password must be at least 6 characters"),
+    .min(PASSWORD_MIN_LENGTH, "Password must be at least 6 characters"),
 });
 
-export const resetSchema = z.object({
+const resetSchema = z.object({
   usernameOrEmail: z.string().trim().nonempty("Please fill in this field."),
 });
 
-export type LoginValues = z.infer<typeof loginSchema>;
-export type RegisterValues = z.infer<typeof registerSchema>;
-export type ResetValues = z.infer<typeof resetSchema>;
+type LoginValues = z.infer<typeof loginSchema>;
+type RegisterValues = z.infer<typeof registerSchema>;
+type ResetValues = z.infer<typeof resetSchema>;
+
+export { registerSchema, loginSchema, resetSchema };
+export type { LoginValues, RegisterValues, ResetValues };

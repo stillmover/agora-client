@@ -1,25 +1,24 @@
-import * as React from "react";
+import { forwardRef, type HTMLAttributes, type ImgHTMLAttributes } from "react";
 
 import { cn } from "@/shared/lib/utils";
 
-const Avatar = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
-      className,
-    )}
-    {...props}
-  />
-));
+const Avatar = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
+        className,
+      )}
+      {...props}
+    />
+  ),
+);
 Avatar.displayName = "Avatar";
 
-const AvatarImage = React.forwardRef<
+const AvatarImage = forwardRef<
   HTMLImageElement,
-  React.ImgHTMLAttributes<HTMLImageElement>
+  ImgHTMLAttributes<HTMLImageElement>
 >(({ className, alt = "", ...props }, ref) => (
   <img
     ref={ref}
@@ -30,9 +29,9 @@ const AvatarImage = React.forwardRef<
 ));
 AvatarImage.displayName = "AvatarImage";
 
-const AvatarFallback = React.forwardRef<
+const AvatarFallback = forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
+  HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}

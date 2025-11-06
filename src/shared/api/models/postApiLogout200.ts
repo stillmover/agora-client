@@ -7,6 +7,6 @@
  */
 
 export type PostApiLogout200 = {
-  success?: boolean;
-  message?: string;
+  success: boolean;
+  message: string;
 };

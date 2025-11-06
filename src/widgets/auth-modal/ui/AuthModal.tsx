@@ -1,30 +1,34 @@
-import * as Dialog from '@radix-ui/react-dialog';
-import { X } from 'lucide-react';
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/shared/ui/button';
-import { LoginForm } from '@/features/auth/ui/LoginForm';
-import { RegisterForm } from '@/features/auth/ui/RegisterForm';
-import { ResetForm } from '@/features/auth/ui/ResetForm';
-import OAuthButtons from '@/features/auth/ui/OAuthButtons';
-import Divider from '@/features/auth/ui/Divider';
-import { ArrowLeft } from 'lucide-react';
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { X, ArrowLeft } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/shared/ui/button";
+import { LoginForm } from "@/features/auth/ui/LoginForm";
+import { RegisterForm } from "@/features/auth/ui/RegisterForm";
+import { ResetForm } from "@/features/auth/ui/ResetForm";
+import OAuthButtons from "@/features/auth/ui/OAuthButtons";
+import Divider from "@/features/auth/ui/Divider";
+
 export const AuthModal = () => {
   const [open, setOpen] = useState(false);
-  const [view, setView] = useState<'login' | 'register' | 'reset'>('login');
+  const [view, setView] = useState<"login" | "register" | "reset">("login");
+
+  const handleSuccess = () => {
+    setOpen(false);
+  };
 
   return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger asChild>
+    <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
+      <DialogPrimitive.Trigger asChild>
         <Button variant="ghost" size="sm">
           Log In
         </Button>
-      </Dialog.Trigger>
+      </DialogPrimitive.Trigger>
 
       <AnimatePresence>
         {open && (
-          <Dialog.Portal forceMount>
-            <Dialog.Overlay asChild>
+          <DialogPrimitive.Portal forceMount>
+            <DialogPrimitive.Overlay asChild>
               <motion.div
                 className="fixed inset-0 bg-black/70 z-40"
                 onClick={() => setOpen(false)}
@@ -33,9 +37,9 @@ export const AuthModal = () => {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
               />
-            </Dialog.Overlay>
+            </DialogPrimitive.Overlay>
 
-            <Dialog.Content asChild>
+            <DialogPrimitive.Content asChild>
               <motion.div
                 key={view}
                 initial={{ opacity: 0 }}
@@ -50,7 +54,7 @@ export const AuthModal = () => {
                               dark:bg-[#181c1f] dark:text-[#D7DADC]
                               p-16 pb-6 shadow-[0_4px_20px_rgba(0,0,0,0.4)] transition-all duration-200"
                 >
-                  <Dialog.Close asChild>
+                  <DialogPrimitive.Close asChild>
                     <button
                       aria-label="Close"
                       className={`
@@ -64,23 +68,23 @@ export const AuthModal = () => {
                     >
                       <X className="h-4 w-4" />
                     </button>
-                  </Dialog.Close>
+                  </DialogPrimitive.Close>
 
-                  {view === 'login' && (
+                  {view === "login" && (
                     <div className="text-center space-y-4">
-                      <Dialog.Title className="text-2xl font-semibold text-center text-neutral-content-strong mt-0 mb-xs font-bold">
+                      <DialogPrimitive.Title className="text-2xl font-semibold text-center text-neutral-content-strong mt-0 mb-xs font-bold">
                         Log In
-                      </Dialog.Title>
+                      </DialogPrimitive.Title>
 
-                      <Dialog.Description className="text-sm text-center my-xs text-gray-600 dark:text-gray-400">
-                        By continuing, you agree to our{' '}
+                      <DialogPrimitive.Description className="text-sm text-center my-xs text-gray-600 dark:text-gray-400">
+                        By continuing, you agree to our{" "}
                         <a
                           href="/user-agreement"
                           className="text-blue-600 hover:underline dark:text-blue-400"
                         >
                           User Agreement
-                        </a>{' '}
-                        and acknowledge that you understand the{' '}
+                        </a>{" "}
+                        and acknowledge that you understand the{" "}
                         <a
                           href="/privacy-policy"
                           className="text-blue-600 hover:underline dark:text-blue-400"
@@ -88,28 +92,28 @@ export const AuthModal = () => {
                           Privacy Policy
                         </a>
                         .
-                      </Dialog.Description>
+                      </DialogPrimitive.Description>
 
                       <OAuthButtons showEmailLink />
                       <Divider text="OR" />
-                      <LoginForm setView={setView} />
+                      <LoginForm setView={setView} onSuccess={handleSuccess} />
                     </div>
                   )}
 
-                  {view === 'register' && (
+                  {view === "register" && (
                     <div className="text-center space-y-4">
-                      <Dialog.Title className="text-2xl font-semibold text-center text-neutral-content-strong mt-0 mb-xs font-bold">
+                      <DialogPrimitive.Title className="text-2xl font-semibold text-center text-neutral-content-strong mt-0 mb-xs font-bold">
                         Sign Up
-                      </Dialog.Title>
-                      <Dialog.Description className="text-sm text-center my-xs text-gray-600 dark:text-gray-400">
-                        By continuing, you agree to our{' '}
+                      </DialogPrimitive.Title>
+                      <DialogPrimitive.Description className="text-sm text-center my-xs text-gray-600 dark:text-gray-400">
+                        By continuing, you agree to our{" "}
                         <a
                           href="/user-agreement"
                           className="text-blue-600 hover:underline dark:text-blue-400 dark:text-[#b7cad4]"
                         >
                           User Agreement
-                        </a>{' '}
-                        and acknowledge that you understand the{' '}
+                        </a>{" "}
+                        and acknowledge that you understand the{" "}
                         <a
                           href="/privacy-policy"
                           className="text-blue-600 hover:underline dark:text-blue-400 dark:text-[#b7cad4]"
@@ -117,19 +121,22 @@ export const AuthModal = () => {
                           Privacy Policy
                         </a>
                         .
-                      </Dialog.Description>
+                      </DialogPrimitive.Description>
                       <OAuthButtons />
                       <Divider text="OR" />
-                      <RegisterForm setView={setView} />
+                      <RegisterForm
+                        setView={setView}
+                        onSuccess={handleSuccess}
+                      />
                     </div>
                   )}
 
-                  {view === 'reset' && (
+                  {view === "reset" && (
                     <>
                       <button
-                        onClick={() => setView('login')}
+                        onClick={() => setView("login")}
                         aria-label="Back"
-                         className={`
+                        className={`
                               absolute left-4 top-4 flex items-center justify-center
                               h-8 w-8 rounded-full
                               text-gray-800 
@@ -138,16 +145,16 @@ export const AuthModal = () => {
                               transition-all duration-200 cursor-pointer
                             `}
                       >
-                       <ArrowLeft size={20} />
+                        <ArrowLeft size={20} />
                       </button>
-                      <Dialog.Title className="text-2xl font-semibold text-center text-neutral-content-strong mt-0 mb-xs font-bold">
+                      <DialogPrimitive.Title className="text-2xl font-semibold text-center text-neutral-content-strong mt-0 mb-xs font-bold">
                         Reset Password
-                      </Dialog.Title>
+                      </DialogPrimitive.Title>
 
-                      <Dialog.Description className="text-sm text-center my-xs mb-2">
+                      <DialogPrimitive.Description className="text-sm text-center my-xs mb-2">
                         Enter your email address or username and we’ll send you
                         a link to reset your password
-                      </Dialog.Description>
+                      </DialogPrimitive.Description>
                       <div className="text-center space-y-4 mt-4 mb-4">
                         <ResetForm />
                       </div>
@@ -155,10 +162,10 @@ export const AuthModal = () => {
                   )}
                 </div>
               </motion.div>
-            </Dialog.Content>
-          </Dialog.Portal>
+            </DialogPrimitive.Content>
+          </DialogPrimitive.Portal>
         )}
       </AnimatePresence>
-    </Dialog.Root>
+    </DialogPrimitive.Root>
   );
 };

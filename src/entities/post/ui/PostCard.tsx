@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { VoteButton } from "@/features/vote";
 import { MessageSquare, Clock } from "lucide-react";
-import { formatRelativeTime, formatCommentCount, logger } from "@/shared/utils";
+import { formatRelativeTime, formatCommentCount } from "@/shared/lib";
+import { logger } from "@/shared/services";
 import type { VoteDirection } from "@/shared/constants";
 
 type PostCardProps = {

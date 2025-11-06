@@ -4,7 +4,7 @@ import type { Community } from "@/entities/community";
 import type { Post } from "@/entities/post";
 import { fetchCommunity, fetchPosts } from "@/shared/api";
 import { Feed } from "@/widgets/feed";
-import { useIsAuthenticated } from "@/features/auth";
+import { useIsAuthenticated } from "@/entities/session";
 import {
   Card,
   CardContent,
