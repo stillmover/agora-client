@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './pages/_auth'
 import { Route as HomeIndexRouteImport } from './pages/home/index'
 import { Route as MainIndexRouteImport } from './pages/_main.index'
 import { Route as MainSubmitRouteImport } from './pages/_main.submit'
+import { Route as MainAuthenticatedRouteImport } from './pages/_main._authenticated'
 import { Route as AuthRegisterRouteImport } from './pages/_auth.register'
 import { Route as AuthLoginRouteImport } from './pages/_auth.login'
 import { Route as MainRCommunityIdRouteImport } from './pages/_main.r.$communityId'
@@ -40,6 +41,10 @@ const MainIndexRoute = MainIndexRouteImport.update({
 const MainSubmitRoute = MainSubmitRouteImport.update({
   id: '/submit',
   path: '/submit',
+  getParentRoute: () => MainRoute,
+} as any)
+const MainAuthenticatedRoute = MainAuthenticatedRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => MainRoute,
 } as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
@@ -87,6 +92,7 @@ export interface FileRoutesById {
   '/_main': typeof MainRouteWithChildren
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
+  '/_main/_authenticated': typeof MainAuthenticatedRoute
   '/_main/submit': typeof MainSubmitRoute
   '/_main/': typeof MainIndexRoute
   '/home/': typeof HomeIndexRoute
@@ -118,6 +124,7 @@ export interface FileRouteTypes {
     | '/_main'
     | '/_auth/login'
     | '/_auth/register'
+    | '/_main/_authenticated'
     | '/_main/submit'
     | '/_main/'
     | '/home/'
@@ -168,6 +175,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainSubmitRouteImport
       parentRoute: typeof MainRoute
     }
+    '/_main/_authenticated': {
+      id: '/_main/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof MainAuthenticatedRouteImport
+      parentRoute: typeof MainRoute
+    }
     '/_auth/register': {
       id: '/_auth/register'
       path: '/register'
@@ -212,6 +226,7 @@ const AuthRouteChildren: AuthRouteChildren = {
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface MainRouteChildren {
+  MainAuthenticatedRoute: typeof MainAuthenticatedRoute
   MainSubmitRoute: typeof MainSubmitRoute
   MainIndexRoute: typeof MainIndexRoute
   MainPostPostIdRoute: typeof MainPostPostIdRoute
@@ -219,6 +234,7 @@ interface MainRouteChildren {
 }
 
 const MainRouteChildren: MainRouteChildren = {
+  MainAuthenticatedRoute: MainAuthenticatedRoute,
   MainSubmitRoute: MainSubmitRoute,
   MainIndexRoute: MainIndexRoute,
   MainPostPostIdRoute: MainPostPostIdRoute,
