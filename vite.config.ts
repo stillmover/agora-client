@@ -149,9 +149,8 @@ export default defineConfig(({ mode }) => {
             },
           },
           {
-            urlPattern: ({ request }) => {
-              return request.method === 'GET' && /\/api\/.*/i.test(request.url);
-            },
+            urlPattern: ({ request }) =>
+              request.method === 'GET' && /\/api\/.*/i.test(request.url),
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
@@ -181,14 +180,13 @@ export default defineConfig(({ mode }) => {
             },
           },
         ],
-        navigateFallback: '/offline.html',
-        navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
       },
       devOptions: {
-        enabled: true,
+        enabled: isDev, // only enables SW in dev mode
         type: 'module',
       },
     }),
+
     isDev && analyzer(),
   ].filter(Boolean)
 

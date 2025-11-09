@@ -1,8 +1,8 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from "react";
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 };
 
 export class PWAInstallManager {
@@ -10,8 +10,11 @@ export class PWAInstallManager {
   private installHandlers: Array<() => void> = [];
 
   constructor() {
-    if (typeof window !== 'undefined') {
-      window.addEventListener('beforeinstallprompt', this.handleBeforeInstallPrompt.bind(this));
+    if (typeof window !== "undefined") {
+      window.addEventListener(
+        "beforeinstallprompt",
+        this.handleBeforeInstallPrompt.bind(this),
+      );
     }
   }
 
@@ -30,9 +33,9 @@ export class PWAInstallManager {
       await this.deferredPrompt.prompt();
       const choiceResult = await this.deferredPrompt.userChoice;
       this.deferredPrompt = null;
-      return choiceResult.outcome === 'accepted';
+      return choiceResult.outcome === "accepted";
     } catch (error) {
-      console.error('PWA installation failed:', error);
+      console.error("PWA installation failed:", error);
       return false;
     }
   }
@@ -42,21 +45,25 @@ export class PWAInstallManager {
   }
 
   isInstalled(): boolean {
-    if (typeof window === 'undefined') return false;
-    return window.matchMedia('(display-mode: standalone)').matches ||
-           (window.navigator as any).standalone === true ||
-           document.referrer.includes('android-app://');
+    if (typeof window === "undefined") {
+      return false;
+    }
+    return (
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as any).standalone === true ||
+      document.referrer.includes("android-app://")
+    );
   }
 
   onInstallAvailable(handler: () => void): () => void {
     this.installHandlers.push(handler);
     return () => {
-      this.installHandlers = this.installHandlers.filter(h => h !== handler);
+      this.installHandlers = this.installHandlers.filter((h) => h !== handler);
     };
   }
 
   private notifyInstallAvailable(): void {
-    this.installHandlers.forEach(handler => handler());
+    this.installHandlers.forEach((handler) => handler());
   }
 
   async checkInstallability(): Promise<{
@@ -105,4 +112,3 @@ export function usePWAInstall() {
     canInstall: installable && !installed,
   };
 }
-

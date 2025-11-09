@@ -18,4 +18,8 @@ export {
 } from "./geolocation";
 export { useUserPlaceQuery } from "./useUserPlace";
 export { serviceWorkerManager, ServiceWorkerManager } from "./service-worker";
-export { pwaInstallManager, PWAInstallManager, usePWAInstall } from "./pwa-install";
+export {
+  pwaInstallManager,
+  PWAInstallManager,
+  usePWAInstall,
+} from "./pwa-install";

@@ -13,11 +13,9 @@ if (import.meta.env.DEV) {
   });
 }
 
-if ('serviceWorker' in navigator) {
-  import('virtual:pwa-register').then(({ registerSW }) => {
-    registerSW({
-      immediate: true,
-    });
+if (import.meta.env.DEV) {
+  import("virtual:pwa-register").then(({ registerSW }) => {
+    registerSW();
   });
 }
 

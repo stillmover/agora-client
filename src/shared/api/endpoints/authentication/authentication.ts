@@ -30,20 +30,20 @@ import type {
   GetApiAuthGoogleCallback400,
   GetApiAuthGoogleCallback401,
   GetApiAuthGoogleCallback500,
-  GetApiMe200,
-  GetApiMe401,
-  GetApiMe500,
-  PostApiLogin200,
-  PostApiLogin401,
-  PostApiLogin500,
-  PostApiLoginBodyOne,
-  PostApiLogout200,
-  PostApiLogout500,
-  PostApiRegister201,
-  PostApiRegister400,
-  PostApiRegister409,
-  PostApiRegister500,
-  PostApiRegisterBodyOne
+  GetAuthMe200,
+  GetAuthMe401,
+  GetAuthMe500,
+  PostAuthLogin200,
+  PostAuthLogin401,
+  PostAuthLogin500,
+  PostAuthLoginBodyOne,
+  PostAuthLogout200,
+  PostAuthLogout500,
+  PostAuthRegister201,
+  PostAuthRegister400,
+  PostAuthRegister409,
+  PostAuthRegister500,
+  PostAuthRegisterBodyOne
 } from '../../models';
 
 import { apiMutator } from '../../apiMutator';
@@ -56,63 +56,63 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 /**
  * @summary Register and login user
  */
-export type postApiRegisterResponse201 = {
-  data: PostApiRegister201
+export type postAuthRegisterResponse201 = {
+  data: PostAuthRegister201
   status: 201
 }
 
-export type postApiRegisterResponse400 = {
-  data: PostApiRegister400
+export type postAuthRegisterResponse400 = {
+  data: PostAuthRegister400
   status: 400
 }
 
-export type postApiRegisterResponse409 = {
-  data: PostApiRegister409
+export type postAuthRegisterResponse409 = {
+  data: PostAuthRegister409
   status: 409
 }
 
-export type postApiRegisterResponse500 = {
-  data: PostApiRegister500
+export type postAuthRegisterResponse500 = {
+  data: PostAuthRegister500
   status: 500
 }
     
-export type postApiRegisterResponseSuccess = (postApiRegisterResponse201) & {
+export type postAuthRegisterResponseSuccess = (postAuthRegisterResponse201) & {
   headers: Headers;
 };
-export type postApiRegisterResponseError = (postApiRegisterResponse400 | postApiRegisterResponse409 | postApiRegisterResponse500) & {
+export type postAuthRegisterResponseError = (postAuthRegisterResponse400 | postAuthRegisterResponse409 | postAuthRegisterResponse500) & {
   headers: Headers;
 };
 
-export type postApiRegisterResponse = (postApiRegisterResponseSuccess | postApiRegisterResponseError)
+export type postAuthRegisterResponse = (postAuthRegisterResponseSuccess | postAuthRegisterResponseError)
 
-export const getPostApiRegisterUrl = () => {
+export const getPostAuthRegisterUrl = () => {
 
 
   
 
-  return `/api/register`
+  return `/auth/register`
 }
 
-export const postApiRegister = async (postApiRegisterBodyOne: PostApiRegisterBodyOne, options?: RequestInit): Promise<postApiRegisterResponse> => {
+export const postAuthRegister = async (postAuthRegisterBodyOne: PostAuthRegisterBodyOne, options?: RequestInit): Promise<postAuthRegisterResponse> => {
   
-  return apiMutator<postApiRegisterResponse>(getPostApiRegisterUrl(),
+  return apiMutator<postAuthRegisterResponse>(getPostAuthRegisterUrl(),
   {      
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
-      postApiRegisterBodyOne,)
+      postAuthRegisterBodyOne,)
   }
 );}
 
 
 
 
-export const getPostApiRegisterMutationOptions = <TError = PostApiRegister400 | PostApiRegister409 | PostApiRegister500,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiRegister>>, TError,{data: PostApiRegisterBodyOne}, TContext>, request?: SecondParameter<typeof apiMutator>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiRegister>>, TError,{data: PostApiRegisterBodyOne}, TContext> => {
+export const getPostAuthRegisterMutationOptions = <TError = PostAuthRegister400 | PostAuthRegister409 | PostAuthRegister500,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthRegister>>, TError,{data: PostAuthRegisterBodyOne}, TContext>, request?: SecondParameter<typeof apiMutator>}
+): UseMutationOptions<Awaited<ReturnType<typeof postAuthRegister>>, TError,{data: PostAuthRegisterBodyOne}, TContext> => {
 
-const mutationKey = ['postApiRegister'];
+const mutationKey = ['postAuthRegister'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -122,10 +122,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiRegister>>, {data: PostApiRegisterBodyOne}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAuthRegister>>, {data: PostAuthRegisterBodyOne}> = (props) => {
           const {data} = props ?? {};
 
-          return  postApiRegister(data,requestOptions)
+          return  postAuthRegister(data,requestOptions)
         }
 
         
@@ -133,81 +133,81 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiRegisterMutationResult = NonNullable<Awaited<ReturnType<typeof postApiRegister>>>
-    export type PostApiRegisterMutationBody = PostApiRegisterBodyOne
-    export type PostApiRegisterMutationError = PostApiRegister400 | PostApiRegister409 | PostApiRegister500
+    export type PostAuthRegisterMutationResult = NonNullable<Awaited<ReturnType<typeof postAuthRegister>>>
+    export type PostAuthRegisterMutationBody = PostAuthRegisterBodyOne
+    export type PostAuthRegisterMutationError = PostAuthRegister400 | PostAuthRegister409 | PostAuthRegister500
 
     /**
  * @summary Register and login user
  */
-export const usePostApiRegister = <TError = PostApiRegister400 | PostApiRegister409 | PostApiRegister500,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiRegister>>, TError,{data: PostApiRegisterBodyOne}, TContext>, request?: SecondParameter<typeof apiMutator>}
+export const usePostAuthRegister = <TError = PostAuthRegister400 | PostAuthRegister409 | PostAuthRegister500,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthRegister>>, TError,{data: PostAuthRegisterBodyOne}, TContext>, request?: SecondParameter<typeof apiMutator>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiRegister>>,
+        Awaited<ReturnType<typeof postAuthRegister>>,
         TError,
-        {data: PostApiRegisterBodyOne},
+        {data: PostAuthRegisterBodyOne},
         TContext
       > => {
 
-      const mutationOptions = getPostApiRegisterMutationOptions(options);
+      const mutationOptions = getPostAuthRegisterMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Login user
  */
-export type postApiLoginResponse200 = {
-  data: PostApiLogin200
+export type postAuthLoginResponse200 = {
+  data: PostAuthLogin200
   status: 200
 }
 
-export type postApiLoginResponse401 = {
-  data: PostApiLogin401
+export type postAuthLoginResponse401 = {
+  data: PostAuthLogin401
   status: 401
 }
 
-export type postApiLoginResponse500 = {
-  data: PostApiLogin500
+export type postAuthLoginResponse500 = {
+  data: PostAuthLogin500
   status: 500
 }
     
-export type postApiLoginResponseSuccess = (postApiLoginResponse200) & {
+export type postAuthLoginResponseSuccess = (postAuthLoginResponse200) & {
   headers: Headers;
 };
-export type postApiLoginResponseError = (postApiLoginResponse401 | postApiLoginResponse500) & {
+export type postAuthLoginResponseError = (postAuthLoginResponse401 | postAuthLoginResponse500) & {
   headers: Headers;
 };
 
-export type postApiLoginResponse = (postApiLoginResponseSuccess | postApiLoginResponseError)
+export type postAuthLoginResponse = (postAuthLoginResponseSuccess | postAuthLoginResponseError)
 
-export const getPostApiLoginUrl = () => {
+export const getPostAuthLoginUrl = () => {
 
 
   
 
-  return `/api/login`
+  return `/auth/login`
 }
 
-export const postApiLogin = async (postApiLoginBodyOne: PostApiLoginBodyOne, options?: RequestInit): Promise<postApiLoginResponse> => {
+export const postAuthLogin = async (postAuthLoginBodyOne: PostAuthLoginBodyOne, options?: RequestInit): Promise<postAuthLoginResponse> => {
   
-  return apiMutator<postApiLoginResponse>(getPostApiLoginUrl(),
+  return apiMutator<postAuthLoginResponse>(getPostAuthLoginUrl(),
   {      
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
-      postApiLoginBodyOne,)
+      postAuthLoginBodyOne,)
   }
 );}
 
 
 
 
-export const getPostApiLoginMutationOptions = <TError = PostApiLogin401 | PostApiLogin500,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiLogin>>, TError,{data: PostApiLoginBodyOne}, TContext>, request?: SecondParameter<typeof apiMutator>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiLogin>>, TError,{data: PostApiLoginBodyOne}, TContext> => {
+export const getPostAuthLoginMutationOptions = <TError = PostAuthLogin401 | PostAuthLogin500,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthLogin>>, TError,{data: PostAuthLoginBodyOne}, TContext>, request?: SecondParameter<typeof apiMutator>}
+): UseMutationOptions<Awaited<ReturnType<typeof postAuthLogin>>, TError,{data: PostAuthLoginBodyOne}, TContext> => {
 
-const mutationKey = ['postApiLogin'];
+const mutationKey = ['postAuthLogin'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -217,10 +217,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiLogin>>, {data: PostApiLoginBodyOne}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAuthLogin>>, {data: PostAuthLoginBodyOne}> = (props) => {
           const {data} = props ?? {};
 
-          return  postApiLogin(data,requestOptions)
+          return  postAuthLogin(data,requestOptions)
         }
 
         
@@ -228,59 +228,59 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiLoginMutationResult = NonNullable<Awaited<ReturnType<typeof postApiLogin>>>
-    export type PostApiLoginMutationBody = PostApiLoginBodyOne
-    export type PostApiLoginMutationError = PostApiLogin401 | PostApiLogin500
+    export type PostAuthLoginMutationResult = NonNullable<Awaited<ReturnType<typeof postAuthLogin>>>
+    export type PostAuthLoginMutationBody = PostAuthLoginBodyOne
+    export type PostAuthLoginMutationError = PostAuthLogin401 | PostAuthLogin500
 
     /**
  * @summary Login user
  */
-export const usePostApiLogin = <TError = PostApiLogin401 | PostApiLogin500,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiLogin>>, TError,{data: PostApiLoginBodyOne}, TContext>, request?: SecondParameter<typeof apiMutator>}
+export const usePostAuthLogin = <TError = PostAuthLogin401 | PostAuthLogin500,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthLogin>>, TError,{data: PostAuthLoginBodyOne}, TContext>, request?: SecondParameter<typeof apiMutator>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiLogin>>,
+        Awaited<ReturnType<typeof postAuthLogin>>,
         TError,
-        {data: PostApiLoginBodyOne},
+        {data: PostAuthLoginBodyOne},
         TContext
       > => {
 
-      const mutationOptions = getPostApiLoginMutationOptions(options);
+      const mutationOptions = getPostAuthLoginMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Logout user
  */
-export type postApiLogoutResponse200 = {
-  data: PostApiLogout200
+export type postAuthLogoutResponse200 = {
+  data: PostAuthLogout200
   status: 200
 }
 
-export type postApiLogoutResponse500 = {
-  data: PostApiLogout500
+export type postAuthLogoutResponse500 = {
+  data: PostAuthLogout500
   status: 500
 }
     
-export type postApiLogoutResponseSuccess = (postApiLogoutResponse200) & {
+export type postAuthLogoutResponseSuccess = (postAuthLogoutResponse200) & {
   headers: Headers;
 };
-export type postApiLogoutResponseError = (postApiLogoutResponse500) & {
+export type postAuthLogoutResponseError = (postAuthLogoutResponse500) & {
   headers: Headers;
 };
 
-export type postApiLogoutResponse = (postApiLogoutResponseSuccess | postApiLogoutResponseError)
+export type postAuthLogoutResponse = (postAuthLogoutResponseSuccess | postAuthLogoutResponseError)
 
-export const getPostApiLogoutUrl = () => {
+export const getPostAuthLogoutUrl = () => {
 
 
   
 
-  return `/api/logout`
+  return `/auth/logout`
 }
 
-export const postApiLogout = async ( options?: RequestInit): Promise<postApiLogoutResponse> => {
+export const postAuthLogout = async ( options?: RequestInit): Promise<postAuthLogoutResponse> => {
   
-  return apiMutator<postApiLogoutResponse>(getPostApiLogoutUrl(),
+  return apiMutator<postAuthLogoutResponse>(getPostAuthLogoutUrl(),
   {      
     ...options,
     method: 'POST'
@@ -292,11 +292,11 @@ export const postApiLogout = async ( options?: RequestInit): Promise<postApiLogo
 
 
 
-export const getPostApiLogoutMutationOptions = <TError = PostApiLogout500,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiLogout>>, TError,void, TContext>, request?: SecondParameter<typeof apiMutator>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiLogout>>, TError,void, TContext> => {
+export const getPostAuthLogoutMutationOptions = <TError = PostAuthLogout500,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthLogout>>, TError,void, TContext>, request?: SecondParameter<typeof apiMutator>}
+): UseMutationOptions<Awaited<ReturnType<typeof postAuthLogout>>, TError,void, TContext> => {
 
-const mutationKey = ['postApiLogout'];
+const mutationKey = ['postAuthLogout'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -306,10 +306,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiLogout>>, void> = () => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAuthLogout>>, void> = () => {
           
 
-          return  postApiLogout(requestOptions)
+          return  postAuthLogout(requestOptions)
         }
 
         
@@ -317,64 +317,64 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiLogoutMutationResult = NonNullable<Awaited<ReturnType<typeof postApiLogout>>>
+    export type PostAuthLogoutMutationResult = NonNullable<Awaited<ReturnType<typeof postAuthLogout>>>
     
-    export type PostApiLogoutMutationError = PostApiLogout500
+    export type PostAuthLogoutMutationError = PostAuthLogout500
 
     /**
  * @summary Logout user
  */
-export const usePostApiLogout = <TError = PostApiLogout500,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiLogout>>, TError,void, TContext>, request?: SecondParameter<typeof apiMutator>}
+export const usePostAuthLogout = <TError = PostAuthLogout500,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthLogout>>, TError,void, TContext>, request?: SecondParameter<typeof apiMutator>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiLogout>>,
+        Awaited<ReturnType<typeof postAuthLogout>>,
         TError,
         void,
         TContext
       > => {
 
-      const mutationOptions = getPostApiLogoutMutationOptions(options);
+      const mutationOptions = getPostAuthLogoutMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Get current user
  */
-export type getApiMeResponse200 = {
-  data: GetApiMe200
+export type getAuthMeResponse200 = {
+  data: GetAuthMe200
   status: 200
 }
 
-export type getApiMeResponse401 = {
-  data: GetApiMe401
+export type getAuthMeResponse401 = {
+  data: GetAuthMe401
   status: 401
 }
 
-export type getApiMeResponse500 = {
-  data: GetApiMe500
+export type getAuthMeResponse500 = {
+  data: GetAuthMe500
   status: 500
 }
     
-export type getApiMeResponseSuccess = (getApiMeResponse200) & {
+export type getAuthMeResponseSuccess = (getAuthMeResponse200) & {
   headers: Headers;
 };
-export type getApiMeResponseError = (getApiMeResponse401 | getApiMeResponse500) & {
+export type getAuthMeResponseError = (getAuthMeResponse401 | getAuthMeResponse500) & {
   headers: Headers;
 };
 
-export type getApiMeResponse = (getApiMeResponseSuccess | getApiMeResponseError)
+export type getAuthMeResponse = (getAuthMeResponseSuccess | getAuthMeResponseError)
 
-export const getGetApiMeUrl = () => {
+export const getGetAuthMeUrl = () => {
 
 
   
 
-  return `/api/me`
+  return `/auth/me`
 }
 
-export const getApiMe = async ( options?: RequestInit): Promise<getApiMeResponse> => {
+export const getAuthMe = async ( options?: RequestInit): Promise<getAuthMeResponse> => {
   
-  return apiMutator<getApiMeResponse>(getGetApiMeUrl(),
+  return apiMutator<getAuthMeResponse>(getGetAuthMeUrl(),
   {      
     ...options,
     method: 'GET'
@@ -387,69 +387,69 @@ export const getApiMe = async ( options?: RequestInit): Promise<getApiMeResponse
 
 
 
-export const getGetApiMeQueryKey = () => {
+export const getGetAuthMeQueryKey = () => {
     return [
-    `/api/me`
+    `/auth/me`
     ] as const;
     }
 
     
-export const getGetApiMeQueryOptions = <TData = Awaited<ReturnType<typeof getApiMe>>, TError = GetApiMe401 | GetApiMe500>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiMe>>, TError, TData>>, request?: SecondParameter<typeof apiMutator>}
+export const getGetAuthMeQueryOptions = <TData = Awaited<ReturnType<typeof getAuthMe>>, TError = GetAuthMe401 | GetAuthMe500>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData>>, request?: SecondParameter<typeof apiMutator>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiMeQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetAuthMeQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiMe>>> = ({ signal }) => getApiMe({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAuthMe>>> = ({ signal }) => getAuthMe({ signal, ...requestOptions });
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiMe>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiMeQueryResult = NonNullable<Awaited<ReturnType<typeof getApiMe>>>
-export type GetApiMeQueryError = GetApiMe401 | GetApiMe500
+export type GetAuthMeQueryResult = NonNullable<Awaited<ReturnType<typeof getAuthMe>>>
+export type GetAuthMeQueryError = GetAuthMe401 | GetAuthMe500
 
 
-export function useGetApiMe<TData = Awaited<ReturnType<typeof getApiMe>>, TError = GetApiMe401 | GetApiMe500>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiMe>>, TError, TData>> & Pick<
+export function useGetAuthMe<TData = Awaited<ReturnType<typeof getAuthMe>>, TError = GetAuthMe401 | GetAuthMe500>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiMe>>,
+          Awaited<ReturnType<typeof getAuthMe>>,
           TError,
-          Awaited<ReturnType<typeof getApiMe>>
+          Awaited<ReturnType<typeof getAuthMe>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiMutator>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiMe<TData = Awaited<ReturnType<typeof getApiMe>>, TError = GetApiMe401 | GetApiMe500>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiMe>>, TError, TData>> & Pick<
+export function useGetAuthMe<TData = Awaited<ReturnType<typeof getAuthMe>>, TError = GetAuthMe401 | GetAuthMe500>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiMe>>,
+          Awaited<ReturnType<typeof getAuthMe>>,
           TError,
-          Awaited<ReturnType<typeof getApiMe>>
+          Awaited<ReturnType<typeof getAuthMe>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiMutator>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiMe<TData = Awaited<ReturnType<typeof getApiMe>>, TError = GetApiMe401 | GetApiMe500>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiMe>>, TError, TData>>, request?: SecondParameter<typeof apiMutator>}
+export function useGetAuthMe<TData = Awaited<ReturnType<typeof getAuthMe>>, TError = GetAuthMe401 | GetAuthMe500>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData>>, request?: SecondParameter<typeof apiMutator>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get current user
  */
 
-export function useGetApiMe<TData = Awaited<ReturnType<typeof getApiMe>>, TError = GetApiMe401 | GetApiMe500>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiMe>>, TError, TData>>, request?: SecondParameter<typeof apiMutator>}
+export function useGetAuthMe<TData = Awaited<ReturnType<typeof getAuthMe>>, TError = GetAuthMe401 | GetAuthMe500>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData>>, request?: SecondParameter<typeof apiMutator>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiMeQueryOptions(options)
+  const queryOptions = getGetAuthMeQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
