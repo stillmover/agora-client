@@ -23,6 +23,7 @@ export const useRegisterForm = ({
       password: "",
     },
     validators: {
+      onChange: registerSchema,
       onBlur: registerSchema,
       onSubmit: registerSchema,
     },
