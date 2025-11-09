@@ -1,7 +1,12 @@
+interface User {
+  id: string;
+  name: string;
+}
+
 interface Comment {
   id: string;
   postId: string;
-  author: string;
+  author: User;
   content: string;
   votes: number;
   createdAt: string;
@@ -9,4 +14,4 @@ interface Comment {
   replies: Comment[];
 }
 
-export type { Comment };
+export type { Comment, User };

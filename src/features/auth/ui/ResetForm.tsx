@@ -2,6 +2,7 @@ import { useForm } from "@tanstack/react-form";
 import { FloatingInput } from "@/shared/ui/floating-input";
 import { Button } from "@/shared/ui/button";
 import { resetSchema } from "@/features/auth/lib/schemas";
+import { logger } from "@/shared/services/logger";
 
 export const ResetForm = () => {
   const isFormValid = (values: { usernameOrEmail: string }) => {
@@ -19,7 +20,9 @@ export const ResetForm = () => {
       onSubmit: resetSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log("Password reset request for:", value.usernameOrEmail);
+      logger.debug("Password reset request", {
+        usernameOrEmail: value.usernameOrEmail,
+      });
     },
   });
 

@@ -1,3 +1,5 @@
+import { logger } from "./logger";
+
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const REDIRECT_URI = import.meta.env.VITE_GOOGLE_REDIRECT_URI;
 
@@ -20,7 +22,7 @@ export const useGoogleOAuth = () => {
     try {
       localStorage.setItem(OAUTH_STATE_KEY, state);
     } catch (error) {
-      console.error("Failed to store OAuth state:", error);
+      logger.error("Failed to store OAuth state", error);
       throw new Error("Unable to initiate authentication", { cause: error });
     }
 

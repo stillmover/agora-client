@@ -6,7 +6,7 @@ config({ path: resolve(process.cwd(), '.env.local') })
 config({ path: resolve(process.cwd(), '.env') })
 
 const BACKEND_URL = process.env.VITE_BACKEND_URL ?? process.env.BACKEND_URL ?? 'http://localhost:8000'
-const SWAGGER_URL = `${BACKEND_URL}/swagger/json`
+const SWAGGER_URL = `${BACKEND_URL}/docs/json`
 
 export default defineConfig({
   defaultClient: {

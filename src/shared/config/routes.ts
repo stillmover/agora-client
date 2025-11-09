@@ -6,6 +6,7 @@ export const ROUTES = {
   NOT_FOUND: "*",
   POST: "/post/",
   REGISTER: "/register",
+  SUBMIT: "/submit",
 } as const;
 
 export type AppRoute = (typeof ROUTES)[keyof typeof ROUTES];

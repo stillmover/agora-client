@@ -6,5 +6,5 @@ export const FormErrorText = ({ children }: PropsWithChildren) => {
       <p className="text-xs text-destructive mt-1 text-left pl-4">{children}</p>
     );
   }
-  return null;
+  return undefined;
 };

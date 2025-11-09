@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Store } from "@tanstack/store";
 import { useStore } from "@tanstack/react-store";
 import { useLocalStorage } from "react-use";
@@ -35,9 +35,6 @@ export const useSessionPersistence = (): SessionState => {
       memoizedSetStorageUser(null);
     }
   }, [sessionState.isAuthenticated, sessionState.user, memoizedSetStorageUser]);
-
-  // Do NOT auto-authenticate from localStorage.
-  // Server validation (via /api/me) is the source of truth.
 
   return sessionState;
 };

@@ -10,7 +10,11 @@ interface LoginFormProps {
   onSuccess?: () => void;
 }
 
-const LoginFormFields = ({ form }: { form: any }) => (
+const LoginFormFields = ({
+  form,
+}: {
+  form: ReturnType<typeof useLoginForm>["form"];
+}) => (
   <>
     <form.Field name="usernameOrEmail">
       {(field) => (
@@ -79,7 +83,7 @@ const LoginSubmitButton = ({
   form,
   isPending,
 }: {
-  form: any;
+  form: ReturnType<typeof useLoginForm>["form"];
   isPending: boolean;
 }) => (
   <form.Subscribe
@@ -109,7 +113,7 @@ const LoginSubmitButton = ({
         buttonClassName = "bg-gray-300 text-gray-500 cursor-not-allowed";
       }
 
-      let buttonVariant;
+      let buttonVariant: "reddit" | "redditDisabled";
       if (active) {
         buttonVariant = "reddit";
       } else {

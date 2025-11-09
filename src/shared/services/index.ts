@@ -1,7 +1,3 @@
-/**
- * Shared Services Public API
- */
-
 export { logger, type ILogger } from "./logger";
 export {
   calculateVoteChange,
@@ -15,4 +11,9 @@ export {
   formatReplyCount,
   getInitials,
 } from "./formatter";
-export { AppErrorHandler, type AppError } from "./error-handler";
+export {
+  detectUserRegion,
+  getRegionFromCountryCode,
+  detectUserPlace,
+} from "./geolocation";
+export { useUserPlaceQuery } from "./useUserPlace";

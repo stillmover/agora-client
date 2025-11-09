@@ -1,6 +1,22 @@
 schema: http://localhost:5555/graphql
+documents: "src/shared/api/gql/all-operations.graphql"
+
 generates:
   src/shared/api/gql/index.ts:
     plugins:
-      - "typescript"
+      - typescript
+      - typescript-operations
+      - typescript-urql
     config:
+      avoidOptionals: false
+      maybeValue: T | null
+      inputMaybeValue: T | null
+      scalars:
+        DateTime: string
+        Upload: File
+      withHooks: true
+      withComponent: false
+      withHOC: false
+      urqlImportFrom: "urql"
+      addDocBlocks: true
+      skipDocumentsValidation: true

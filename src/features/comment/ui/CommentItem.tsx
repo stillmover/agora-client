@@ -6,8 +6,7 @@ import { Card, CardContent } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Textarea } from "@/shared/ui/textarea";
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
-import { formatRelativeTime, getInitials } from "@/shared/lib";
-import { logger } from "@/shared/services";
+import { formatRelativeTime, getInitials, logger } from "@/shared/services";
 import {
   MAX_COMMENT_DEPTH,
   REPLY_FORM_PLACEHOLDER,
@@ -36,6 +35,7 @@ export const CommentItem = ({
   const [showReplies, setShowReplies] = useState(true);
 
   const handleVote = (direction: VoteDirection) => {
+    // TODO: Implement comment voting functionality
     logger.debug(`Voted ${direction} on comment ${comment.id}`);
   };
 
@@ -58,10 +58,12 @@ export const CommentItem = ({
               <div className="flex items-center gap-2 mb-2">
                 <Avatar className="h-6 w-6">
                   <AvatarFallback className="text-xs">
-                    {getInitials(comment.author)}
+                    {getInitials(comment.author.name)}
                   </AvatarFallback>
                 </Avatar>
-                <span className="text-xs font-medium">{comment.author}</span>
+                <span className="text-xs font-medium">
+                  {comment.author.name}
+                </span>
                 <span className="text-xs text-muted-foreground">
                   {formatRelativeTime(comment.createdAt)}
                 </span>

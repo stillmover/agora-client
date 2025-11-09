@@ -1,7 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { sessionApi } from "./sessionApi";
 import { sessionKeys } from "./query-keys";
 import { sessionActions } from "../model/session-store";
+import { logger } from "@/shared/services/logger";
 import type {
   PostApiLoginBodyOne,
   PostApiRegisterBodyOne,
@@ -22,14 +24,14 @@ const handlePostAuth = async (
       sessionActions.login({
         id: String(user.id),
         username: user.username,
-        email: user.email || undefined,
+        email: user.email ?? undefined,
       });
 
       // Keep the cache shape consistent with the queryFn/select expectations
       queryClient.setQueryData(sessionKeys.me(), userData);
     }
   } catch (error) {
-    console.error("Failed to fetch user data after authentication:", error);
+    logger.error("Failed to fetch user data after authentication:", error);
   }
 };
 

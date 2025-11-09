@@ -9,9 +9,9 @@ type ErrorWithStatus = Error & {
 
 const defaultQueryOptions = {
   gcTime: 10 * TIME_CONSTANTS.MINUTE,
-  refetchOnMount: true,
+  refetchOnMount: false, // Use cached data if available, only refetch when stale
   refetchOnReconnect: true,
-  refetchOnWindowFocus: isDevelopment,
+  refetchOnWindowFocus: false, // Prevent refetch spam when switching tabs
   retry: (failureCount: number, error: unknown) => {
     if (error instanceof Error && "status" in error) {
       const status = (error as ErrorWithStatus).status;

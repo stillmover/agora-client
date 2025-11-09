@@ -7,6 +7,7 @@ import {
 import { useEffect } from "react";
 import { handlePostAuth } from "@/entities/session";
 import { useQueryClient } from "@tanstack/react-query";
+import { logger } from "@/shared/services/logger";
 
 export const Route = createFileRoute("/_auth")({
   component: AuthLayout,
@@ -25,7 +26,7 @@ function AuthLayout() {
   useEffect(() => {
     // Handle OAuth callback
     if (search.code && search.state) {
-      console.log("OAuth callback received:", {
+      logger.debug("OAuth callback received", {
         code: search.code,
         state: search.state,
       });
@@ -33,7 +34,7 @@ function AuthLayout() {
       // Verify state matches what we stored
       const storedState = localStorage.getItem("oauth_state");
       if (storedState !== search.state) {
-        console.error("OAuth state mismatch");
+        logger.error("OAuth state mismatch");
         navigate({ to: "/login", search: { error: "auth_failed" } });
         return;
       }
@@ -48,7 +49,7 @@ function AuthLayout() {
           navigate({ to: "/", replace: true });
         })
         .catch((error) => {
-          console.error("OAuth authentication failed:", error);
+          logger.error("OAuth authentication failed", error);
           navigate({ to: "/login", search: { error: "auth_failed" } });
         });
     }

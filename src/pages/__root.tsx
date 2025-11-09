@@ -3,12 +3,12 @@ import {
   Outlet,
   Link,
 } from "@tanstack/react-router";
-import { useSession } from "@/entities/session";
+import { useSession, type SessionState } from "@/entities/session";
 import type { QueryClient } from "@tanstack/react-query";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
+import { ErrorBoundary } from "@/shared/ui";
 import { ROUTES } from "@/shared/config";
-import type { SessionState } from "@/entities/session";
 
 interface RouterContext {
   queryClient: QueryClient;
@@ -37,7 +37,9 @@ function RootComponent() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Outlet />
+      <ErrorBoundary>
+        <Outlet />
+      </ErrorBoundary>
     </div>
   );
 }

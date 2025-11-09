@@ -3,6 +3,8 @@
  * Do not edit manually.
  * Reddit Backend API
  * Modern backend API built with Elysia.js, Drizzle ORM, and PostgreSQL. Provides user management, authentication, and health monitoring endpoints.
+
+⚠️ **Note**: GraphQL endpoints are not included in this REST API documentation. Use GraphiQL Playground at `/graphql` for GraphQL API documentation.
  * OpenAPI spec version: 1.0.0
  */
 import type { GetUsers200DataItem } from './getUsers200DataItem';
@@ -11,4 +13,6 @@ export type GetUsers200 = {
   success?: boolean;
   data?: GetUsers200DataItem[];
   count?: number;
+  limit?: number;
+  offset?: number;
 };

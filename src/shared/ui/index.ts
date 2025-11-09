@@ -11,7 +11,14 @@ export {
 } from "./card";
 export { Avatar, AvatarImage, AvatarFallback } from "./avatar";
 export { Badge, badgeVariants } from "./badge";
-export { Separator } from "./separator";
+export { FlairBadge } from "./flair-badge";
+export {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "./accordion";
+export { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
 export {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -29,3 +36,4 @@ export {
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
 } from "./dropdown-menu";
+export { ErrorBoundary, useErrorHandler } from "./error-boundary";
