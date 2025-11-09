@@ -1,9 +1,13 @@
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useForm } from "@tanstack/react-form";
-import { useEffect, useState } from "react";
-import { useAuthUser, authStore } from "@/features/auth";
-import { createPost, fetchCommunities } from "@/shared/api";
-import type { Community } from "@/entities/community";
+
+import {
+  useCreatePostMutation,
+  useCommunitiesQuery,
+  mapCommunity,
+  PostType,
+  type CreatePostInput,
+} from "@/shared/api";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Textarea } from "@/shared/ui/textarea";
@@ -15,29 +19,19 @@ import {
   CardTitle,
 } from "@/shared/ui/card";
 import { UI_TEXT } from "@/shared/constants";
-import { logger } from "@/shared/utils";
+import { logger } from "@/shared/services/logger";
+
+import type { Community } from "@/entities/community";
 
 export const Route = createFileRoute("/_main/submit")({
-  beforeLoad: ({ location }) => {
-    if (!authStore.state.isAuthenticated) {
-      throw redirect({
-        to: "/login",
-        search: { redirect: location.href },
-      });
-    }
-  },
   component: CreatePostPage,
 });
 
 function CreatePostPage() {
-  const user = useAuthUser();
   const navigate = useNavigate();
-  const [communities, setCommunities] = useState<Community[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    fetchCommunities().then(setCommunities);
-  }, []);
+  const [{ data: communitiesData }] = useCommunitiesQuery();
+  const communities = (communitiesData?.communities ?? []).map(mapCommunity);
+  const [, executeCreatePost] = useCreatePostMutation();
 
   const form = useForm({
     defaultValues: {
@@ -50,22 +44,26 @@ function CreatePostPage() {
         return;
       }
 
-      setIsSubmitting(true);
       try {
-        await createPost({
+        const input: CreatePostInput = {
+          communityId: value.communityId,
           title: value.title,
           content: value.content,
-          communityId: value.communityId,
-          author: user?.name || "Anonymous",
-        });
+          type: PostType.Text,
+        };
+
+        const result = await executeCreatePost({ input });
+
+        if (result.error) {
+          throw result.error;
+        }
+
         navigate({
           to: "/r/$communityId",
           params: { communityId: value.communityId },
         });
       } catch (error) {
         logger.error("Failed to create post:", error);
-      } finally {
-        setIsSubmitting(false);
       }
     },
   });
@@ -100,7 +98,7 @@ function CreatePostPage() {
                     className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:border-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
                   >
                     <option value="">Select a community</option>
-                    {communities.map((community) => (
+                    {communities.map((community: Community) => (
                       <option key={community.id} value={community.id}>
                         r/{community.name}
                       </option>
@@ -161,8 +159,14 @@ function CreatePostPage() {
             </form.Field>
 
             <div className="flex gap-2">
-              <Button type="submit" disabled={isSubmitting} className="flex-1">
-                {isSubmitting ? UI_TEXT.POST.CREATING : UI_TEXT.POST.CREATE}
+              <Button
+                type="submit"
+                disabled={form.state.isSubmitting}
+                className="flex-1"
+              >
+                {form.state.isSubmitting
+                  ? UI_TEXT.POST.CREATING
+                  : UI_TEXT.POST.CREATE}
               </Button>
               <Button
                 type="button"

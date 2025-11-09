@@ -5,7 +5,7 @@ export const apiMutator = async <T>(
   url: string,
   options: RequestInit = {},
 ): Promise<T> => {
-  const baseUrl = url.startsWith("http") ? undefined : env.API_BASE_URL;
+  const baseUrl = env.BACKEND_URL;
   const urlObj = new URL(url, baseUrl);
 
   const requestHeaders: HeadersInit = {
@@ -65,6 +65,10 @@ export const apiMutator = async <T>(
       error.statusText = response.statusText;
       error.data = errorData;
 
+      if (response.status === 401) {
+        throw error;
+      }
+
       throw error;
     }
 
@@ -97,11 +101,15 @@ export const apiMutator = async <T>(
       throw error;
     }
 
-    if (isDevelopment) {
-      logger.error(
-        `API Error: ${options.method || "GET"} ${urlObj.toString()}`,
-        error,
-      );
+    if (
+      !(error instanceof Error && "status" in error && error.status === 401)
+    ) {
+      if (isDevelopment) {
+        logger.error(
+          `API Error: ${options.method || "GET"} ${urlObj.toString()}`,
+          error,
+        );
+      }
     }
 
     throw error;

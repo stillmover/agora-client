@@ -9,7 +9,7 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(5173),
   PREVIEW_PORT: z.coerce.number().int().positive().default(4173),
 
-  BACKEND_URL: z.string().url().default("http://localhost:8000"),
+  BACKEND_URL: z.string().url().default("http://localhost:5555"),
   API_BASE_URL: z.string().url().default("https://www.reddit.com/api/v1"),
   API_TIMEOUT: z.coerce.number().int().positive().default(10000),
 
@@ -20,6 +20,9 @@ const envSchema = z.object({
     .string()
     .url()
     .default("http://localhost:5173/auth/callback"),
+
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_REDIRECT_URI: z.string().url().default("http://localhost:5173"),
 
   ENABLE_ANALYTICS: z.coerce.boolean().default(false),
   ENABLE_ERROR_REPORTING: z.coerce.boolean().default(true),

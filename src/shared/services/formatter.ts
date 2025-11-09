@@ -31,5 +31,10 @@ export function formatReplyCount(count: number): string {
 }
 
 export function getInitials(name: string): string {
-  return name.charAt(0).toUpperCase();
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 }

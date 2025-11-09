@@ -1,10 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import type { Community } from "@/entities/community";
-import type { Post } from "@/entities/post";
-import { fetchCommunity, fetchPosts } from "@/shared/api";
+import { useCommunity } from "@/entities/community/model/useCommunities";
+import { usePosts } from "@/entities/post/model/usePosts";
 import { Feed } from "@/widgets/feed";
-import { useIsAuthenticated } from "@/features/auth";
+import { useIsAuthenticated } from "@/entities/session";
 import {
   Card,
   CardContent,
@@ -24,20 +22,11 @@ function CommunityPage() {
   const { communityId } = Route.useParams();
   const navigate = useNavigate();
   const isAuthenticated = useIsAuthenticated();
-  const [community, setCommunity] = useState<Community | null>(null);
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    setIsLoading(true);
-    Promise.all([fetchCommunity(communityId), fetchPosts(communityId)]).then(
-      ([communityData, postsData]) => {
-        setCommunity(communityData);
-        setPosts(postsData);
-        setIsLoading(false);
-      },
-    );
-  }, [communityId]);
+  const { community, isLoading: communityLoading } = useCommunity(communityId);
+  const { posts, isLoading: postsLoading } = usePosts({ communityId });
+
+  const isLoading = communityLoading || postsLoading;
 
   if (isLoading) {
     return (

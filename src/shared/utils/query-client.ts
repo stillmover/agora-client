@@ -3,15 +3,19 @@ import { isDevelopment } from "./env";
 import { TIME_CONSTANTS } from "@/shared/constants";
 import { logger } from "@/shared/services/logger";
 
+type ErrorWithStatus = Error & {
+  status?: number;
+};
+
 const defaultQueryOptions = {
   gcTime: 10 * TIME_CONSTANTS.MINUTE,
-  refetchOnMount: true,
+  refetchOnMount: false, // Use cached data if available, only refetch when stale
   refetchOnReconnect: true,
-  refetchOnWindowFocus: isDevelopment,
+  refetchOnWindowFocus: false, // Prevent refetch spam when switching tabs
   retry: (failureCount: number, error: unknown) => {
     if (error instanceof Error && "status" in error) {
-      const status = (error as any).status;
-      if (status >= 400 && status < 500) {
+      const status = (error as ErrorWithStatus).status;
+      if (status !== undefined && status >= 400 && status < 500) {
         return false;
       }
     }
@@ -29,6 +33,14 @@ const defaultMutationOptions = {
 };
 
 const globalErrorHandler = (error: unknown) => {
+  if (
+    error instanceof Error &&
+    "status" in error &&
+    (error as ErrorWithStatus).status === 401
+  ) {
+    return;
+  }
+
   if (isDevelopment) {
     logger.error("Query Error:", error);
   }
@@ -54,7 +66,8 @@ queryClient.getMutationCache().subscribe((event) => {
 });
 
 if (isDevelopment) {
-  (window as any).queryClient = queryClient;
+  // Expose queryClient to window for debugging
+  (window as Window & { queryClient?: QueryClient }).queryClient = queryClient;
 
   queryClient.getQueryCache().subscribe((event) => {
     if (event.type === "added") {

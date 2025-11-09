@@ -1,31 +1,21 @@
-import { useForm } from "@tanstack/react-form";
-import { useNavigate } from "@tanstack/react-router";
-import { authActions } from "@/features/auth";
+import { FloatingInput } from "@/shared/ui/floating-input";
 import { Button } from "@/shared/ui/button";
-import { Input } from "@/shared/ui/input";
+import { useRegisterForm } from "../model/useRegisterForm";
 
-export const RegisterForm = () => {
-  const navigate = useNavigate();
+interface RegisterFormProps {
+  setView?: (view: "login" | "register" | "reset") => void;
+  redirect?: string;
+  onSuccess?: () => void;
+}
 
-  const form = useForm({
-    defaultValues: { name: "" },
-    onSubmit: async ({ value }) => {
-      if (!value.name.trim()) {
-        return;
-      }
-      authActions.login({ id: crypto.randomUUID(), name: value.name });
-      navigate({ to: "/" });
-    },
-  });
-
+export const RegisterForm = ({
+  setView,
+  redirect,
+  onSuccess,
+}: RegisterFormProps) => {
+  const { form, isPending } = useRegisterForm({ redirect, onSuccess });
   return (
     <div className="space-y-6">
-      <div className="space-y-2">
-        <h2 className="text-2xl font-semibold">Register</h2>
-        <p className="text-sm text-muted-foreground">
-          Create a new account to get started
-        </p>
-      </div>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -33,30 +23,92 @@ export const RegisterForm = () => {
         }}
         className="space-y-4"
       >
-        <form.Field name="name">
+        <form.Field name="email">
           {(field) => (
-            <div className="space-y-2">
-              <label htmlFor={field.name} className="text-sm font-medium">
-                Username
-              </label>
-              <Input
-                id={field.name}
-                placeholder="Pick a username"
-                value={field.state.value}
-                onChange={(e) => field.handleChange(e.target.value)}
-                required
-              />
-              {field.state.meta.errors && (
-                <p className="text-sm text-destructive">
-                  {field.state.meta.errors[0]}
-                </p>
-              )}
-            </div>
+            <FloatingInput
+              id={field.name}
+              type="email"
+              value={field.state.value}
+              onChange={(e) => field.setValue(e.target.value)}
+              label="Email"
+              required
+              error={field.state.meta.errors?.[0]?.message}
+            />
           )}
         </form.Field>
-        <Button type="submit" className="w-full">
-          Register
-        </Button>
+
+        <form.Field name="username">
+          {(field) => (
+            <FloatingInput
+              id={field.name}
+              type="text"
+              value={field.state.value}
+              onChange={(e) => field.setValue(e.target.value)}
+              label="Username"
+              required
+              error={field.state.meta.errors?.[0]?.message}
+            />
+          )}
+        </form.Field>
+
+        <form.Field name="password">
+          {(field) => (
+            <FloatingInput
+              id={field.name}
+              type="password"
+              value={field.state.value}
+              onChange={(e) => field.setValue(e.target.value)}
+              label="Password"
+              required
+              error={field.state.meta.errors?.[0]?.message}
+            />
+          )}
+        </form.Field>
+
+        <p className="text-sm text-gray-600 text-left space-y-2 pl-4 pb-4 dark:text-[#b7cad4]">
+          Already have an account?{" "}
+          <button
+            onClick={() => setView?.("login")}
+            className="text-blue-600 hover:underline cursor-pointer dark:text-[#648efc]"
+          >
+            Log In
+          </button>
+        </p>
+
+        <form.Subscribe
+          selector={(state) => ({
+            values: state.values,
+            canSubmit: state.canSubmit,
+            isSubmitting: state.isSubmitting,
+          })}
+        >
+          {({ values, canSubmit, isSubmitting }) => {
+            const username = values?.username ?? "";
+            const email = values?.email ?? "";
+            const password = values?.password ?? "";
+            const isEmpty =
+              !username.trim() || !password.trim() || !email.trim();
+
+            const active = canSubmit && !isEmpty && !isSubmitting && !isPending;
+
+            return (
+              <Button
+                type="submit"
+                variant={active ? "reddit" : "redditDisabled"}
+                disabled={!active}
+                className={`w-full p-6 font-semibold transition-colors duration-200
+                  ${
+                    active
+                      ? "bg-[#d93a00] hover:bg-[#bb3200] text-white"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  }
+                `}
+              >
+                {isSubmitting || isPending ? "Sign Up..." : "Sign up"}
+              </Button>
+            );
+          }}
+        </form.Subscribe>
       </form>
     </div>
   );

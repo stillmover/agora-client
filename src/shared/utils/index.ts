@@ -1,2 +1,2 @@
 export { queryClient } from "./query-client";
-export * from "@/shared/services";
+export * from "./env";

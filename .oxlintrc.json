@@ -173,6 +173,7 @@
     "build",
     "coverage",
     ".next",
-    "storybook-static"
+    "storybook-static",
+    "src/shared/api/**/*"
   ]
 }
