@@ -78,13 +78,15 @@ define(['./workbox-47da91e0'], (function (workbox) { 'use strict';
    * See https://goo.gl/S9QRab
    */
   workbox.precacheAndRoute([{
-    "url": "/offline.html",
-    "revision": "0.p3tgigu6qf8"
+    "url": "registerSW.js",
+    "revision": "3ca0b8505b4bec776b69afdba2768812"
+  }, {
+    "url": "index.html",
+    "revision": "0.d2lpmst005g"
   }], {});
   workbox.cleanupOutdatedCaches();
-  workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("/offline.html"), {
-    allowlist: [/^\/$/],
-    denylist: [/^\/_/, /\/[^/?]+\.[^/]+$/]
+  workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
+    allowlist: [/^\/$/]
   }));
   workbox.registerRoute(/^https:\/\/.*\.(jpg|jpeg|png|gif|svg|webp|ico|bmp)$/i, new workbox.CacheFirst({
     "cacheName": "images-cache",
@@ -106,9 +108,7 @@ define(['./workbox-47da91e0'], (function (workbox) { 'use strict';
   }), 'GET');
   workbox.registerRoute(({
     request
-  }) => {
-    return request.method === "GET" && /\/api\/.*/i.test(request.url);
-  }, new workbox.NetworkFirst({
+  }) => request.method === "GET" && /\/api\/.*/i.test(request.url), new workbox.NetworkFirst({
     "cacheName": "api-cache",
     "networkTimeoutSeconds": 10,
     plugins: [new workbox.ExpirationPlugin({

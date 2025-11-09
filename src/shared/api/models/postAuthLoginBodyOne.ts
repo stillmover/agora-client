@@ -8,9 +8,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetAuthMe200DataUser = {
-  id?: number;
-  username?: string;
-  email?: string;
-  createdAt?: string;
+export type PostAuthLoginBodyOne = {
+  /** @minLength 3 */
+  usernameOrEmail: string;
+  /** @minLength 6 */
+  password: string;
 };

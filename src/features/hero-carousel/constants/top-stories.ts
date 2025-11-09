@@ -15,42 +15,47 @@ export const MOCK_TOP_STORIES: TopStory[] = [
     title: "React 19 is here: New features and improvements",
     community: { id: "react", name: "react" },
     thumbnail:
-      "https://via.placeholder.com/400x225/61DAFB/FFFFFF?text=React+19",
+      "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=225&fit=crop&crop=center",
     score: 1250,
   },
   {
     id: "2",
     title: "TypeScript 5.4 brings better performance and new features",
     community: { id: "typescript", name: "typescript" },
-    thumbnail: "https://via.placeholder.com/400x225/3178C6/FFFFFF?text=TS+5.4",
+    thumbnail:
+      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=225&fit=crop&crop=center",
     score: 890,
   },
   {
     id: "3",
     title: "Building scalable applications with Feature-Sliced Design",
     community: { id: "webdev", name: "webdev" },
-    thumbnail: "https://via.placeholder.com/400x225/00D4FF/FFFFFF?text=FSD",
+    thumbnail:
+      "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=225&fit=crop&crop=center",
     score: 675,
   },
   {
     id: "4",
     title: "The future of web development: What's coming next",
     community: { id: "programming", name: "programming" },
-    thumbnail: "https://via.placeholder.com/400x225/FF6B35/FFFFFF?text=Future",
+    thumbnail:
+      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=225&fit=crop&crop=center",
     score: 543,
   },
   {
     id: "5",
     title: "CSS Grid vs Flexbox: When to use each",
     community: { id: "css", name: "css" },
-    thumbnail: "https://via.placeholder.com/400x225/1572B6/FFFFFF?text=CSS",
+    thumbnail:
+      "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=225&fit=crop&crop=center",
     score: 432,
   },
   {
     id: "6",
     title: "Node.js 20 LTS: New features and migration guide",
     community: { id: "nodejs", name: "nodejs" },
-    thumbnail: "https://via.placeholder.com/400x225/339933/FFFFFF?text=Node+20",
+    thumbnail:
+      "https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=400&h=225&fit=crop&crop=center",
     score: 321,
   },
 ];

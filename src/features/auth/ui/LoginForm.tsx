@@ -43,6 +43,12 @@ const LoginFormFields = ({
           type="password"
           value={field.state.value}
           onChange={(e) => field.setValue(e.target.value)}
+          onBlur={() =>
+            field.setMeta((prev) => ({
+              ...prev,
+              touched: true,
+            }))
+          }
           label="Password"
           required
           error={field.state.meta.errors?.[FIRST_ERROR_INDEX]?.message}
@@ -141,8 +147,10 @@ export const LoginForm = ({ setView, redirect, onSuccess }: LoginFormProps) => {
     <div className="space-y-6">
       <form
         onSubmit={(e) => {
+          console.log("🔥 Login form onSubmit triggered");
           e.preventDefault();
           e.stopPropagation();
+          console.log("📨 Calling form.handleSubmit()");
           form.handleSubmit();
         }}
         className="space-y-4"

@@ -5,9 +5,13 @@ import {
   useSearch,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { handlePostAuth } from "@/entities/session";
 import { useQueryClient } from "@tanstack/react-query";
 import { logger } from "@/shared/services/logger";
+import { getGetApiAuthGoogleCallbackUrl } from "@/shared/api/endpoints/authentication/authentication";
+import { env } from "@/shared/utils/env";
+import { sessionActions } from "@/entities/session";
+import { sessionApi } from "@/entities/session/api/sessionApi";
+import { sessionKeys } from "@/entities/session/api/query-keys";
 
 export const Route = createFileRoute("/_auth")({
   component: AuthLayout,
@@ -24,33 +28,103 @@ function AuthLayout() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    // Handle OAuth callback
     if (search.code && search.state) {
       logger.debug("OAuth callback received", {
         code: search.code,
         state: search.state,
       });
 
-      // Verify state matches what we stored
       const storedState = localStorage.getItem("oauth_state");
       if (storedState !== search.state) {
         logger.error("OAuth state mismatch");
-        navigate({ to: "/login", search: { error: "auth_failed" } });
+        navigate({
+          to: "/login",
+          search: {
+            error: "auth_failed",
+            code: undefined,
+            state: undefined,
+            redirect: undefined,
+          },
+        });
         return;
       }
 
-      // Clear stored state
       localStorage.removeItem("oauth_state");
 
-      // TODO: Exchange code for tokens and authenticate user
-      // For now, just call handlePostAuth to check if user is authenticated
-      handlePostAuth(queryClient)
-        .then(() => {
-          navigate({ to: "/", replace: true });
+      const callbackUrl = new URL(
+        getGetApiAuthGoogleCallbackUrl(),
+        env.BACKEND_URL,
+      );
+      callbackUrl.searchParams.set("code", search.code);
+      callbackUrl.searchParams.set("state", search.state);
+
+      fetch(callbackUrl.toString(), {
+        method: "GET",
+        credentials: "include",
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`OAuth callback failed: ${response.status}`);
+          }
+          return response;
+        })
+        .then(async () => {
+          try {
+            const userResponse = await sessionApi.getCurrentUser();
+            const anyResponse = userResponse as unknown as {
+              success?: boolean;
+              data?: { user?: unknown };
+            };
+
+            if (anyResponse?.success && anyResponse.data?.user) {
+              const userData = anyResponse.data.user as {
+                id: number;
+                username: string;
+                email?: string;
+              };
+
+              sessionActions.login({
+                id: String(userData.id),
+                username: userData.username,
+                email: userData.email ?? undefined,
+              });
+
+              queryClient.setQueryData(sessionKeys.me(), userResponse);
+
+              logger.info("OAuth authentication successful", {
+                userId: userData.id,
+              });
+              navigate({ to: "/", replace: true });
+            } else {
+              throw new Error("OAuth successful but failed to fetch user data");
+            }
+          } catch (error) {
+            logger.error(
+              "Failed to fetch user data after OAuth authentication",
+              error,
+            );
+            navigate({
+              to: "/login",
+              search: {
+                error: "auth_failed",
+                code: undefined,
+                state: undefined,
+                redirect: undefined,
+              },
+            });
+          }
         })
         .catch((error) => {
           logger.error("OAuth authentication failed", error);
-          navigate({ to: "/login", search: { error: "auth_failed" } });
+          navigate({
+            to: "/login",
+            search: {
+              error: "auth_failed",
+              code: undefined,
+              state: undefined,
+              redirect: undefined,
+            },
+          });
         });
     }
   }, [search.code, search.state, navigate, queryClient]);

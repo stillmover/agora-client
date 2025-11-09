@@ -8,7 +8,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetAuthMe200DataUser = {
+export type PostAuthRegister201DataUser = {
   id?: number;
   username?: string;
   email?: string;

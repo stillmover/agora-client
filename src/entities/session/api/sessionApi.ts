@@ -1,8 +1,8 @@
 import {
-  getApiMe,
-  postApiLogin,
-  postApiRegister,
-  postApiLogout,
+  getAuthMe,
+  postAuthLogin,
+  postAuthRegister,
+  postAuthLogout,
 } from "@/shared/api/endpoints/authentication/authentication";
 import type {
   PostApiLoginBodyOne,
@@ -10,8 +10,10 @@ import type {
 } from "@/shared/api/models";
 
 export const sessionApi = {
-  getCurrentUser: () => getApiMe(),
-  login: (credentials: PostApiLoginBodyOne) => postApiLogin(credentials),
-  register: (data: PostApiRegisterBodyOne) => postApiRegister(data),
-  logout: () => postApiLogout(),
+  getCurrentUser: () => getAuthMe(),
+  login: (credentials: PostApiLoginBodyOne) =>
+    postAuthLogin(credentials, { credentials: "omit" }),
+  register: (data: PostApiRegisterBodyOne) =>
+    postAuthRegister(data, { credentials: "omit" }),
+  logout: () => postAuthLogout(),
 } as const;

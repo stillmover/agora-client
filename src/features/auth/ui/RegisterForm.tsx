@@ -30,6 +30,12 @@ export const RegisterForm = ({
               type="email"
               value={field.state.value}
               onChange={(e) => field.setValue(e.target.value)}
+              onBlur={() =>
+                field.setMeta((prev) => ({
+                  ...prev,
+                  touched: true,
+                }))
+              }
               label="Email"
               required
               error={field.state.meta.errors?.[0]?.message}
@@ -44,6 +50,12 @@ export const RegisterForm = ({
               type="text"
               value={field.state.value}
               onChange={(e) => field.setValue(e.target.value)}
+              onBlur={() =>
+                field.setMeta((prev) => ({
+                  ...prev,
+                  touched: true,
+                }))
+              }
               label="Username"
               required
               error={field.state.meta.errors?.[0]?.message}
@@ -58,6 +70,12 @@ export const RegisterForm = ({
               type="password"
               value={field.state.value}
               onChange={(e) => field.setValue(e.target.value)}
+              onBlur={() =>
+                field.setMeta((prev) => ({
+                  ...prev,
+                  touched: true,
+                }))
+              }
               label="Password"
               required
               error={field.state.meta.errors?.[0]?.message}

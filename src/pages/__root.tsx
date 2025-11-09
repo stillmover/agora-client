@@ -3,7 +3,7 @@ import {
   Outlet,
   Link,
 } from "@tanstack/react-router";
-import { useSession, type SessionState } from "@/entities/session";
+import { type SessionState } from "@/entities/session";
 import type { QueryClient } from "@tanstack/react-query";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
@@ -25,16 +25,6 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 });
 
 function RootComponent() {
-  const { isInitializing } = useSession();
-
-  if (isInitializing) {
-    return (
-      <div className="flex h-screen items-center justify-center text-gray-500">
-        Checking session...
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-background">
       <ErrorBoundary>

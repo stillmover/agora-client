@@ -11,8 +11,8 @@ import {
 
 import {
   useSessionUser,
+  useIsAuthenticated,
   useLogoutMutation,
-  sessionActions,
 } from "@/entities/session";
 import { ROUTES } from "@/shared/config";
 import { Button } from "@/shared/ui/button";
@@ -30,12 +30,12 @@ import { getInitials } from "@/shared/services";
 
 export const UserMenuWidget = () => {
   const user = useSessionUser();
+  const isAuthenticated = useIsAuthenticated();
   const navigate = useNavigate();
   const logoutMutation = useLogoutMutation();
 
   const handleLogout = async () => {
     try {
-      sessionActions.logout();
       await logoutMutation.mutateAsync();
       navigate({ to: ROUTES.HOME });
     } catch (error) {
@@ -43,6 +43,16 @@ export const UserMenuWidget = () => {
       navigate({ to: ROUTES.HOME });
     }
   };
+
+  if (isAuthenticated && !user) {
+    return (
+      <div className="flex items-center gap-2">
+        <Button variant="ghost" size="icon" className="h-9 w-9" disabled>
+          <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+        </Button>
+      </div>
+    );
+  }
 
   if (!user) {
     return null;

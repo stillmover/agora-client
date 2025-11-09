@@ -22,8 +22,9 @@ export const useLoginForm = ({
       password: "",
     },
     validators: {
-      onSubmit: loginSchema,
+      onChange: loginSchema,
       onBlur: loginSchema,
+      onSubmit: loginSchema,
     },
     onSubmit: async ({ value }) => {
       try {

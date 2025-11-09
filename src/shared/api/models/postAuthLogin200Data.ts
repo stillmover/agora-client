@@ -7,10 +7,8 @@
 ⚠️ **Note**: Всі інші endpoints доступні через GraphQL API. Використовуйте GraphiQL Playground на `/graphql` для GraphQL API документації.
  * OpenAPI spec version: 1.0.0
  */
+import type { PostAuthLogin200DataUser } from './postAuthLogin200DataUser';
 
-export type GetAuthMe200DataUser = {
-  id?: number;
-  username?: string;
-  email?: string;
-  createdAt?: string;
+export type PostAuthLogin200Data = {
+  user?: PostAuthLogin200DataUser;
 };
