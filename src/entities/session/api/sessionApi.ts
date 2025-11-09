@@ -11,7 +11,9 @@ import type {
 
 export const sessionApi = {
   getCurrentUser: () => getAuthMe(),
-  login: (credentials: PostApiLoginBodyOne) => postAuthLogin(credentials),
-  register: (data: PostApiRegisterBodyOne) => postAuthRegister(data),
+  login: (credentials: PostApiLoginBodyOne) =>
+    postAuthLogin(credentials, { credentials: "omit" }),
+  register: (data: PostApiRegisterBodyOne) =>
+    postAuthRegister(data, { credentials: "omit" }),
   logout: () => postAuthLogout(),
 } as const;

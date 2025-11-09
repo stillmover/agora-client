@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { sessionQueries } from "../api/queries";
 import { sessionActions, useSessionPersistence } from "./session-store";
@@ -7,9 +7,7 @@ import { logger } from "@/shared/services";
 export const useSession = () => {
   const sessionState = useSessionPersistence();
 
-  const isLoading =
-    (sessionState as { isLoading?: boolean }).isLoading || false;
-  const shouldFetchUser = !isLoading;
+  const shouldFetchUser = sessionState.isAuthenticated && !sessionState.user;
 
   const sessionQuery = useQuery({
     ...sessionQueries.currentUser(),
@@ -18,40 +16,34 @@ export const useSession = () => {
     gcTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    retry: (failureCount, error) => {
+      if (error instanceof Error && "status" in error && error.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 
-  const hasHandledAuth = useRef(false);
-
   useEffect(() => {
-    if (shouldFetchUser) {
-      hasHandledAuth.current = false;
-    }
-  }, [shouldFetchUser]);
-
-  useEffect(() => {
-    if (hasHandledAuth.current || !shouldFetchUser) {
-      return;
-    }
-
-    if (sessionQuery.isLoading) {
-      return;
-    }
-
-    if (sessionQuery.isError) {
+    if (sessionQuery.isError && sessionState.isAuthenticated) {
       const error = sessionQuery.error;
 
       if (error instanceof Error && "status" in error) {
         const status = error.status as number;
 
         if (status === 401) {
-          hasHandledAuth.current = true;
-          sessionActions.logout();
-          logger.info("User unauthenticated (401), logging out");
+          if (sessionState.user) {
+            sessionActions.logout();
+            logger.info("User unauthenticated (401), logging out");
+          } else {
+            logger.warn(
+              "User data fetch failed with 401 but no user data in store - likely cookies not set yet",
+            );
+          }
           return;
         }
 
         if (status >= 400 && status < 500) {
-          hasHandledAuth.current = true;
           sessionActions.logout();
           logger.error(`Client error ${status}, logging out`, error);
           return;
@@ -67,33 +59,43 @@ export const useSession = () => {
         "Session query error (network/unknown), keeping session",
         error,
       );
-      return;
     }
+  }, [
+    sessionQuery.isError,
+    sessionQuery.error,
+    sessionState.isAuthenticated,
+    sessionState.user,
+  ]);
 
-    if (sessionQuery.isSuccess && sessionQuery.data) {
-      const userData = sessionQuery.data;
+  useEffect(() => {
+    if (
+      sessionQuery.isSuccess &&
+      sessionQuery.data &&
+      sessionState.isAuthenticated &&
+      !sessionState.user
+    ) {
+      const userData = sessionQuery.data as {
+        id: number;
+        username: string;
+        email?: string;
+      };
       if (userData) {
-        hasHandledAuth.current = true;
         sessionActions.login({
           id: String(userData.id),
           username: userData.username,
           email: userData.email || undefined,
         });
-        logger.info("Session restored from server validation");
+        logger.info("Session user data updated from server");
       } else {
-        hasHandledAuth.current = true;
         sessionActions.logout();
         logger.warn("Session query successful but no user data, logging out");
       }
-      return;
     }
   }, [
-    shouldFetchUser,
-    sessionQuery.isLoading,
-    sessionQuery.isError,
     sessionQuery.isSuccess,
     sessionQuery.data,
-    sessionQuery.error,
+    sessionState.isAuthenticated,
+    sessionState.user,
   ]);
 
   return useMemo(
@@ -104,7 +106,7 @@ export const useSession = () => {
         ? sessionQuery.error instanceof Error
           ? sessionQuery.error.message
           : String(sessionQuery.error)
-        : null,
+        : sessionState.error,
       refetch: () => {
         void sessionQuery.refetch();
       },
@@ -113,9 +115,11 @@ export const useSession = () => {
       sessionState.isAuthenticated,
       sessionState.user,
       sessionState.isLoading,
+      sessionState.error,
       shouldFetchUser,
       sessionQuery.isLoading,
       sessionQuery.isError,
+      sessionQuery.error,
     ],
   );
 };

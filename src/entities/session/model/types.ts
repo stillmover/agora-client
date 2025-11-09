@@ -18,6 +18,19 @@ type UnauthenticatedSession = {
   error?: string | null;
 };
 
-type SessionState = Session | UnauthenticatedSession;
+type AuthenticatingSession = {
+  user: null;
+  isAuthenticated: true;
+  isLoading?: boolean;
+  error?: string | null;
+};
 
-export type { SessionUser, Session, UnauthenticatedSession, SessionState };
+type SessionState = Session | UnauthenticatedSession | AuthenticatingSession;
+
+export type {
+  SessionUser,
+  Session,
+  UnauthenticatedSession,
+  AuthenticatingSession,
+  SessionState,
+};
