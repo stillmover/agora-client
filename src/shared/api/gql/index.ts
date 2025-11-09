@@ -167,7 +167,7 @@ export type Mutation = {
    * mutation {
    *   createPost(input: {
    *     communityId: "1"
-   *     title: "My awesome post"
+   *     title: "My awesome post"r/react
    *     content: "This is the content"
    *     type: text
    *     flairIds: ["1", "2"]
@@ -246,7 +246,7 @@ export type Mutation = {
    * **Authentication:** Required
    *
    * **Example:**
-   * ```graphql
+   * ```graphqlr/react
    * mutation {
    *   unsavePost(postId: "1")
    * }
