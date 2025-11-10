@@ -7,7 +7,19 @@ import { logger } from "@/shared/services";
 export const useSession = () => {
   const sessionState = useSessionPersistence();
 
-  const shouldFetchUser = sessionState.isAuthenticated && !sessionState.user;
+  const { authSuccess, shouldFetchUser } = useMemo(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get("auth") === "success";
+    return {
+      authSuccess: success,
+      shouldFetchUser:
+        (sessionState.isAuthenticated && !sessionState.user) || success,
+    };
+  }, [sessionState.isAuthenticated, sessionState.user]);
+
+  if (authSuccess) {
+    window.history.replaceState({}, "", window.location.pathname);
+  }
 
   const sessionQuery = useQuery({
     ...sessionQueries.currentUser(),
@@ -68,35 +80,21 @@ export const useSession = () => {
   ]);
 
   useEffect(() => {
-    if (
-      sessionQuery.isSuccess &&
-      sessionQuery.data &&
-      sessionState.isAuthenticated &&
-      !sessionState.user
-    ) {
+    if (sessionQuery.isSuccess && sessionQuery.data && !sessionState.user) {
       const userData = sessionQuery.data as {
         id: number;
         username: string;
         email?: string;
       };
-      if (userData) {
-        sessionActions.login({
-          id: String(userData.id),
-          username: userData.username,
-          email: userData.email || undefined,
-        });
-        logger.info("Session user data updated from server");
-      } else {
-        sessionActions.logout();
-        logger.warn("Session query successful but no user data, logging out");
-      }
+
+      sessionActions.login({
+        id: String(userData.id),
+        username: userData.username,
+        email: userData.email || undefined,
+      });
+      logger.info("✅ Session user data updated from server");
     }
-  }, [
-    sessionQuery.isSuccess,
-    sessionQuery.data,
-    sessionState.isAuthenticated,
-    sessionState.user,
-  ]);
+  }, [sessionQuery.isSuccess, sessionQuery.data, sessionState.user]);
 
   return useMemo(
     () => ({
@@ -107,15 +105,10 @@ export const useSession = () => {
           ? sessionQuery.error.message
           : String(sessionQuery.error)
         : sessionState.error,
-      refetch: () => {
-        void sessionQuery.refetch();
-      },
+      refetch: () => void sessionQuery.refetch(),
     }),
     [
-      sessionState.isAuthenticated,
-      sessionState.user,
-      sessionState.isLoading,
-      sessionState.error,
+      sessionState,
       shouldFetchUser,
       sessionQuery.isLoading,
       sessionQuery.isError,
