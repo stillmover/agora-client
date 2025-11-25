@@ -18,7 +18,7 @@ export const AppShell = ({
   <div className="min-h-screen bg-background">
     <Header />
     {showHeroCarousel && <HeroCarousel />}
-    <div className="container mx-auto grid grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-12 xl:grid-cols-16">
+    <div className="w-full grid grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-12 xl:grid-cols-16">
       <aside className="hidden lg:block lg:col-span-3 xl:col-span-4">
         <div className="sticky top-20">
           <Sidebar />

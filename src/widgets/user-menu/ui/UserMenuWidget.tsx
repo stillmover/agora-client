@@ -1,4 +1,4 @@
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, Link } from "@tanstack/react-router";
 import {
   User,
   LogOut,
@@ -60,9 +60,12 @@ export const UserMenuWidget = () => {
 
   return (
     <div className="flex items-center gap-2">
-      <Button variant="ghost" size="icon" className="h-9 w-9">
-        <Plus className="h-5 w-5" />
-      </Button>
+      <Link to={ROUTES.CREATE_POST}>
+        <Button variant="ghost" size="sm" className="h-9 text-sm">
+          <Plus className="h-4 w-4" />
+          Create Post
+        </Button>
+      </Link>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

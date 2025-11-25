@@ -54,7 +54,7 @@ export const HeroCarousel = () => {
 
   return (
     <div className="bg-muted/20 border-b py-8">
-      <div className="container mx-auto px-4">
+      <div className="w-full px-4">
         <div className="flex items-center gap-4 mb-6">
           <TrendingUp className="h-6 w-6 text-orange-500" />
           <h2 className="text-xl font-semibold">Today's Top Stories</h2>

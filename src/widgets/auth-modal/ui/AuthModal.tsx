@@ -20,7 +20,7 @@ export const AuthModal = () => {
   return (
     <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
       <DialogPrimitive.Trigger asChild>
-        <Button variant="ghost" size="sm">
+        <Button variant="ghost" size="sm" className="text-lg">
           Log In
         </Button>
       </DialogPrimitive.Trigger>
