@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { FloatingInput } from "@/shared/ui/floating-input";
 import { Button } from "@/shared/ui/button";
 import { useLoginForm } from "../model/use-login-form";
@@ -60,30 +61,50 @@ const LoginFormFields = ({
 
 const LoginFormFooter = ({
   setView,
+  redirect,
 }: {
   setView?: (view: "login" | "register" | "reset") => void;
-}) => (
-  <div className="text-left space-y-2 pb-4">
-    <button
-      type="button"
-      onClick={() => setView?.("reset")}
-      className="text-sm text-blue-600 hover:underline cursor-pointer dark:text-[#648efc]"
-    >
-      Forgot password?
-    </button>
+  redirect?: string;
+}) => {
+  const navigate = useNavigate();
 
-    <p className="text-sm text-gray-600 dark:text-[#b7cad4]">
-      New to Reddit?{" "}
+  const navigateTo = (to: "/reset" | "/register") =>
+    navigate({
+      to,
+      search: (prev) => ({
+        ...prev,
+        redirect: redirect ?? prev.redirect,
+        code: undefined,
+        state: undefined,
+        error: undefined,
+      }),
+    });
+
+  return (
+    <div className="text-left space-y-2 pb-4">
       <button
         type="button"
-        onClick={() => setView?.("register")}
-        className="text-blue-600 hover:underline cursor-pointer dark:text-[#648efc]"
+        onClick={() => (setView ? setView("reset") : navigateTo("/reset"))}
+        className="text-sm text-blue-600 hover:underline cursor-pointer dark:text-[#648efc]"
       >
-        Sign Up
+        Forgot password?
       </button>
-    </p>
-  </div>
-);
+
+      <p className="text-sm text-gray-600 dark:text-[#b7cad4]">
+        New to Reddit?{" "}
+        <button
+          type="button"
+          onClick={() =>
+            setView ? setView("register") : navigateTo("/register")
+          }
+          className="text-blue-600 hover:underline cursor-pointer dark:text-[#648efc]"
+        >
+          Sign Up
+        </button>
+      </p>
+    </div>
+  );
+};
 
 const LoginSubmitButton = ({
   form,
@@ -147,16 +168,14 @@ export const LoginForm = ({ setView, redirect, onSuccess }: LoginFormProps) => {
     <div className="space-y-6">
       <form
         onSubmit={(e) => {
-          console.log("🔥 Login form onSubmit triggered");
           e.preventDefault();
           e.stopPropagation();
-          console.log("📨 Calling form.handleSubmit()");
           form.handleSubmit();
         }}
         className="space-y-4"
       >
         <LoginFormFields form={form} />
-        <LoginFormFooter setView={setView} />
+        <LoginFormFooter setView={setView} redirect={redirect} />
         <LoginSubmitButton form={form} isPending={isPending} />
       </form>
     </div>

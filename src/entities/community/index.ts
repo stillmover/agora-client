@@ -1,2 +1,9 @@
 export type { Community } from "./model/types";
-export { usePopularCommunities, useCommunity } from "./model/useCommunities";
+export {
+  useCommunities,
+  usePopularCommunities,
+  useCommunity,
+  useCommunityByName,
+  useFlairsByCommunity,
+} from "./model/useCommunities";
+export { mapCommunity } from "./api/mappers";

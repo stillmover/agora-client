@@ -1,28 +1,40 @@
 import { useCallback } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   useJoinCommunityMutation,
   useLeaveCommunityMutation,
-} from "@/shared/api";
+} from "@/shared/api/gql/query-hooks";
+import { queryKeys } from "@/shared/api/query-keys";
 import { useIsCommunityJoined, clientStateActions } from "@/shared/stores";
+import { logger } from "@/shared/services/logger";
 
 export const useCommunityActions = (communityId: string) => {
   const isJoined = useIsCommunityJoined(communityId);
-  const [, executeJoin] = useJoinCommunityMutation();
-  const [, executeLeave] = useLeaveCommunityMutation();
+  const queryClient = useQueryClient();
+  const joinMutation = useJoinCommunityMutation();
+  const leaveMutation = useLeaveCommunityMutation();
 
   const join = useCallback(async () => {
     clientStateActions.joinCommunity(communityId);
 
     try {
-      const result = await executeJoin({ communityId });
-      if (result.error) {
-        throw result.error;
-      }
+      await joinMutation.mutateAsync({ communityId });
+
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.communities.detail(communityId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.communities.lists(),
+        refetchType: "none",
+      });
+
+      logger.info("Joined community:", communityId);
     } catch (error) {
       clientStateActions.leaveCommunity(communityId);
+      logger.error("Failed to join community:", error);
       throw error;
     }
-  }, [communityId, executeJoin]);
+  }, [communityId, joinMutation, queryClient]);
 
   const leave = useCallback(async () => {
     const wasJoined = isJoined;
@@ -30,17 +42,25 @@ export const useCommunityActions = (communityId: string) => {
     clientStateActions.leaveCommunity(communityId);
 
     try {
-      const result = await executeLeave({ communityId });
-      if (result.error) {
-        throw result.error;
-      }
+      await leaveMutation.mutateAsync({ communityId });
+
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.communities.detail(communityId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.communities.lists(),
+        refetchType: "none",
+      });
+
+      logger.info("Left community:", communityId);
     } catch (error) {
       if (wasJoined) {
         clientStateActions.joinCommunity(communityId);
       }
+      logger.error("Failed to leave community:", error);
       throw error;
     }
-  }, [communityId, isJoined, executeLeave]);
+  }, [communityId, isJoined, leaveMutation, queryClient]);
 
   const toggleJoin = useCallback(async () => {
     if (isJoined) {
@@ -50,11 +70,14 @@ export const useCommunityActions = (communityId: string) => {
     }
   }, [isJoined, join, leave]);
 
+  const isPending = joinMutation.isPending || leaveMutation.isPending;
+
   return {
     join,
     leave,
     toggleJoin,
     isJoined,
+    isPending,
     joinLabel: isJoined ? "Joined" : "Join",
     actionLabel: isJoined ? "Leave" : "Join",
   };

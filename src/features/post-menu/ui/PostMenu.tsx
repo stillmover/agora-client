@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu";
 import { logger } from "@/shared/services/logger";
-import { usePostActions } from "../../post-actions/model/usePostActions";
+import { usePostActions } from "@/features/post-actions";
 import type { Post } from "@/entities/post";
 
 type PostMenuProps = {
@@ -27,17 +27,14 @@ export const PostMenu = ({ post }: PostMenuProps) => {
   const { save, share, saveLabel } = usePostActions(post.id);
 
   const handleHide = () => {
-    // TODO: Implement hide functionality
     logger.debug("Hide post:", post.id);
   };
 
   const handleReport = () => {
-    // TODO: Implement report functionality
     logger.debug("Report post:", post.id);
   };
 
   const handleBlockUser = () => {
-    // TODO: Implement block user functionality
     logger.debug("Block user:", post.author.id);
   };
 

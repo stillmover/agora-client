@@ -17,10 +17,12 @@ export const CommentSectionWidget = ({
   comments,
 }: CommentSectionWidgetProps) => {
   const user = useSessionUser();
-  const { createComment } = useCreateComment(postId);
+  const { createComment, isPending, error } = useCreateComment(postId);
 
   const handleCommentSubmit = async (content: string, parentId?: string) => {
-    await createComment(content, parentId);
+    try {
+      await createComment(content, parentId);
+    } catch {}
   };
 
   return (

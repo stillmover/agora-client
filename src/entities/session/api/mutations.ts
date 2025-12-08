@@ -4,193 +4,136 @@ import { sessionApi } from "./sessionApi";
 import { sessionKeys } from "./query-keys";
 import { sessionActions, sessionStore } from "../model/session-store";
 import { logger } from "@/shared/services/logger";
+import { extractUserFromResponse } from "./types";
 import type {
   PostApiLoginBodyOne,
   PostApiRegisterBodyOne,
 } from "@/shared/api/models";
 
+const setLoadingState = () => {
+  sessionStore.setState((prev) => ({
+    ...prev,
+    isLoading: true,
+    error: null,
+  }));
+};
+
+const setErrorState = (error: unknown, fallbackMessage: string) => {
+  sessionStore.setState((prev) => ({
+    ...prev,
+    isLoading: false,
+    error: error instanceof Error ? error.message : fallbackMessage,
+  }));
+};
+
+const syncUserAfterAuth = async (
+  queryClient: ReturnType<typeof useQueryClient>,
+  actionName: string,
+): Promise<void> => {
+  const userResponse = await sessionApi.getCurrentUser();
+  const userData = extractUserFromResponse(userResponse);
+
+  if (userData) {
+    sessionActions.login({
+      id: String(userData.id),
+      username: userData.username,
+      email: userData.email ?? undefined,
+    });
+
+    queryClient.setQueryData(sessionKeys.me(), userResponse);
+    logger.info(`User ${actionName} successfully`, { userId: userData.id });
+  } else {
+    throw new Error(`${actionName} successful but failed to fetch user data`);
+  }
+};
+
 const handlePostAuth = async (
   queryClient: ReturnType<typeof useQueryClient>,
 ): Promise<void> => {
   try {
-    const response = await sessionApi.getCurrentUser();
-
-    const anyResponse = response as unknown as {
-      success?: boolean;
-      data?: { user?: unknown };
-    };
-
-    if (anyResponse?.success && anyResponse.data?.user) {
-      const userData = anyResponse.data.user as {
-        id: number;
-        username: string;
-        email?: string;
-      };
-
-      sessionActions.login({
-        id: String(userData.id),
-        username: userData.username,
-        email: userData.email ?? undefined,
-      });
-
-      queryClient.setQueryData(sessionKeys.me(), response);
-
-      logger.info("User authenticated successfully", { userId: userData.id });
-    } else {
-      logger.warn("Authentication response missing user data", response);
-    }
+    await syncUserAfterAuth(queryClient, "authenticated");
   } catch (error) {
     logger.error("Failed to fetch user data after authentication:", error);
   }
 };
 
-const useLoginMutation = () => {
-  const queryClient = useQueryClient();
+const createAuthMutation = <TPayload>(
+  authFn: (payload: TPayload) => Promise<unknown>,
+  actionName: string,
+) => {
+  return () => {
+    const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async (credentials: PostApiLoginBodyOne) => {
-      sessionStore.setState((prev) => ({
-        ...prev,
-        isLoading: true,
-        error: null,
-      }));
-      const response = await sessionApi.login(credentials);
+    return useMutation({
+      mutationFn: async (payload: TPayload) => {
+        setLoadingState();
+        const response = await authFn(payload);
 
-      try {
-        const userResponse = await sessionApi.getCurrentUser();
-        const anyResponse = userResponse as unknown as {
-          success?: boolean;
-          data?: { user?: unknown };
-        };
-
-        if (anyResponse?.success && anyResponse.data?.user) {
-          const userData = anyResponse.data.user as {
-            id: number;
-            username: string;
-            email?: string;
-          };
-
-          sessionActions.login({
-            id: String(userData.id),
-            username: userData.username,
-            email: userData.email ?? undefined,
-          });
-
-          queryClient.setQueryData(sessionKeys.me(), userResponse);
-          logger.info("User logged in successfully", { userId: userData.id });
-        } else {
-          throw new Error("Login successful but failed to fetch user data");
-        }
-      } catch (error) {
-        sessionStore.setState((prev) => ({
-          ...prev,
-          isLoading: false,
-          error: "Failed to fetch user data after login",
-        }));
-        throw error;
-      }
-
-      return response;
-    },
-    onError: (error) => {
-      sessionStore.setState((prev) => ({
-        ...prev,
-        isLoading: false,
-        error: error instanceof Error ? error.message : "Login failed",
-      }));
-      logger.error("Login failed", error);
-    },
-  });
-};
-
-const useRegisterMutation = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (data: PostApiRegisterBodyOne) => {
-      sessionStore.setState((prev) => ({
-        ...prev,
-        isLoading: true,
-        error: null,
-      }));
-      const response = await sessionApi.register(data);
-
-      try {
-        const userResponse = await sessionApi.getCurrentUser();
-        const anyResponse = userResponse as unknown as {
-          success?: boolean;
-          data?: { user?: unknown };
-        };
-
-        if (anyResponse?.success && anyResponse.data?.user) {
-          const userData = anyResponse.data.user as {
-            id: number;
-            username: string;
-            email?: string;
-          };
-
-          sessionActions.login({
-            id: String(userData.id),
-            username: userData.username,
-            email: userData.email ?? undefined,
-          });
-
-          queryClient.setQueryData(sessionKeys.me(), userResponse);
-          logger.info("User registered successfully", { userId: userData.id });
-        } else {
-          throw new Error(
-            "Registration successful but failed to fetch user data",
+        try {
+          await syncUserAfterAuth(queryClient, actionName);
+        } catch (error) {
+          setErrorState(
+            error,
+            `Failed to fetch user data after ${actionName.toLowerCase()}`,
           );
+          throw error;
         }
-      } catch (error) {
-        sessionStore.setState((prev) => ({
-          ...prev,
-          isLoading: false,
-          error: "Failed to fetch user data after registration",
-        }));
-        throw error;
-      }
 
-      return response;
-    },
-    onError: (error) => {
-      sessionStore.setState((prev) => ({
-        ...prev,
-        isLoading: false,
-        error: error instanceof Error ? error.message : "Registration failed",
-      }));
-      logger.error("Registration failed", error);
-    },
-  });
+        return response;
+      },
+      onError: (error) => {
+        setErrorState(error, `${actionName} failed`);
+        logger.error(`${actionName} failed`, error);
+      },
+    });
+  };
 };
+
+const useLoginMutation = createAuthMutation<PostApiLoginBodyOne>(
+  sessionApi.login,
+  "Login",
+);
+
+const useRegisterMutation = createAuthMutation<PostApiRegisterBodyOne>(
+  sessionApi.register,
+  "Registration",
+);
 
 const useLogoutMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async () => {
-      sessionStore.setState((prev) => ({
-        ...prev,
-        isLoading: true,
-        error: null,
-      }));
+      setLoadingState();
       return await sessionApi.logout();
     },
-    onSettled: () => {
+    onSettled: async () => {
       sessionActions.logout();
+      await queryClient.cancelQueries();
       queryClient.removeQueries({ queryKey: sessionKeys.all });
-      queryClient.clear();
+      queryClient.invalidateQueries({
+        predicate: ({ queryKey }) =>
+          !Array.isArray(queryKey) ||
+          (queryKey[0] as string | undefined) !== sessionKeys.all[0],
+        refetchType: "none",
+      });
       logger.info("User logged out successfully");
     },
     onError: (error) => {
-      sessionStore.setState((prev) => ({
-        ...prev,
-        isLoading: false,
-        error: error instanceof Error ? error.message : "Logout failed",
-      }));
+      setErrorState(error, "Logout failed");
       logger.error("Logout failed", error);
     },
   });
+};
+
+export const useLogout = () => {
+  const mutation = useLogoutMutation();
+  return {
+    logout: async () => {
+      await mutation.mutateAsync();
+    },
+    isPending: mutation.isPending,
+  };
 };
 
 export {

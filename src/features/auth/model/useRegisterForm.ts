@@ -1,5 +1,5 @@
 import { useForm } from "@tanstack/react-form";
-import { useRouter } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { useRegisterMutation } from "@/entities/session";
 import { registerSchema } from "../lib/schemas";
 import { logger } from "@/shared/services";
@@ -9,11 +9,15 @@ type UseRegisterFormOptions = {
   onSuccess?: VoidFunction;
 };
 
+/**
+ * Form hook for registration using TanStack Form + TanStack Query mutation.
+ * Optimized to only validate on blur and submit (not onChange).
+ */
 export const useRegisterForm = ({
   redirect,
   onSuccess,
 }: UseRegisterFormOptions = {}) => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const registerMutation = useRegisterMutation();
 
   const form = useForm({
@@ -23,7 +27,7 @@ export const useRegisterForm = ({
       password: "",
     },
     validators: {
-      onChange: registerSchema,
+      // Only validate on blur and submit to reduce re-renders
       onBlur: registerSchema,
       onSubmit: registerSchema,
     },
@@ -37,11 +41,8 @@ export const useRegisterForm = ({
 
         onSuccess?.();
 
-        if (redirect) {
-          router.history.push(redirect);
-        } else {
-          router.navigate({ to: "/" });
-        }
+        const targetUrl = redirect ?? "/";
+        navigate({ to: targetUrl });
       } catch (error) {
         logger.error("Registration failed", error);
         throw error;

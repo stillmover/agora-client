@@ -1,224 +1,265 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
+import { useState } from "react";
 import { ROUTES } from "@/shared/config";
-import { useCommunities } from "@/shared/api";
+import { useCommunities, type Community } from "@/entities/community";
+import { useIsAuthenticated } from "@/entities/session";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/shared/ui/accordion";
-import { Badge } from "@/shared/ui/badge";
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Badge,
+  Input,
+} from "@/shared/ui";
 import {
   Home,
   TrendingUp,
-  Users,
-  HelpCircle,
-  FileText,
-  Shield,
-  Info,
-  Briefcase,
-  Newspaper,
-  Crown,
+  Bookmark,
+  Bell,
+  Settings,
   Search,
   Plus,
+  Flame,
+  Sparkles,
 } from "lucide-react";
+import { CommunityInfoModal } from "@/widgets/community-info-modal";
+import { CreateCommunityModal } from "@/widgets/create-community-modal";
+import { cn } from "@/shared/lib/utils";
+
+type NavItemProps = {
+  to: string;
+  icon: React.ElementType;
+  label: string;
+  badge?: string | number;
+  params?: Record<string, string>;
+  search?: Record<string, unknown>;
+};
+
+const NavItem = ({
+  to,
+  icon: Icon,
+  label,
+  badge,
+  params,
+  search,
+}: NavItemProps) => {
+  const location = useLocation();
+  const isActive =
+    location.pathname === to ||
+    (params && location.pathname.startsWith(to.replace(/\$\w+/g, "")));
+
+  return (
+    <Link
+      to={to}
+      params={params}
+      search={search}
+      className={cn(
+        "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium",
+        "transition-all duration-150",
+        isActive
+          ? "bg-accent text-foreground"
+          : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+      )}
+    >
+      <Icon className={cn("h-5 w-5", isActive && "text-brand")} />
+      <span className="flex-1">{label}</span>
+      {badge !== undefined && (
+        <Badge variant="secondary" className="ml-auto">
+          {badge}
+        </Badge>
+      )}
+    </Link>
+  );
+};
 
 export const Sidebar = () => {
   const { communities, isLoading } = useCommunities();
+  const isAuthenticated = useIsAuthenticated();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredCommunities = communities.filter((c: Community) =>
+    c.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
   return (
-    <aside className="space-y-4">
+    <aside className="space-y-6">
+      <nav className="space-y-1">
+        <NavItem to={ROUTES.HOME} icon={Home} label="Home" />
+        <NavItem
+          to="/r/$communityId"
+          params={{ communityId: "popular" }}
+          icon={TrendingUp}
+          label="Popular"
+        />
+        <NavItem
+          to="/r/$communityId"
+          params={{ communityId: "all" }}
+          icon={Flame}
+          label="All"
+        />
+        {isAuthenticated && (
+          <>
+            <NavItem to="/saved" icon={Bookmark} label="Saved" />
+            <NavItem
+              to="/notifications"
+              icon={Bell}
+              label="Notifications"
+              badge={3}
+            />
+          </>
+        )}
+      </nav>
+
+      <hr className="border-border" />
+
       <Accordion
         type="multiple"
-        defaultValue={["navigation", "communities"]}
+        defaultValue={["communities"]}
         className="w-full"
       >
-        {/* Navigation Section */}
-        <AccordionItem value="navigation">
-          <AccordionTrigger className="text-base font-medium px-0">
-            <div className="flex items-center gap-2">
-              <Home className="h-4 w-4" />
-              Navigation
-            </div>
+        <AccordionItem value="communities" className="border-none">
+          <AccordionTrigger className="text-xs font-semibold uppercase tracking-wider text-muted-foreground py-2 hover:no-underline">
+            Communities
           </AccordionTrigger>
-          <AccordionContent className="space-y-1 pb-2">
-            <Link
-              to={ROUTES.HOME}
-              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted transition-colors"
-            >
-              <Home className="h-4 w-4" />
-              Home
-            </Link>
-            <Link
-              to="/r/$communityId"
-              params={{ communityId: "react" }}
-              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted transition-colors"
-            >
-              <TrendingUp className="h-4 w-4" />
-              Popular
-            </Link>
-          </AccordionContent>
-        </AccordionItem>
-
-        {/* Communities Section */}
-        <AccordionItem value="communities">
-          <AccordionTrigger className="text-base font-medium px-0">
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Communities
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="space-y-2 pb-2">
-            <div className="flex items-center gap-2 px-3">
-              <Search className="h-4 w-4 text-muted-foreground" />
-              <input
+          <AccordionContent className="space-y-3 pt-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
                 type="text"
                 placeholder="Search communities"
-                className="flex-1 text-sm bg-transparent border-none outline-none placeholder:text-muted-foreground"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                size="sm"
+                variant="filled"
+                className="pl-9"
               />
             </div>
-            <Link
-              to="/communities"
-              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted transition-colors"
-            >
-              <Plus className="h-4 w-4" />
-              Browse communities
-            </Link>
+
+            <CreateCommunityModal
+              trigger={
+                <button
+                  className={cn(
+                    "group flex items-center gap-3 w-full rounded-lg p-3",
+                    "text-sm transition-all cursor-pointer",
+                    "bg-gradient-to-r from-brand/5 to-orange-500/5",
+                    "hover:from-brand/10 hover:to-orange-500/10",
+                    "border border-brand/20 hover:border-brand/40",
+                  )}
+                >
+                  <div
+                    className={cn(
+                      "flex h-9 w-9 items-center justify-center rounded-full",
+                      "bg-brand text-white shadow-sm",
+                      "group-hover:scale-105 transition-transform",
+                    )}
+                  >
+                    <Plus className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <p className="font-medium text-foreground">
+                      Create a community
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Start your own space
+                    </p>
+                  </div>
+                </button>
+              }
+            />
+
             <div className="space-y-1">
               {isLoading ? (
-                <div className="space-y-1">
-                  {[1, 2, 3].map((i) => (
-                    <div
-                      key={i}
-                      className="h-8 bg-muted animate-pulse rounded"
-                    ></div>
+                <div className="space-y-2">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="flex items-center gap-3 p-2">
+                      <div className="h-8 w-8 bg-muted animate-pulse rounded-full" />
+                      <div className="flex-1">
+                        <div className="h-4 bg-muted animate-pulse rounded w-24" />
+                      </div>
+                    </div>
                   ))}
                 </div>
               ) : (
-                communities.slice(0, 5).map((community) => (
-                  <Link
+                filteredCommunities.slice(0, 8).map((community: Community) => (
+                  <CommunityInfoModal
                     key={community.id}
-                    to="/r/$communityId"
-                    params={{ communityId: community.id }}
-                    className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted transition-colors"
-                  >
-                    <Badge variant="secondary" className="text-xs">
-                      r/{community.name}
-                    </Badge>
-                  </Link>
+                    communityName={community.name}
+                    trigger={
+                      <button
+                        className={cn(
+                          "flex items-center gap-3 w-full rounded-lg px-2 py-2",
+                          "text-sm transition-colors cursor-pointer",
+                          "hover:bg-accent",
+                        )}
+                      >
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage
+                            src={community.iconUrl}
+                            alt={community.name}
+                          />
+                          <AvatarFallback className="text-xs font-semibold bg-gradient-to-br from-brand to-orange-400 text-white">
+                            {community.name.slice(0, 2).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 text-left min-w-0">
+                          <p className="font-medium text-foreground truncate">
+                            r/{community.name}
+                          </p>
+                        </div>
+                      </button>
+                    }
+                  />
                 ))
               )}
             </div>
-            <Link
-              to="/communities"
-              className="block text-sm text-muted-foreground hover:text-foreground px-3 py-1 transition-colors"
-            >
-              See more
-            </Link>
-          </AccordionContent>
-        </AccordionItem>
 
-        {/* Resources Section */}
-        <AccordionItem value="resources">
-          <AccordionTrigger className="text-base font-medium px-0">
-            <div className="flex items-center gap-2">
-              <HelpCircle className="h-4 w-4" />
-              Resources
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="space-y-1 pb-2">
-            <Link
-              to="/about"
-              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted transition-colors"
-            >
-              <Info className="h-4 w-4" />
-              About
-            </Link>
-            <Link
-              to="/ads"
-              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted transition-colors"
-            >
-              <FileText className="h-4 w-4" />
-              Ads
-            </Link>
-            <Link
-              to="/help"
-              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted transition-colors"
-            >
-              <HelpCircle className="h-4 w-4" />
-              Help
-            </Link>
-            <Link
-              to="/blog"
-              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted transition-colors"
-            >
-              <Newspaper className="h-4 w-4" />
-              Blog
-            </Link>
-            <Link
-              to="/careers"
-              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted transition-colors"
-            >
-              <Briefcase className="h-4 w-4" />
-              Careers
-            </Link>
-            <Link
-              to="/press"
-              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted transition-colors"
-            >
-              <FileText className="h-4 w-4" />
-              Press
-            </Link>
-            <div className="flex items-center gap-2 rounded-md px-3 py-2 text-sm">
-              <Crown className="h-4 w-4 text-orange-500" />
-              <span>Reddit Pro</span>
-              <Badge variant="secondary" className="text-xs ml-auto">
-                BETA
-              </Badge>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-
-        {/* Rules & Policies Section */}
-        <AccordionItem value="rules">
-          <AccordionTrigger className="text-base font-medium px-0">
-            <div className="flex items-center gap-2">
-              <Shield className="h-4 w-4" />
-              Rules & Policies
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="space-y-1 pb-2">
-            <Link
-              to="/rules"
-              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted transition-colors"
-            >
-              <Shield className="h-4 w-4" />
-              Reddit Rules
-            </Link>
-            <Link
-              to="/privacy"
-              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted transition-colors"
-            >
-              <FileText className="h-4 w-4" />
-              Privacy Policy
-            </Link>
-            <Link
-              to="/user-agreement"
-              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted transition-colors"
-            >
-              <FileText className="h-4 w-4" />
-              User Agreement
-            </Link>
-            <Link
-              to="/accessibility"
-              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted transition-colors"
-            >
-              <HelpCircle className="h-4 w-4" />
-              Accessibility
-            </Link>
+            {communities.length > 8 && (
+              <Link
+                to="/search"
+                search={{ q: "", type: "communities" }}
+                className={cn(
+                  "flex items-center gap-2 px-3 py-2 rounded-lg text-sm",
+                  "text-muted-foreground hover:text-foreground hover:bg-accent",
+                  "transition-colors",
+                )}
+              >
+                <Sparkles className="h-4 w-4" />
+                See all communities
+              </Link>
+            )}
           </AccordionContent>
         </AccordionItem>
       </Accordion>
+
+      {isAuthenticated && (
+        <>
+          <hr className="border-border" />
+          <nav className="space-y-1">
+            <NavItem to="/settings" icon={Settings} label="Settings" />
+          </nav>
+        </>
+      )}
+
+      <div className="pt-4 text-xs text-muted-foreground space-y-2">
+        <div className="flex flex-wrap gap-x-2 gap-y-1">
+          <a href="#" className="hover:text-foreground transition-colors">
+            About
+          </a>
+          <a href="#" className="hover:text-foreground transition-colors">
+            Help
+          </a>
+          <a href="#" className="hover:text-foreground transition-colors">
+            Privacy
+          </a>
+          <a href="#" className="hover:text-foreground transition-colors">
+            Terms
+          </a>
+        </div>
+        <p>© 2025 Agora. All rights reserved.</p>
+      </div>
     </aside>
   );
 };

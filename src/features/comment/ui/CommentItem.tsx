@@ -15,10 +15,7 @@ import {
   type VoteDirection,
 } from "@/shared/constants";
 import { MessageSquare } from "lucide-react";
-
-const formatReplyCount = (count: number): string => {
-  return `${count} ${count === 1 ? UI_TEXT.COMMENT.REPLY_SINGULAR : UI_TEXT.COMMENT.REPLY_PLURAL}`;
-};
+import { formatReplyCount } from "../lib/formatters";
 
 type CommentItemProps = {
   comment: Comment;
@@ -35,7 +32,6 @@ export const CommentItem = ({
   const [showReplies, setShowReplies] = useState(true);
 
   const handleVote = (direction: VoteDirection) => {
-    // TODO: Implement comment voting functionality
     logger.debug(`Voted ${direction} on comment ${comment.id}`);
   };
 

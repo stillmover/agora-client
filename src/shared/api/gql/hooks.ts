@@ -1,5 +1,4 @@
 import { useQuery, useMutation } from "urql";
-import { useMemo } from "react";
 import {
   PostsDocument,
   PostDocument,
@@ -22,10 +21,22 @@ import {
   DeleteCommentDocument,
   JoinCommunityDocument,
   LeaveCommunityDocument,
+  UserDocument,
+  UserByUsernameDocument,
+  UserPostsDocument,
+  UserCommentsDocument,
+  SavedPostsDocument,
+  SearchPostsDocument,
+  SearchCommunitiesDocument,
+  SearchUsersDocument,
+  FlairsByCommunityDocument,
+  UpdatePostDocument,
+  DeletePostDocument,
+  CreateCommunityDocument,
+  UpdateCommunityDocument,
+  UpdateUserDocument,
 } from "./operations";
-import { mapCommunity, mapComment } from "./mappers";
 
-// Query Hooks
 export function usePostsQuery(variables?: Parameters<typeof useQuery>[0]["variables"], options?: Omit<Parameters<typeof useQuery>[0], "query" | "variables">) {
   return useQuery({
     query: PostsDocument,
@@ -74,26 +85,6 @@ export function useCommunitiesQuery(variables?: Parameters<typeof useQuery>[0]["
   });
 }
 
-/**
- * Hook wrapper for communities query that returns mapped communities
- */
-export function useCommunities() {
-  const [result, reexecute] = useCommunitiesQuery(undefined, {
-    requestPolicy: "cache-first",
-  });
-
-  const communities = useMemo(() => {
-    return (result.data?.communities ?? []).map(mapCommunity);
-  }, [result.data]);
-
-  return {
-    communities,
-    isLoading: result.fetching && !result.data,
-    error: result.error,
-    refetch: () => reexecute({ requestPolicy: "network-only" }),
-  };
-}
-
 export function useCommunityQuery(variables?: Parameters<typeof useQuery>[0]["variables"], options?: Omit<Parameters<typeof useQuery>[0], "query" | "variables">) {
   return useQuery({
     query: CommunityDocument,
@@ -126,28 +117,6 @@ export function useCommentsQuery(variables: Parameters<typeof useQuery>[0]["vari
   });
 }
 
-/**
- * Hook wrapper for comments query that returns mapped comments
- */
-export function useComments(postId: string) {
-  const [result, reexecute] = useCommentsQuery(
-    { postId },
-    {
-      requestPolicy: "cache-first",
-    }
-  );
-
-  const comments = useMemo(() => {
-    return (result.data?.comments ?? []).map(mapComment);
-  }, [result.data]);
-
-  return {
-    comments,
-    isLoading: result.fetching && !result.data,
-    error: result.error,
-    refetch: () => reexecute({ requestPolicy: "network-only" }),
-  };
-}
 
 export function useCommentQuery(variables: Parameters<typeof useQuery>[0]["variables"], options?: Omit<Parameters<typeof useQuery>[0], "query" | "variables">) {
   return useQuery({
@@ -157,7 +126,6 @@ export function useCommentQuery(variables: Parameters<typeof useQuery>[0]["varia
   });
 }
 
-// Mutation Hooks
 export function useCreatePostMutation() {
   return useMutation(CreatePostDocument);
 }
@@ -196,5 +164,102 @@ export function useJoinCommunityMutation() {
 
 export function useLeaveCommunityMutation() {
   return useMutation(LeaveCommunityDocument);
+}
+
+// User queries
+export function useUserQuery(variables: Parameters<typeof useQuery>[0]["variables"], options?: Omit<Parameters<typeof useQuery>[0], "query" | "variables">) {
+  return useQuery({
+    query: UserDocument,
+    variables,
+    ...options,
+  });
+}
+
+export function useUserByUsernameQuery(variables: Parameters<typeof useQuery>[0]["variables"], options?: Omit<Parameters<typeof useQuery>[0], "query" | "variables">) {
+  return useQuery({
+    query: UserByUsernameDocument,
+    variables,
+    ...options,
+  });
+}
+
+export function useUserPostsQuery(variables: Parameters<typeof useQuery>[0]["variables"], options?: Omit<Parameters<typeof useQuery>[0], "query" | "variables">) {
+  return useQuery({
+    query: UserPostsDocument,
+    variables,
+    ...options,
+  });
+}
+
+export function useUserCommentsQuery(variables: Parameters<typeof useQuery>[0]["variables"], options?: Omit<Parameters<typeof useQuery>[0], "query" | "variables">) {
+  return useQuery({
+    query: UserCommentsDocument,
+    variables,
+    ...options,
+  });
+}
+
+// Saved posts
+export function useSavedPostsQuery(variables?: Parameters<typeof useQuery>[0]["variables"], options?: Omit<Parameters<typeof useQuery>[0], "query" | "variables">) {
+  return useQuery({
+    query: SavedPostsDocument,
+    variables,
+    ...options,
+  });
+}
+
+// Search queries
+export function useSearchPostsQuery(variables: Parameters<typeof useQuery>[0]["variables"], options?: Omit<Parameters<typeof useQuery>[0], "query" | "variables">) {
+  return useQuery({
+    query: SearchPostsDocument,
+    variables,
+    ...options,
+  });
+}
+
+export function useSearchCommunitiesQuery(variables: Parameters<typeof useQuery>[0]["variables"], options?: Omit<Parameters<typeof useQuery>[0], "query" | "variables">) {
+  return useQuery({
+    query: SearchCommunitiesDocument,
+    variables,
+    ...options,
+  });
+}
+
+export function useSearchUsersQuery(variables: Parameters<typeof useQuery>[0]["variables"], options?: Omit<Parameters<typeof useQuery>[0], "query" | "variables">) {
+  return useQuery({
+    query: SearchUsersDocument,
+    variables,
+    ...options,
+  });
+}
+
+// Flairs
+export function useFlairsByCommunityQuery(variables: Parameters<typeof useQuery>[0]["variables"], options?: Omit<Parameters<typeof useQuery>[0], "query" | "variables">) {
+  return useQuery({
+    query: FlairsByCommunityDocument,
+    variables,
+    ...options,
+  });
+}
+
+// Additional mutations
+export function useUpdatePostMutation() {
+  return useMutation(UpdatePostDocument);
+}
+
+export function useDeletePostMutation() {
+  return useMutation(DeletePostDocument);
+}
+
+export function useCreateCommunityMutation() {
+  return useMutation(CreateCommunityDocument);
+}
+
+export function useUpdateCommunityMutation() {
+  return useMutation(UpdateCommunityDocument);
+}
+
+export function useUpdateUserMutation() {
+  return useMutation(UpdateUserDocument);
 }
 

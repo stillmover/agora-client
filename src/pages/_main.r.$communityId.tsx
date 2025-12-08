@@ -1,6 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useCommunity } from "@/entities/community/model/useCommunities";
-import { usePosts } from "@/entities/post/model/usePosts";
+import { useCommunityByName } from "@/entities/community";
 import { Feed } from "@/widgets/feed";
 import { useIsAuthenticated } from "@/entities/session";
 import {
@@ -12,33 +11,52 @@ import {
 } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
-import { Users } from "lucide-react";
+import { Users, Loader2 } from "lucide-react";
+import { prefetchQueries } from "@/shared/api/gql/query-hooks";
 
 export const Route = createFileRoute("/_main/r/$communityId")({
   component: CommunityPage,
+  loader: async ({ context, params }) => {
+    const { queryClient } = context;
+    const { communityId: communityName } = params;
+
+    await prefetchQueries.communityByName(queryClient, communityName);
+
+    return { communityName };
+  },
+  pendingComponent: CommunityLoadingSkeleton,
+  staleTime: 5 * 60 * 1000,
 });
 
+function CommunityLoadingSkeleton() {
+  return (
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <div className="h-8 bg-muted animate-pulse rounded w-1/3" />
+          <div className="h-4 bg-muted animate-pulse rounded w-2/3 mt-2" />
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span className="text-sm text-muted-foreground">
+              Loading community...
+            </span>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 function CommunityPage() {
-  const { communityId } = Route.useParams();
+  const { communityId: communityName } = Route.useParams();
   const navigate = useNavigate();
   const isAuthenticated = useIsAuthenticated();
-
-  const { community, isLoading: communityLoading } = useCommunity(communityId);
-  const { posts, isLoading: postsLoading } = usePosts({ communityId });
-
-  const isLoading = communityLoading || postsLoading;
+  const { community, isLoading } = useCommunityByName(communityName);
 
   if (isLoading) {
-    return (
-      <div className="space-y-4">
-        <Card>
-          <CardHeader>
-            <div className="h-8 bg-muted animate-pulse rounded w-1/3"></div>
-          </CardHeader>
-        </Card>
-        <Feed />
-      </div>
-    );
+    return <CommunityLoadingSkeleton />;
   }
 
   if (!community) {
@@ -78,15 +96,19 @@ function CommunityPage() {
             <div className="flex items-center gap-1">
               <Users className="h-4 w-4" />
               <span>
-                {posts.length} {posts.length === 1 ? "post" : "posts"}
+                {community.members.toLocaleString()}{" "}
+                {community.members === 1 ? "member" : "members"}
               </span>
             </div>
           </div>
-          {isAuthenticated && (
+          {isAuthenticated && community && (
             <div className="mt-4">
               <Button
                 onClick={() =>
-                  navigate({ to: "/submit", search: { communityId } })
+                  navigate({
+                    to: "/submit",
+                    search: { communityId: community.id },
+                  })
                 }
                 className="w-full"
               >

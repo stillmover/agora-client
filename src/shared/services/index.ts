@@ -1,10 +1,5 @@
 export { logger, type ILogger } from "./logger";
 export {
-  calculateVoteChange,
-  type VoteState,
-  type VoteResult,
-} from "./vote-calculator";
-export {
   formatRelativeTime,
   formatCount,
   formatCommentCount,

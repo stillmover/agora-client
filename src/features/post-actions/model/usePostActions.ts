@@ -1,24 +1,19 @@
 import { useCallback } from "react";
-
-import { useSavePostMutation, useUnsavePostMutation } from "@/shared/api";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  useSavePostMutation,
+  useUnsavePostMutation,
+} from "@/shared/api/gql/query-hooks";
+import { queryKeys } from "@/shared/api/query-keys";
 import { useIsPostSaved, clientStateActions } from "@/shared/stores";
 import { logger } from "@/shared/services/logger";
-
-const fallbackShare = (url: string) => {
-  navigator.clipboard
-    .writeText(url)
-    .then(() => {
-      logger.debug("Link copied to clipboard");
-    })
-    .catch(() => {
-      logger.warn("Failed to copy to clipboard");
-    });
-};
+import { sharePost } from "../lib/share-utils";
 
 export const usePostActions = (postId: string) => {
   const isSaved = useIsPostSaved(postId);
-  const [, executeSave] = useSavePostMutation();
-  const [, executeUnsave] = useUnsavePostMutation();
+  const queryClient = useQueryClient();
+  const savePostMutation = useSavePostMutation();
+  const unsavePostMutation = useUnsavePostMutation();
 
   const save = useCallback(async () => {
     const wasSaved = isSaved;
@@ -30,13 +25,15 @@ export const usePostActions = (postId: string) => {
     }
 
     try {
-      const result = isSaved
-        ? await executeUnsave({ postId })
-        : await executeSave({ postId });
-
-      if (result.error) {
-        throw result.error;
+      if (isSaved) {
+        await unsavePostMutation.mutateAsync({ postId });
+      } else {
+        await savePostMutation.mutateAsync({ postId });
       }
+
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.posts.saved(),
+      });
     } catch (error) {
       if (wasSaved) {
         clientStateActions.savePost(postId);
@@ -46,29 +43,19 @@ export const usePostActions = (postId: string) => {
       logger.error("Failed to save/unsave post:", error);
       throw error;
     }
-  }, [postId, isSaved, executeSave, executeUnsave]);
+  }, [postId, isSaved, savePostMutation, unsavePostMutation, queryClient]);
 
   const share = useCallback(async () => {
-    const url = `${window.location.origin}/post/${postId}`;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "Check out this post",
-          url,
-        });
-      } catch {
-        fallbackShare(url);
-      }
-    } else {
-      fallbackShare(url);
-    }
+    await sharePost(postId);
   }, [postId]);
+
+  const isPending = savePostMutation.isPending || unsavePostMutation.isPending;
 
   return {
     save,
     share,
     isSaved,
+    isPending,
     saveLabel: isSaved ? "Saved" : "Save",
   };
 };

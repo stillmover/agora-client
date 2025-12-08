@@ -1,20 +1,53 @@
-import type { ComponentProps } from "react";
+import { forwardRef, type ComponentProps } from "react";
+import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/shared/lib/utils";
 
-const Input = ({ className, type, ...props }: ComponentProps<"input">) => (
-  <input
-    type={type}
-    data-slot="input"
-    className={cn(
-      "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground bg-background dark:bg-input border-input h-9 w-full min-w-0 rounded-md border px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-      "focus-visible:border-blue-500 focus-visible:ring-blue-500/50 focus-visible:ring-[3px]",
-      "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
-      className,
-    )}
-    {...props}
-    autoComplete="off"
-  />
+const inputVariants = cva(
+  [
+    "flex w-full min-w-0 rounded-lg border bg-background px-3 text-sm",
+    "placeholder:text-muted-foreground/70",
+    "transition-all duration-150 ease-out",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:border-ring",
+    "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted",
+    "aria-invalid:border-destructive aria-invalid:ring-destructive/20",
+    "file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground",
+    "selection:bg-brand/20 selection:text-foreground",
+  ],
+  {
+    variants: {
+      size: {
+        sm: "h-8 text-xs px-2.5",
+        default: "h-10 py-2",
+        lg: "h-12 text-base px-4",
+      },
+      variant: {
+        default: "border-input shadow-xs dark:bg-input/30",
+        filled: "border-transparent bg-muted hover:bg-muted/80",
+        ghost: "border-transparent bg-transparent hover:bg-accent",
+      },
+    },
+    defaultVariants: {
+      size: "default",
+      variant: "default",
+    },
+  },
 );
 
-export { Input };
+type InputProps = Omit<ComponentProps<"input">, "size"> &
+  VariantProps<typeof inputVariants>;
+
+const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ className, type, size, variant, ...props }, ref) => (
+    <input
+      ref={ref}
+      type={type}
+      data-slot="input"
+      className={cn(inputVariants({ size, variant, className }))}
+      {...props}
+    />
+  ),
+);
+Input.displayName = "Input";
+
+export { Input, inputVariants };

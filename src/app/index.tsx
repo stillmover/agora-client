@@ -40,7 +40,12 @@ function InnerApp() {
 
   const context = useMemo(
     () => ({ queryClient, session }),
-    [session.isAuthenticated, session.user, session.isInitializing],
+    [
+      session.isAuthenticated,
+      session.user?.id,
+      session.isInitializing,
+      session.error,
+    ],
   );
 
   return <RouterProvider router={router} context={context} />;

@@ -2,7 +2,6 @@ import { Region } from "@/shared/api/gql";
 import { logger } from "./logger";
 
 const countryCodeToRegion: Record<string, Region> = {
-  // North America
   US: Region.NorthAmerica,
   CA: Region.NorthAmerica,
   MX: Region.NorthAmerica,
@@ -27,7 +26,6 @@ const countryCodeToRegion: Record<string, Region> = {
   KN: Region.NorthAmerica,
   DM: Region.NorthAmerica,
   BS: Region.NorthAmerica,
-  // South America
   BR: Region.SouthAmerica,
   AR: Region.SouthAmerica,
   CO: Region.SouthAmerica,
@@ -42,7 +40,6 @@ const countryCodeToRegion: Record<string, Region> = {
   SR: Region.SouthAmerica,
   GF: Region.SouthAmerica,
   FK: Region.SouthAmerica,
-  // Europe
   GB: Region.Europe,
   FR: Region.Europe,
   DE: Region.Europe,
@@ -84,7 +81,6 @@ const countryCodeToRegion: Record<string, Region> = {
   AL: Region.Europe,
   ME: Region.Europe,
   XK: Region.Europe,
-  // Asia
   CN: Region.Asia,
   IN: Region.Asia,
   ID: Region.Asia,
@@ -128,7 +124,6 @@ const countryCodeToRegion: Record<string, Region> = {
   BN: Region.Asia,
   MV: Region.Asia,
   BT: Region.Asia,
-  // Africa
   NG: Region.Africa,
   ET: Region.Africa,
   EG: Region.Africa,
@@ -180,7 +175,6 @@ const countryCodeToRegion: Record<string, Region> = {
   SC: Region.Africa,
   CV: Region.Africa,
   ST: Region.Africa,
-  // Australia/Oceania
   AU: Region.Australia,
   NZ: Region.Australia,
   PG: Region.Australia,
@@ -207,7 +201,7 @@ export type UserPlace = {
   countryCode: string;
   countryName: string | null;
   region: Region | undefined;
-  displayName: string; // e.g. "Kyiv/Ukraine" or "Ukraine"
+  displayName: string;
 };
 
 async function reverseGeocode(

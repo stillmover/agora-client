@@ -1,5 +1,5 @@
 import { useForm } from "@tanstack/react-form";
-import { useRouter } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { useLoginMutation } from "@/entities/session";
 import { loginSchema } from "../lib/schemas";
 import { logger } from "@/shared/services";
@@ -9,11 +9,15 @@ type UseLoginFormOptions = {
   onSuccess?: VoidFunction;
 };
 
+/**
+ * Form hook for login using TanStack Form + TanStack Query mutation.
+ * Optimized to only validate on blur and submit (not onChange).
+ */
 export const useLoginForm = ({
   redirect,
   onSuccess,
 }: UseLoginFormOptions = {}) => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const loginMutation = useLoginMutation();
 
   const form = useForm({
@@ -22,7 +26,7 @@ export const useLoginForm = ({
       password: "",
     },
     validators: {
-      onChange: loginSchema,
+      // Only validate on blur and submit to reduce re-renders
       onBlur: loginSchema,
       onSubmit: loginSchema,
     },
@@ -36,7 +40,7 @@ export const useLoginForm = ({
         onSuccess?.();
 
         const targetUrl = redirect ?? "/";
-        router.history.push(targetUrl);
+        navigate({ to: targetUrl });
       } catch (error) {
         logger.error("Login failed", error);
         throw error;

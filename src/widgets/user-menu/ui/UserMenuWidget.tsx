@@ -1,10 +1,9 @@
-import { useNavigate, Link } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import {
   User,
   LogOut,
   Settings,
-  Plus,
-  Download,
+  Bookmark,
   FileText,
   MessageSquare,
 } from "lucide-react";
@@ -46,11 +45,9 @@ export const UserMenuWidget = () => {
 
   if (isAuthenticated && !user) {
     return (
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" className="h-9 w-9" disabled>
-          <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
-        </Button>
-      </div>
+      <Button variant="ghost" size="icon" className="h-9 w-9" disabled>
+        <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+      </Button>
     );
   }
 
@@ -59,58 +56,63 @@ export const UserMenuWidget = () => {
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <Link to={ROUTES.CREATE_POST}>
-        <Button variant="ghost" size="sm" className="h-9 text-sm">
-          <Plus className="h-4 w-4" />
-          Create Post
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" className="h-9 w-9">
+          <Avatar className="h-8 w-8">
+            <AvatarFallback>{getInitials(user.username)}</AvatarFallback>
+          </Avatar>
         </Button>
-      </Link>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-9 w-9">
-            <Avatar className="h-8 w-8">
-              <AvatarFallback>{getInitials(user.username)}</AvatarFallback>
-            </Avatar>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuLabel>
-            <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium">{user.username}</p>
-              <p className="text-xs text-muted-foreground">{user.email}</p>
-            </div>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <User className="mr-2 h-4 w-4" />
-            Profile
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Settings className="mr-2 h-4 w-4" />
-            Settings
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <FileText className="mr-2 h-4 w-4" />
-            My Posts
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <MessageSquare className="mr-2 h-4 w-4" />
-            Messages
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Download className="mr-2 h-4 w-4" />
-            Saved
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout}>
-            <LogOut className="mr-2 h-4 w-4" />
-            Log out
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel>
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium">{user.username}</p>
+            <p className="text-xs text-muted-foreground">{user.email}</p>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={() =>
+            navigate({
+              to: "/u/$username",
+              params: { username: user.username },
+            })
+          }
+        >
+          <User className="mr-2 h-4 w-4" />
+          Profile
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate({ to: "/settings" })}>
+          <Settings className="mr-2 h-4 w-4" />
+          Settings
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={() =>
+            navigate({
+              to: "/u/$username",
+              params: { username: user.username },
+            })
+          }
+        >
+          <FileText className="mr-2 h-4 w-4" />
+          My Posts
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <MessageSquare className="mr-2 h-4 w-4" />
+          Messages
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate({ to: "/saved" })}>
+          <Bookmark className="mr-2 h-4 w-4" />
+          Saved
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleLogout}>
+          <LogOut className="mr-2 h-4 w-4" />
+          Log out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };

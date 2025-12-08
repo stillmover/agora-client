@@ -280,3 +280,145 @@ export const LeaveCommunityDocument = gql`
   }
 `;
 
+// User Fragment
+export const UserFragment = gql`
+  fragment UserFragment on User {
+    id
+    username
+    name
+    bio
+    avatarUrl
+    createdAt
+  }
+`;
+
+// User queries
+export const UserDocument = gql`
+  query User($id: ID!) {
+    user(id: $id) {
+      ...UserFragment
+    }
+  }
+  ${UserFragment}
+`;
+
+export const UserByUsernameDocument = gql`
+  query UserByUsername($username: String!) {
+    user(username: $username) {
+      ...UserFragment
+    }
+  }
+  ${UserFragment}
+`;
+
+export const UserPostsDocument = gql`
+  query UserPosts($userId: ID!, $limit: Int, $offset: Int) {
+    userPosts(userId: $userId, limit: $limit, offset: $offset) {
+      ...PostFragment
+    }
+  }
+  ${PostFragment}
+`;
+
+export const UserCommentsDocument = gql`
+  query UserComments($userId: ID!, $limit: Int, $offset: Int) {
+    userComments(userId: $userId, limit: $limit, offset: $offset) {
+      ...CommentFragment
+    }
+  }
+  ${CommentFragment}
+`;
+
+// Saved posts
+export const SavedPostsDocument = gql`
+  query SavedPosts($limit: Int, $offset: Int) {
+    savedPosts(limit: $limit, offset: $offset) {
+      ...PostFragment
+    }
+  }
+  ${PostFragment}
+`;
+
+// Search queries
+export const SearchPostsDocument = gql`
+  query SearchPosts($query: String!, $limit: Int, $offset: Int) {
+    searchPosts(query: $query, limit: $limit, offset: $offset) {
+      ...PostFragment
+    }
+  }
+  ${PostFragment}
+`;
+
+export const SearchCommunitiesDocument = gql`
+  query SearchCommunities($query: String!, $limit: Int, $offset: Int) {
+    searchCommunities(query: $query, limit: $limit, offset: $offset) {
+      ...CommunityFragment
+    }
+  }
+  ${CommunityFragment}
+`;
+
+export const SearchUsersDocument = gql`
+  query SearchUsers($query: String!, $limit: Int, $offset: Int) {
+    searchUsers(query: $query, limit: $limit, offset: $offset) {
+      ...UserFragment
+    }
+  }
+  ${UserFragment}
+`;
+
+// Flairs query
+export const FlairsByCommunityDocument = gql`
+  query FlairsByCommunity($communityId: ID!) {
+    flairsByCommunity(communityId: $communityId) {
+      id
+      label
+      color
+      backgroundColor
+    }
+  }
+`;
+
+// Additional mutations
+export const UpdatePostDocument = gql`
+  mutation UpdatePost($postId: ID!, $title: String, $content: String, $flairIds: [ID!]) {
+    updatePost(postId: $postId, title: $title, content: $content, flairIds: $flairIds) {
+      ...PostFragment
+    }
+  }
+  ${PostFragment}
+`;
+
+export const DeletePostDocument = gql`
+  mutation DeletePost($postId: ID!) {
+    deletePost(postId: $postId)
+  }
+`;
+
+export const CreateCommunityDocument = gql`
+  mutation CreateCommunity($input: CreateCommunityInput!) {
+    createCommunity(input: $input) {
+      ...CommunityFragment
+    }
+  }
+  ${CommunityFragment}
+`;
+
+export const UpdateCommunityDocument = gql`
+  mutation UpdateCommunity($communityId: ID!, $description: String, $iconUrl: String, $bannerUrl: String) {
+    updateCommunity(communityId: $communityId, description: $description, iconUrl: $iconUrl, bannerUrl: $bannerUrl) {
+      ...CommunityFragment
+    }
+  }
+  ${CommunityFragment}
+`;
+
+export const UpdateUserDocument = gql`
+  mutation UpdateUser($userId: ID!, $name: String, $bio: String, $avatarUrl: String) {
+    updateUser(userId: $userId, name: $name, bio: $bio, avatarUrl: $avatarUrl) {
+      ...UserFragment
+    }
+  }
+  ${UserFragment}
+`;
+

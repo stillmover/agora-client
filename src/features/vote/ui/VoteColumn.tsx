@@ -1,6 +1,6 @@
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { memo, useCallback } from "react";
+import { ArrowBigUp, ArrowBigDown } from "lucide-react";
 
-import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { logger } from "@/shared/services/logger";
 import { useVote } from "../model/useVote";
@@ -9,68 +9,100 @@ import type { VoteDirection } from "@/shared/constants";
 type VoteColumnProps = {
   postId: string;
   score: number;
-  userVote?: -1 | 0 | 1;
 };
 
-export const VoteColumn = ({ postId, score }: VoteColumnProps) => {
+const formatScore = (score: number): string => {
+  if (Math.abs(score) >= 10000) {
+    return `${(score / 1000).toFixed(0)}k`;
+  }
+  if (Math.abs(score) >= 1000) {
+    return `${(score / 1000).toFixed(1)}k`;
+  }
+  return score.toString();
+};
+
+export const VoteColumn = memo(({ postId, score }: VoteColumnProps) => {
   const { vote, currentVote, hasUpvoted, hasDownvoted } = useVote(postId);
 
-  const handleVote = async (direction: VoteDirection) => {
-    try {
-      await vote(direction);
-    } catch (error) {
-      // Error is already handled by the hook with optimistic updates
-      logger.error("Failed to vote:", error);
-    }
-  };
+  const handleVote = useCallback(
+    async (direction: VoteDirection) => {
+      try {
+        await vote(direction);
+      } catch (error) {
+        logger.error("Failed to vote:", error);
+      }
+    },
+    [vote],
+  );
 
-  // Calculate optimistic score
+  const handleUpvote = useCallback(() => handleVote("up"), [handleVote]);
+  const handleDownvote = useCallback(() => handleVote("down"), [handleVote]);
+
   const optimisticScore = score + currentVote;
+  const formattedScore = formatScore(optimisticScore);
 
   return (
     <div
-      className="flex flex-col items-center gap-1 py-2 px-1 min-w-[40px]"
+      className="flex flex-col items-center gap-0.5 py-1 min-w-[40px]"
       role="group"
       aria-label={`Vote on post with ${optimisticScore} points`}
     >
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => handleVote("up")}
+      <button
+        onClick={handleUpvote}
         className={cn(
-          "h-6 w-6 hover:bg-muted focus-visible:ring-2 focus-visible:ring-orange-500",
-          hasUpvoted && "text-orange-500 hover:text-orange-600",
+          "p-1 rounded-md transition-all duration-150",
+          "hover:bg-vote-up/10 active:scale-90",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vote-up",
+          hasUpvoted
+            ? "text-vote-up bg-vote-up/10"
+            : "text-muted-foreground hover:text-vote-up",
         )}
-        aria-label={`Upvote post (${optimisticScore} points)`}
+        aria-label={`Upvote (${optimisticScore} points)`}
         aria-pressed={hasUpvoted}
       >
-        <ChevronUp className="h-4 w-4" />
-      </Button>
+        <ArrowBigUp
+          className={cn(
+            "h-6 w-6 transition-transform duration-150",
+            hasUpvoted && "fill-current scale-110",
+          )}
+        />
+      </button>
 
       <span
         className={cn(
-          "text-xs font-medium min-w-[24px] text-center leading-none",
-          optimisticScore > 0 && "text-orange-500",
-          optimisticScore < 0 && "text-blue-500",
+          "text-xs font-bold tabular-nums min-w-[32px] text-center py-0.5",
+          "transition-colors duration-150",
+          hasUpvoted && "text-vote-up",
+          hasDownvoted && "text-vote-down",
+          !hasUpvoted && !hasDownvoted && "text-foreground",
         )}
-        aria-label={`${optimisticScore} vote${Math.abs(optimisticScore) !== 1 ? "s" : ""}`}
+        aria-label={`${optimisticScore} votes`}
       >
-        {optimisticScore}
+        {formattedScore}
       </span>
 
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => handleVote("down")}
+      <button
+        onClick={handleDownvote}
         className={cn(
-          "h-6 w-6 hover:bg-muted focus-visible:ring-2 focus-visible:ring-blue-500",
-          hasDownvoted && "text-blue-500 hover:text-blue-600",
+          "p-1 rounded-md transition-all duration-150",
+          "hover:bg-vote-down/10 active:scale-90",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vote-down",
+          hasDownvoted
+            ? "text-vote-down bg-vote-down/10"
+            : "text-muted-foreground hover:text-vote-down",
         )}
-        aria-label={`Downvote post (${optimisticScore} points)`}
+        aria-label={`Downvote (${optimisticScore} points)`}
         aria-pressed={hasDownvoted}
       >
-        <ChevronDown className="h-4 w-4" />
-      </Button>
+        <ArrowBigDown
+          className={cn(
+            "h-6 w-6 transition-transform duration-150",
+            hasDownvoted && "fill-current scale-110",
+          )}
+        />
+      </button>
     </div>
   );
-};
+});
+
+VoteColumn.displayName = "VoteColumn";

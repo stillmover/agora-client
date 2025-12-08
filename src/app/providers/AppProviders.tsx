@@ -1,7 +1,6 @@
 import type { PropsWithChildren } from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Provider as UrqlProvider } from "urql";
-import { urqlClient } from "@/shared/api/gql/client";
+import { Toaster } from "sonner";
 import { queryClient } from "@/shared/utils";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
@@ -9,24 +8,31 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
 export const AppProviders = ({ children }: PropsWithChildren) => {
   return (
-    <UrqlProvider value={urqlClient}>
-      <QueryClientProvider client={queryClient}>
-        {children}
-        <TanStackDevtools
-          config={{
-            requireUrlFlag: true,
-            urlFlag: "devtools",
-            defaultOpen: false,
-          }}
-          plugins={[
-            { name: "TanStack Query", render: <ReactQueryDevtoolsPanel /> },
-            {
-              name: "TanStack Router",
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
-        />
-      </QueryClientProvider>
-    </UrqlProvider>
+    <QueryClientProvider client={queryClient}>
+      {children}
+      <Toaster
+        position="top-right"
+        expand={false}
+        richColors
+        closeButton
+        toastOptions={{
+          className: "font-sans",
+        }}
+      />
+      <TanStackDevtools
+        config={{
+          requireUrlFlag: true,
+          urlFlag: "devtools",
+          defaultOpen: false,
+        }}
+        plugins={[
+          { name: "TanStack Query", render: <ReactQueryDevtoolsPanel /> },
+          {
+            name: "TanStack Router",
+            render: <TanStackRouterDevtoolsPanel />,
+          },
+        ]}
+      />
+    </QueryClientProvider>
   );
 };

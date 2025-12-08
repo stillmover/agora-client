@@ -1,7 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { MessageSquare, Share, Bookmark, Award } from "lucide-react";
+import {
+  MessageSquare,
+  Share2,
+  Bookmark,
+  Gift,
+  MoreHorizontal,
+} from "lucide-react";
 
-import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { formatCommentCount } from "@/shared/services";
 import { logger } from "@/shared/services/logger";
@@ -12,57 +17,83 @@ type PostActionsProps = {
   post: Post;
 };
 
+type ActionButtonProps = {
+  onClick?: () => void;
+  isActive?: boolean;
+  activeColor?: string;
+  children: React.ReactNode;
+  className?: string;
+};
+
+const ActionButton = ({
+  onClick,
+  isActive,
+  activeColor = "text-brand",
+  children,
+  className,
+}: ActionButtonProps) => (
+  <button
+    onClick={onClick}
+    className={cn(
+      "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium",
+      "transition-all duration-150",
+      "hover:bg-accent",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+      "active:scale-95",
+      isActive ? activeColor : "text-muted-foreground hover:text-foreground",
+      className,
+    )}
+  >
+    {children}
+  </button>
+);
+
 export const PostActions = ({ post }: PostActionsProps) => {
   const { save, share, isSaved, saveLabel } = usePostActions(post.id);
 
   const handleAward = () => {
-    // TODO: Implement award functionality
     logger.debug("Award post:", post.id);
   };
 
   return (
-    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+    <div className="flex items-center gap-1 flex-wrap">
+      {/* Comments */}
       <Link
         to="/post/$postId"
         params={{ postId: post.id }}
-        className="flex items-center gap-1 hover:text-foreground transition-colors"
+        className={cn(
+          "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium",
+          "text-muted-foreground hover:text-foreground hover:bg-accent",
+          "transition-all duration-150",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        )}
       >
         <MessageSquare className="h-4 w-4" />
         <span>{formatCommentCount(post.comments)}</span>
       </Link>
 
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={share}
-        className="h-auto p-0 text-muted-foreground hover:text-foreground"
-      >
-        <Share className="h-4 w-4 mr-1" />
-        <span>Share</span>
-      </Button>
+      {/* Share */}
+      <ActionButton onClick={share}>
+        <Share2 className="h-4 w-4" />
+        <span className="hidden sm:inline">Share</span>
+      </ActionButton>
 
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={save}
-        className={cn(
-          "h-auto p-0 text-muted-foreground hover:text-foreground",
-          isSaved && "text-orange-500",
-        )}
-      >
-        <Bookmark className="h-4 w-4 mr-1" />
-        <span>{saveLabel}</span>
-      </Button>
+      {/* Save */}
+      <ActionButton onClick={save} isActive={isSaved} activeColor="text-brand">
+        <Bookmark className={cn("h-4 w-4", isSaved && "fill-current")} />
+        <span className="hidden sm:inline">{saveLabel}</span>
+      </ActionButton>
 
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={handleAward}
-        className="h-auto p-0 text-muted-foreground hover:text-foreground"
-      >
-        <Award className="h-4 w-4 mr-1" />
-        <span>Award</span>
-      </Button>
+      {/* Award */}
+      <ActionButton onClick={handleAward}>
+        <Gift className="h-4 w-4" />
+        <span className="hidden sm:inline">Award</span>
+      </ActionButton>
+
+      {/* More actions (hidden on mobile, shown on desktop) */}
+      <ActionButton className="hidden lg:flex">
+        <MoreHorizontal className="h-4 w-4" />
+      </ActionButton>
     </div>
   );
 };

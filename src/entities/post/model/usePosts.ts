@@ -1,41 +1,27 @@
-import { useMemo, useState, useCallback, useEffect, useRef } from "react";
-import { usePostsQuery, usePostQuery, mapPost } from "@/shared/api";
-import { Region } from "@/shared/api/gql";
+import { useMemo, useEffect, useRef } from "react";
+import {
+  usePostsQuery as usePostsGql,
+  usePostQuery as usePostGql,
+  useInfinitePostsQuery,
+  useSavedPostsQuery as useSavedPostsGql,
+  useUserPostsQuery as useUserPostsGql,
+} from "@/shared/api/gql/query-hooks";
 import type { SortType } from "@/shared/api/gql";
-import type { RegionOption } from "@/features/sort-bar";
+import type { RegionOption } from "@/shared/types";
 import { detectUserRegion } from "@/shared/services";
 import { clientStateActions, useUserRegion } from "@/shared/stores";
+import { mapPost } from "../api/mappers";
+import { mapRegionOptionToRegion } from "../lib/mappers";
 
 export type PostsQueryParams = {
   communityId?: string;
   sort?: SortType;
   region?: RegionOption;
-  page?: number;
   limit?: number;
-};
-
-const mapRegionOptionToRegion = (
-  region?: RegionOption,
-  userRegion: Region | null = null,
-): Region | undefined => {
-  if (!region) {
-    return undefined;
-  }
-
-  switch (region) {
-    case "global":
-      return Region.All;
-    case "my-country":
-      return userRegion ?? undefined;
-    default:
-      return undefined;
-  }
 };
 
 export const usePosts = (params: PostsQueryParams = {}) => {
   const limit = params.limit ?? 20;
-  const [currentPage, setCurrentPage] = useState(1);
-  const offset = (currentPage - 1) * limit;
   const userRegion = useUserRegion();
   const hasDetectedRegion = useRef(false);
 
@@ -61,74 +47,118 @@ export const usePosts = (params: PostsQueryParams = {}) => {
     }
   }, [params.region, userRegion]);
 
-  const [result, reexecute] = usePostsQuery(
-    {
-      communityId: params.communityId ?? undefined,
-      sort: params.sort ?? undefined,
-      region: mapRegionOptionToRegion(params.region, userRegion),
-      limit,
-      offset,
-    },
-    {
-      requestPolicy: "cache-first",
-    },
-  );
+  const region = mapRegionOptionToRegion(params.region, userRegion);
 
-  const hasReexecutedRef = useRef(false);
-  useEffect(() => {
-    if (
-      params.region === "my-country" &&
-      userRegion !== null &&
-      !hasReexecutedRef.current
-    ) {
-      hasReexecutedRef.current = true;
-      reexecute({ requestPolicy: "network-only" });
-    }
-    if (params.region !== "my-country") {
-      hasReexecutedRef.current = false;
-    }
-  }, [userRegion, params.region, reexecute]);
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    error,
+    refetch,
+  } = useInfinitePostsQuery({
+    communityId: params.communityId,
+    sort: params.sort,
+    region,
+    limit,
+  });
 
   const posts = useMemo(() => {
-    return (result.data?.posts ?? []).map(mapPost);
-  }, [result.data]);
-
-  const hasMore = posts.length === limit;
-
-  const fetchNextPage = useCallback(() => {
-    if (hasMore && !result.fetching) {
-      setCurrentPage((prev) => prev + 1);
-      reexecute({ requestPolicy: "network-only" });
-    }
-  }, [hasMore, result.fetching, reexecute]);
+    if (!data?.pages) return [];
+    return data.pages.flatMap((page) => page.posts.map(mapPost));
+  }, [data]);
 
   return {
     posts,
-    isLoading: result.fetching && !result.data,
-    isFetchingNextPage: result.fetching && !!result.data,
-    hasMore,
-    error: result.error,
-    fetchNextPage,
-    refetch: () => reexecute({ requestPolicy: "network-only" }),
+    isLoading: isLoading && posts.length === 0,
+    isFetchingNextPage,
+    hasMore: hasNextPage ?? false,
+    error,
+    fetchNextPage: () => {
+      if (hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    },
+    refetch,
+  };
+};
+
+export const usePostsList = (params: PostsQueryParams = {}) => {
+  const limit = params.limit ?? 20;
+  const userRegion = useUserRegion();
+  const region = mapRegionOptionToRegion(params.region, userRegion);
+
+  const { data, isLoading, error, refetch } = usePostsGql({
+    communityId: params.communityId,
+    sort: params.sort,
+    region,
+    limit,
+    offset: 0,
+  });
+
+  const posts = useMemo(() => {
+    return (data ?? []).map(mapPost);
+  }, [data]);
+
+  return {
+    posts,
+    isLoading,
+    error,
+    refetch,
   };
 };
 
 export const usePost = (postId: string) => {
-  const [result, reexecute] = usePostQuery(
-    { id: postId },
-    {
-      requestPolicy: "cache-first",
-    },
-  );
+  const { data, isLoading, error, refetch } = usePostGql(postId, {
+    enabled: Boolean(postId),
+  });
 
   const post = useMemo(() => {
-    return result.data?.post ? mapPost(result.data.post) : null;
-  }, [result.data]);
+    return data ? mapPost(data) : null;
+  }, [data]);
 
   return {
     post,
-    isLoading: result.fetching && !result.data,
-    error: result.error,
-    refetch: () => reexecute({ requestPolicy: "network-only" }),
+    isLoading,
+    error,
+    refetch,
+  };
+};
+
+export const useSavedPosts = (limit = 20, offset = 0, enabled = true) => {
+  const { data, isLoading, error, refetch } = useSavedPostsGql(
+    { limit, offset },
+    { enabled },
+  );
+
+  const posts = useMemo(() => {
+    return (data ?? []).map(mapPost);
+  }, [data]);
+
+  return {
+    posts,
+    isLoading,
+    error,
+    refetch,
+  };
+};
+
+export const useUserPosts = (userId: string, limit = 20, offset = 0) => {
+  const { data, isLoading, error, refetch } = useUserPostsGql(
+    userId,
+    { limit, offset },
+    { enabled: Boolean(userId) },
+  );
+
+  const posts = useMemo(() => {
+    return (data ?? []).map(mapPost);
+  }, [data]);
+
+  return {
+    posts,
+    isLoading,
+    error,
+    refetch,
   };
 };

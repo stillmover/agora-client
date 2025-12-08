@@ -81,10 +81,8 @@ export class ErrorBoundary extends Component<
   }
 }
 
-// Hook version for functional components
 export const useErrorHandler = () => {
   return (error: Error, errorInfo?: { componentStack?: string }) => {
     logger.error("Error caught by error handler:", error, errorInfo);
-    // Here you could send error reports to a service like Sentry
   };
 };

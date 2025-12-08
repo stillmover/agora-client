@@ -1,43 +1,92 @@
 import { useMemo } from "react";
 import {
-  usePopularCommunitiesQuery,
-  useCommunityQuery,
-  mapCommunity,
-} from "@/shared/api";
+  useCommunitiesQuery as useCommunitiesGql,
+  usePopularCommunitiesQuery as usePopularCommunitiesGql,
+  useCommunityQuery as useCommunityGql,
+  useCommunityByNameQuery as useCommunityByNameGql,
+  useFlairsByCommunityQuery as useFlairsByCommunityGql,
+} from "@/shared/api/gql/query-hooks";
+import { mapCommunity } from "../api/mappers";
 
-export const usePopularCommunities = () => {
-  const [result, reexecute] = usePopularCommunitiesQuery(undefined, {
-    requestPolicy: "cache-first",
+export const useCommunities = (limit = 20, offset = 0) => {
+  const { data, isLoading, error, refetch } = useCommunitiesGql({
+    limit,
+    offset,
   });
 
   const communities = useMemo(() => {
-    return (result.data?.popularCommunities ?? []).map(mapCommunity);
-  }, [result.data]);
+    return (data ?? []).map(mapCommunity);
+  }, [data]);
 
   return {
     communities,
-    isLoading: result.fetching && !result.data,
-    error: result.error,
-    refetch: () => reexecute({ requestPolicy: "network-only" }),
+    isLoading,
+    error,
+    refetch,
+  };
+};
+
+export const usePopularCommunities = (limit = 10) => {
+  const { data, isLoading, error, refetch } = usePopularCommunitiesGql(limit);
+
+  const communities = useMemo(() => {
+    return (data ?? []).map(mapCommunity);
+  }, [data]);
+
+  return {
+    communities,
+    isLoading,
+    error,
+    refetch,
   };
 };
 
 export const useCommunity = (communityId: string) => {
-  const [result, reexecute] = useCommunityQuery(
-    { id: communityId },
-    {
-      requestPolicy: "cache-first",
-    },
-  );
+  const { data, isLoading, error, refetch } = useCommunityGql(communityId, {
+    enabled: Boolean(communityId),
+  });
 
   const community = useMemo(() => {
-    return result.data?.community ? mapCommunity(result.data.community) : null;
-  }, [result.data]);
+    return data ? mapCommunity(data) : null;
+  }, [data]);
 
   return {
     community,
-    isLoading: result.fetching && !result.data,
-    error: result.error,
-    refetch: () => reexecute({ requestPolicy: "network-only" }),
+    isLoading,
+    error,
+    refetch,
+  };
+};
+
+export const useCommunityByName = (name: string) => {
+  const { data, isLoading, error, refetch } = useCommunityByNameGql(name, {
+    enabled: Boolean(name),
+  });
+
+  const community = useMemo(() => {
+    return data ? mapCommunity(data) : null;
+  }, [data]);
+
+  return {
+    community,
+    isLoading,
+    error,
+    refetch,
+  };
+};
+
+export const useFlairsByCommunity = (communityId: string) => {
+  const { data, isLoading, error, refetch } = useFlairsByCommunityGql(
+    communityId,
+    {
+      enabled: Boolean(communityId),
+    },
+  );
+
+  return {
+    flairs: data ?? [],
+    isLoading,
+    error,
+    refetch,
   };
 };

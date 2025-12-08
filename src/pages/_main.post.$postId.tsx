@@ -1,21 +1,33 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { usePost } from "@/entities/post/model/usePosts";
-import { useComments } from "@/shared/api";
+import { usePost } from "@/entities/post";
+import { useComments } from "@/entities/comment";
 import { PostDetailWidget } from "@/widgets/post-detail";
 import { CommentSectionWidget } from "@/widgets/comment-section";
 import { PostLoadingSkeletonWidget } from "@/widgets/post-loading-skeleton";
 import { PostNotFoundWidget } from "@/widgets/post-not-found";
+import { prefetchQueries } from "@/shared/api/gql/query-hooks";
 
 export const Route = createFileRoute("/_main/post/$postId")({
   component: PostDetailPage,
+  loader: async ({ context, params }) => {
+    const { queryClient } = context;
+    const { postId } = params;
+
+    await Promise.all([
+      prefetchQueries.post(queryClient, postId),
+      prefetchQueries.comments(queryClient, postId),
+    ]);
+
+    return { postId };
+  },
+  pendingComponent: PostLoadingSkeletonWidget,
+  staleTime: 2 * 60 * 1000,
 });
 
 function PostDetailPage() {
   const { postId } = Route.useParams();
-
   const { post, isLoading: postLoading } = usePost(postId);
   const { comments, isLoading: commentsLoading } = useComments(postId);
-
   const isLoading = postLoading || commentsLoading;
 
   if (isLoading) {

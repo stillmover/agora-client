@@ -1,123 +1,170 @@
-import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Card } from "@/shared/ui/card";
-import { Badge } from "@/shared/ui/badge";
-import { ChevronLeft, ChevronRight, TrendingUp } from "lucide-react";
-import { Button } from "@/shared/ui/button";
-import { MOCK_TOP_STORIES } from "../constants/top-stories";
+import {
+  Card,
+  Badge,
+  Button,
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Skeleton,
+} from "@/shared/ui";
+import {
+  ChevronLeft,
+  ChevronRight,
+  TrendingUp,
+  AlertCircle,
+  Flame,
+  MessageSquare,
+} from "lucide-react";
+import { useHeroCarousel } from "../model/useHeroCarousel";
+import { cn } from "@/shared/lib/utils";
 
-type TopStory = {
-  id: string;
-  title: string;
-  community: {
-    id: string;
-    name: string;
-  };
-  thumbnail: string;
-  score: number;
-};
+const LoadingSkeleton = () => (
+  <div className="bg-gradient-to-b from-muted/30 to-transparent py-8 border-b border-border/50">
+    <div className="max-w-[1600px] mx-auto px-4">
+      <div className="flex items-center gap-3 mb-6">
+        <Skeleton className="h-6 w-6 rounded" />
+        <Skeleton className="h-6 w-40 rounded" />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {[1, 2, 3].map((i) => (
+          <Skeleton key={i} className="aspect-[16/10] rounded-xl" />
+        ))}
+      </div>
+    </div>
+  </div>
+);
 
 export const HeroCarousel = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [stories, setStories] = useState<TopStory[]>([]);
+  const { visibleStories, isLoading, error, stories, nextSlide, prevSlide } =
+    useHeroCarousel();
 
-  useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setStories(MOCK_TOP_STORIES);
-    }, 500);
-  }, []);
+  if (isLoading) {
+    return <LoadingSkeleton />;
+  }
 
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % stories.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + stories.length) % stories.length);
-  };
-
-  if (stories.length === 0) {
+  if (error) {
     return (
-      <div className="bg-muted/20 border-b py-8">
-        <div className="container mx-auto px-4">
-          <div className="text-center text-muted-foreground">
-            Loading top stories...
+      <div className="bg-gradient-to-b from-destructive/5 to-transparent py-8 border-b border-border/50">
+        <div className="max-w-[1600px] mx-auto px-4">
+          <div className="flex items-center justify-center gap-2 text-muted-foreground">
+            <AlertCircle className="h-5 w-5" />
+            <span>Unable to load trending posts</span>
           </div>
         </div>
       </div>
     );
   }
 
-  const visibleStories = stories
-    .slice(currentIndex, currentIndex + 3)
-    .concat(stories.slice(0, Math.max(0, currentIndex + 3 - stories.length)));
+  if (stories.length === 0) {
+    return null;
+  }
 
   return (
-    <div className="bg-muted/20 border-b py-8">
-      <div className="w-full px-4">
-        <div className="flex items-center gap-4 mb-6">
-          <TrendingUp className="h-6 w-6 text-orange-500" />
-          <h2 className="text-xl font-semibold">Today's Top Stories</h2>
+    <div className="bg-gradient-to-b from-muted/30 to-transparent py-8 border-b border-border/50">
+      <div className="max-w-[1600px] mx-auto px-4">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand/10">
+              <Flame className="h-5 w-5 text-brand" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-foreground">
+                Trending Today
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                Top stories across all communities
+              </p>
+            </div>
+          </div>
+
+          <div className="hidden md:flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon-sm"
+              onClick={prevSlide}
+              className="rounded-full"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon-sm"
+              onClick={nextSlide}
+              className="rounded-full"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
-        <div className="relative">
-          {/* Navigation buttons - hidden on mobile */}
-          <Button
-            variant="outline"
-            size="icon"
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex"
-            onClick={prevSlide}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-
-          <Button
-            variant="outline"
-            size="icon"
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex"
-            onClick={nextSlide}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-
-          {/* Stories grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {visibleStories.map((story, index) => (
-              <Card
-                key={`${story.id}-${index}`}
-                className="overflow-hidden hover:shadow-md transition-shadow"
-              >
-                <div className="relative aspect-video">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {visibleStories.map((story, index) => (
+            <Link
+              key={`${story.id}-${index}`}
+              to="/post/$postId"
+              params={{ postId: story.id }}
+              className="group"
+            >
+              <Card variant="interactive" className="overflow-hidden h-full">
+                <div className="relative aspect-[16/10]">
                   <img
                     src={story.thumbnail}
                     alt={story.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                  <div className="absolute bottom-3 left-3 right-3">
-                    <Badge variant="secondary" className="mb-2">
-                      r/{story.community.name}
-                    </Badge>
-                    <Link
-                      to="/post/$postId"
-                      params={{ postId: story.id }}
-                      className="block"
-                    >
-                      <h3 className="text-white font-medium text-sm line-clamp-2 hover:underline">
-                        {story.title}
-                      </h3>
-                    </Link>
-                    <div className="flex items-center gap-1 mt-1">
-                      <TrendingUp className="h-3 w-3 text-orange-400" />
-                      <span className="text-white/80 text-xs">
-                        {story.score.toLocaleString()} points
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+
+                  <div className="absolute inset-0 p-4 flex flex-col justify-end">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Avatar className="h-5 w-5 ring-2 ring-white/20">
+                        <AvatarImage src={story.community.iconUrl} />
+                        <AvatarFallback className="text-[8px] bg-brand text-white">
+                          {story.community.name.slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <Badge
+                        variant="secondary"
+                        className="bg-white/10 text-white border-white/20 backdrop-blur-sm"
+                      >
+                        r/{story.community.name}
+                      </Badge>
+                    </div>
+
+                    <h3 className="text-white font-semibold text-base line-clamp-2 group-hover:text-brand transition-colors">
+                      {story.title}
+                    </h3>
+
+                    <div className="flex items-center gap-3 mt-2 text-white/70 text-xs">
+                      <span className="flex items-center gap-1">
+                        <TrendingUp className="h-3.5 w-3.5 text-brand" />
+                        {story.score.toLocaleString()}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <MessageSquare className="h-3.5 w-3.5" />
+                        {story.comments?.toLocaleString() ?? 0}
                       </span>
                     </div>
                   </div>
+
+                  {index < 3 && (
+                    <div
+                      className={cn(
+                        "absolute top-3 left-3 flex items-center justify-center",
+                        "h-7 w-7 rounded-lg font-bold text-sm",
+                        index === 0 && "bg-amber-500 text-white",
+                        index === 1 && "bg-gray-300 text-gray-800",
+                        index === 2 && "bg-amber-700 text-white",
+                      )}
+                    >
+                      {index + 1}
+                    </div>
+                  )}
                 </div>
               </Card>
-            ))}
-          </div>
+            </Link>
+          ))}
         </div>
       </div>
     </div>

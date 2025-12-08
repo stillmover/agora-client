@@ -1,13 +1,19 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useParams } from "@tanstack/react-router";
 
-import { PostCard, usePosts } from "@/entities/post";
+import { usePosts, type Post } from "@/entities/post";
+import { PostCard } from "@/widgets/post-card";
+import { SortBar } from "@/features/sort-bar";
+import type { SortOption, RegionOption } from "@/shared/types";
+import { useInfiniteScroll } from "@/shared/hooks";
+import { mapSortOptionToSortType } from "../lib/mappers";
 import {
-  SortBar,
-  type SortOption,
-  type RegionOption,
-} from "@/features/sort-bar";
-import { UI_TEXT } from "@/shared/constants";
+  FeedError,
+  FeedEmpty,
+  FeedLoading,
+  LoadingMoreIndicator,
+  EndOfFeed,
+} from "./components";
 
 export const Feed = () => {
   const params = useParams({ strict: false });
@@ -15,9 +21,6 @@ export const Feed = () => {
 
   const [sort, setSort] = useState<SortOption>("best");
   const [region, setRegion] = useState<RegionOption>("global");
-
-  const observerRef = useRef<IntersectionObserver>(null);
-  const lastPostRef = useRef<HTMLDivElement>(null);
 
   const {
     posts,
@@ -28,84 +31,31 @@ export const Feed = () => {
     error,
   } = usePosts({
     communityId,
-    sort,
+    sort: mapSortOptionToSortType(sort),
     region,
   });
 
-  const setupIntersectionObserver = useCallback(() => {
-    if (isLoading || isFetchingNextPage) {
-      return;
-    }
+  const sentinelRef = useInfiniteScroll(fetchNextPage, {
+    hasMore,
+    isLoading: isLoading || isFetchingNextPage,
+  });
 
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-    }
+  const handleFilterClick = useCallback(() => {}, []);
 
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    if (lastPostRef.current) {
-      observerRef.current.observe(lastPostRef.current);
-    }
-
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-    };
-  }, [isLoading, isFetchingNextPage, hasMore, fetchNextPage]);
-
-  useEffect(() => {
-    const cleanup = setupIntersectionObserver();
-    return cleanup;
-  }, [setupIntersectionObserver]);
-
-  const handleFilterClick = useCallback(() => {
-    // TODO: Implement filter functionality
+  const handleSortChange = useCallback((newSort: SortOption) => {
+    setSort(newSort);
   }, []);
 
-  const handleSortChange = (newSort: SortOption) => {
-    setSort(newSort);
-  };
-
-  const handleRegionChange = (newRegion: RegionOption) => {
+  const handleRegionChange = useCallback((newRegion: RegionOption) => {
     setRegion(newRegion);
-  };
+  }, []);
 
   if (error) {
-    return (
-      <div className="rounded-lg border bg-destructive/10 p-6 text-center">
-        <p className="text-destructive">
-          Failed to load posts. Please try again.
-        </p>
-        <button
-          onClick={() => window.location.reload()}
-          className="mt-2 text-sm underline hover:no-underline"
-        >
-          Reload page
-        </button>
-      </div>
-    );
+    return <FeedError />;
   }
 
   if (isLoading && posts.length === 0) {
-    return (
-      <div className="space-y-4">
-        {Array.from({ length: UI_TEXT.LOADING.SKELETON_COUNT }, (_, i) => (
-          <div key={i} className="rounded-lg border bg-card p-4 shadow-sm">
-            <div className="h-6 bg-muted animate-pulse rounded w-3/4 mb-2"></div>
-            <div className="h-4 bg-muted animate-pulse rounded w-full mb-2"></div>
-            <div className="h-4 bg-muted animate-pulse rounded w-5/6"></div>
-          </div>
-        ))}
-      </div>
-    );
+    return <FeedLoading />;
   }
 
   return (
@@ -119,44 +69,18 @@ export const Feed = () => {
       />
 
       {posts.length === 0 ? (
-        <div className="rounded-lg border bg-card p-6 text-center">
-          <p className="text-muted-foreground">{UI_TEXT.POST.NO_POSTS}</p>
-        </div>
+        <FeedEmpty />
       ) : (
         <div className="space-y-4">
-          {posts.map((post, index) => (
-            <div
-              key={post.id}
-              ref={index === posts.length - 1 ? lastPostRef : null}
-            >
-              <PostCard post={post} showCommunity={!communityId} />
-            </div>
+          {posts.map((post: Post) => (
+            <PostCard key={post.id} post={post} showCommunity={!communityId} />
           ))}
 
-          {/* Loading more indicator */}
-          {isFetchingNextPage && (
-            <div className="space-y-4">
-              {Array.from({ length: 3 }, (_, i) => (
-                <div
-                  key={`loading-${i}`}
-                  className="rounded-lg border bg-card p-4 shadow-sm"
-                >
-                  <div className="h-6 bg-muted animate-pulse rounded w-3/4 mb-2"></div>
-                  <div className="h-4 bg-muted animate-pulse rounded w-full mb-2"></div>
-                  <div className="h-4 bg-muted animate-pulse rounded w-5/6"></div>
-                </div>
-              ))}
-            </div>
-          )}
+          <div ref={sentinelRef} aria-hidden="true" />
 
-          {/* End of feed message */}
-          {!hasMore && posts.length > 0 && (
-            <div className="rounded-lg border bg-muted/20 p-6 text-center">
-              <p className="text-sm text-muted-foreground">
-                You've reached the end of the feed
-              </p>
-            </div>
-          )}
+          {isFetchingNextPage && <LoadingMoreIndicator />}
+
+          {!hasMore && posts.length > 0 && <EndOfFeed />}
         </div>
       )}
     </div>

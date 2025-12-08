@@ -1,16 +1,30 @@
 import { Link } from "@tanstack/react-router";
-import { Plus, Users } from "lucide-react";
+import { Plus, TrendingUp, Sparkles, ChevronRight, Trophy } from "lucide-react";
 
 import { usePopularCommunities, type Community } from "@/entities/community";
 import { useCommunityActions } from "@/features/community";
-import { Button } from "@/shared/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
-import { Badge } from "@/shared/ui/badge";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Badge,
+  SkeletonCommunityList,
+} from "@/shared/ui";
 import { logger } from "@/shared/services/logger";
+import { cn } from "@/shared/lib/utils";
 
-// Separate component for community item to properly use hooks
-const CommunityItem = ({ community }: { community: Community }) => {
+const CommunityItem = ({
+  community,
+  rank,
+}: {
+  community: Community;
+  rank: number;
+}) => {
   const { toggleJoin, isJoined, joinLabel } = useCommunityActions(community.id);
 
   const handleJoin = async () => {
@@ -22,36 +36,43 @@ const CommunityItem = ({ community }: { community: Community }) => {
   };
 
   return (
-    <div className="flex items-center gap-3 group">
-      <Avatar className="h-8 w-8">
+    <div className="flex items-center gap-3 group py-1.5">
+      <span
+        className={cn(
+          "w-5 text-center text-sm font-bold",
+          rank <= 3 ? "text-brand" : "text-muted-foreground",
+        )}
+      >
+        {rank}
+      </span>
+
+      <Avatar className="h-9 w-9 ring-2 ring-background">
         <AvatarImage src={community.iconUrl} alt={community.name} />
-        <AvatarFallback className="text-xs">
-          r/{community.name.slice(0, 2).toUpperCase()}
+        <AvatarFallback className="text-xs font-semibold bg-gradient-to-br from-brand to-orange-400 text-white">
+          {community.name.slice(0, 2).toUpperCase()}
         </AvatarFallback>
       </Avatar>
+
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <Link
-            to="/r/$communityId"
-            params={{ communityId: community.id }}
-            className="text-sm font-medium hover:underline truncate"
-          >
-            r/{community.name}
-          </Link>
-          {isJoined && (
-            <Badge variant="secondary" className="text-xs px-1 py-0">
-              Joined
-            </Badge>
-          )}
-        </div>
+        <Link
+          to="/r/$communityId"
+          params={{ communityId: community.id }}
+          className="text-sm font-medium hover:text-brand transition-colors truncate block"
+        >
+          r/{community.name}
+        </Link>
         <p className="text-xs text-muted-foreground">
           {community.members.toLocaleString()} members
         </p>
       </div>
+
       <Button
-        size="sm"
-        variant={isJoined ? "secondary" : "outline"}
-        className="h-7 px-2 text-xs"
+        size="xs"
+        variant={isJoined ? "subtle" : "brand"}
+        className={cn(
+          "opacity-0 group-hover:opacity-100 transition-opacity",
+          isJoined && "opacity-100",
+        )}
         onClick={handleJoin}
       >
         {joinLabel}
@@ -63,80 +84,128 @@ const CommunityItem = ({ community }: { community: Community }) => {
 export const RightSidebar = () => {
   const { communities, isLoading, error } = usePopularCommunities();
 
-  if (error) {
-    return (
-      <div className="space-y-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <p className="text-sm text-muted-foreground">
-              Failed to load communities
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-4">
-      {/* Popular Communities Card */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <Users className="h-4 w-4" />
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm flex items-center gap-2">
+            <TrendingUp className="h-4 w-4 text-brand" />
             Popular Communities
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          {isLoading ? (
-            <div className="space-y-3">
-              {Array.from({ length: 5 }, (_, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <div className="h-8 w-8 bg-muted animate-pulse rounded-full"></div>
-                  <div className="flex-1 space-y-1">
-                    <div className="h-4 bg-muted animate-pulse rounded w-20"></div>
-                    <div className="h-3 bg-muted animate-pulse rounded w-16"></div>
-                  </div>
-                </div>
-              ))}
+        <CardContent className="pt-0">
+          {error ? (
+            <div className="py-4 text-center">
+              <p className="text-sm text-muted-foreground">
+                Failed to load communities
+              </p>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="mt-2"
+                onClick={() => window.location.reload()}
+              >
+                Try again
+              </Button>
             </div>
+          ) : isLoading ? (
+            <SkeletonCommunityList count={5} />
           ) : (
-            <>
-              {communities.slice(0, 7).map((community) => (
-                <CommunityItem key={community.id} community={community} />
+            <div className="space-y-1">
+              {communities.slice(0, 5).map((community, index) => (
+                <CommunityItem
+                  key={community.id}
+                  community={community}
+                  rank={index + 1}
+                />
               ))}
               <Link
-                to="/communities"
-                className="block text-sm text-muted-foreground hover:text-foreground transition-colors"
+                to="/search"
+                search={{ q: "", type: "communities" }}
+                className={cn(
+                  "flex items-center justify-between py-2 px-1 mt-2",
+                  "text-sm text-muted-foreground hover:text-foreground",
+                  "transition-colors rounded-lg hover:bg-accent",
+                )}
               >
-                View more
+                <span>See all communities</span>
+                <ChevronRight className="h-4 w-4" />
               </Link>
-            </>
+            </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Create Community Card */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="text-center space-y-3">
-            <div className="mx-auto w-12 h-12 bg-muted rounded-full flex items-center justify-center">
-              <Plus className="h-6 w-6 text-muted-foreground" />
+      <Card className="overflow-hidden">
+        <div className="bg-gradient-to-br from-brand/10 via-orange-500/5 to-transparent p-6">
+          <div className="flex items-center gap-4">
+            <div
+              className={cn(
+                "flex h-12 w-12 items-center justify-center rounded-xl",
+                "bg-brand text-white shadow-lg",
+                "group-hover:scale-105 transition-transform",
+              )}
+            >
+              <Sparkles className="h-6 w-6" />
             </div>
-            <div>
-              <h3 className="text-sm font-medium mb-1">
-                Create your community
+            <div className="flex-1">
+              <h3 className="font-semibold text-foreground">
+                Create a Community
               </h3>
-              <p className="text-xs text-muted-foreground mb-3">
-                Share your interests with the world
+              <p className="text-xs text-muted-foreground">
+                Build your own space
               </p>
             </div>
-            <Button size="sm" className="w-full" asChild>
-              <Link to="/communities/create">Create</Link>
-            </Button>
+          </div>
+          <Button variant="brand" size="sm" className="w-full mt-4" asChild>
+            <Link to="/submit">
+              <Plus className="h-4 w-4 mr-2" />
+              Get Started
+            </Link>
+          </Button>
+        </div>
+      </Card>
+
+      <Card className="border-amber-500/30 bg-gradient-to-br from-amber-500/5 to-transparent">
+        <CardContent className="p-5">
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-500/10">
+              <Trophy className="h-5 w-5 text-amber-500" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="font-semibold text-foreground">Agora Premium</h3>
+                <Badge className="bg-amber-500 text-white text-[10px]">
+                  NEW
+                </Badge>
+              </div>
+              <p className="text-xs text-muted-foreground mb-3">
+                Ad-free browsing, exclusive features, and more.
+              </p>
+              <Button variant="outline" size="sm" className="w-full">
+                Learn More
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
+
+      <div className="text-xs text-muted-foreground space-y-2 px-1">
+        <div className="flex flex-wrap gap-x-3 gap-y-1">
+          <a href="#" className="hover:text-foreground transition-colors">
+            Content Policy
+          </a>
+          <a href="#" className="hover:text-foreground transition-colors">
+            Privacy Policy
+          </a>
+          <a href="#" className="hover:text-foreground transition-colors">
+            User Agreement
+          </a>
+        </div>
+        <p className="text-muted-foreground/60">
+          © 2025 Agora Inc. All rights reserved.
+        </p>
+      </div>
     </div>
   );
 };

@@ -1,0 +1,1 @@
+export const LOADING_MORE_SKELETON_COUNT = 3;

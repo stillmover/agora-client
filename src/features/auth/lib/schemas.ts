@@ -8,33 +8,54 @@ const registerSchema = z.object({
   email: z
     .string()
     .trim()
-    .email("Please enter an email address.")
-    .nonempty("Please fill in this field."),
+    .nonempty("Please enter your email address.")
+    .email("Please enter a valid email address."),
   username: z
     .string()
-    .min(USERNAME_MIN_LENGTH)
-    .max(USERNAME_MAX_LENGTH)
-    .regex(/^[a-zA-Z0-9_]+$/)
     .trim()
-    .nonempty("Please fill in this field."),
+    .nonempty("Please enter a username.")
+    .min(
+      USERNAME_MIN_LENGTH,
+      `Username must be at least ${USERNAME_MIN_LENGTH} characters.`,
+    )
+    .max(
+      USERNAME_MAX_LENGTH,
+      `Username must be at most ${USERNAME_MAX_LENGTH} characters.`,
+    )
+    .regex(
+      /^[a-zA-Z0-9_]+$/,
+      "Username can only contain letters, numbers, and underscores.",
+    ),
   password: z
     .string()
     .trim()
-    .nonempty("Please fill in this field.")
-    .min(PASSWORD_MIN_LENGTH, "Password must be at least 6 characters"),
+    .nonempty("Please enter a password.")
+    .min(
+      PASSWORD_MIN_LENGTH,
+      `Password must be at least ${PASSWORD_MIN_LENGTH} characters.`,
+    ),
 });
 
 const loginSchema = z.object({
-  usernameOrEmail: z.string().trim().nonempty("Please fill in this field."),
+  usernameOrEmail: z
+    .string()
+    .trim()
+    .nonempty("Please enter your email or username."),
   password: z
     .string()
     .trim()
-    .nonempty("Please fill in this field.")
-    .min(PASSWORD_MIN_LENGTH, "Password must be at least 6 characters"),
+    .nonempty("Please enter your password.")
+    .min(
+      PASSWORD_MIN_LENGTH,
+      `Password must be at least ${PASSWORD_MIN_LENGTH} characters.`,
+    ),
 });
 
 const resetSchema = z.object({
-  usernameOrEmail: z.string().trim().nonempty("Please fill in this field."),
+  usernameOrEmail: z
+    .string()
+    .trim()
+    .nonempty("Please enter your email or username."),
 });
 
 type LoginValues = z.infer<typeof loginSchema>;

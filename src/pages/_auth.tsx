@@ -12,6 +12,7 @@ import { env } from "@/shared/utils/env";
 import { sessionActions } from "@/entities/session";
 import { sessionApi } from "@/entities/session/api/sessionApi";
 import { sessionKeys } from "@/entities/session/api/query-keys";
+import { extractUserFromResponse } from "@/entities/session/api/types";
 
 export const Route = createFileRoute("/_auth")({
   component: AuthLayout,
@@ -71,18 +72,9 @@ function AuthLayout() {
         .then(async () => {
           try {
             const userResponse = await sessionApi.getCurrentUser();
-            const anyResponse = userResponse as unknown as {
-              success?: boolean;
-              data?: { user?: unknown };
-            };
+            const userData = extractUserFromResponse(userResponse);
 
-            if (anyResponse?.success && anyResponse.data?.user) {
-              const userData = anyResponse.data.user as {
-                id: number;
-                username: string;
-                email?: string;
-              };
-
+            if (userData) {
               sessionActions.login({
                 id: String(userData.id),
                 username: userData.username,

@@ -1,4 +1,4 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { RegisterForm } from "@/features/auth";
 import { useEffect } from "react";
 import { useIsAuthenticated } from "@/entities/session";
@@ -11,19 +11,16 @@ export const Route = createFileRoute("/_auth/register")({
 });
 
 function RegisterPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { redirect } = Route.useSearch();
   const isAuthenticated = useIsAuthenticated();
 
   useEffect(() => {
     if (isAuthenticated) {
-      if (redirect) {
-        router.history.push(redirect);
-      } else {
-        router.navigate({ to: "/" });
-      }
+      const targetUrl = redirect ?? "/";
+      navigate({ to: targetUrl });
     }
-  }, [isAuthenticated, redirect, router]);
+  }, [isAuthenticated, redirect, navigate]);
 
   return <RegisterForm redirect={redirect} />;
 }

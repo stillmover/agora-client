@@ -9,9 +9,9 @@ type ErrorWithStatus = Error & {
 
 const defaultQueryOptions = {
   gcTime: 10 * TIME_CONSTANTS.MINUTE,
-  refetchOnMount: false, // Use cached data if available, only refetch when stale
+  refetchOnMount: false,
   refetchOnReconnect: true,
-  refetchOnWindowFocus: false, // Prevent refetch spam when switching tabs
+  refetchOnWindowFocus: false,
   retry: (failureCount: number, error: unknown) => {
     if (error instanceof Error && "status" in error) {
       const status = (error as ErrorWithStatus).status;
@@ -66,7 +66,6 @@ queryClient.getMutationCache().subscribe((event) => {
 });
 
 if (isDevelopment) {
-  // Expose queryClient to window for debugging
   (window as Window & { queryClient?: QueryClient }).queryClient = queryClient;
 
   queryClient.getQueryCache().subscribe((event) => {

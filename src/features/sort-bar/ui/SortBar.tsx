@@ -1,17 +1,24 @@
-import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/shared/ui/dropdown-menu";
-import { Button } from "@/shared/ui/button";
-import { Badge } from "@/shared/ui/badge";
-import { ChevronDown, Filter, MapPin } from "lucide-react";
-import { useUserPlaceQuery } from "@/shared/services";
-
-export type SortOption = "best" | "hot" | "new" | "rising" | "top";
-export type RegionOption = "global" | "my-country";
+  Button,
+} from "@/shared/ui";
+import {
+  ChevronDown,
+  SlidersHorizontal,
+  MapPin,
+  Flame,
+  TrendingUp,
+  Clock,
+  Star,
+  Sparkles,
+} from "lucide-react";
+import type { SortOption, RegionOption } from "@/shared/types";
+import { useSortBar } from "../model/useSortBar";
+import { SORT_OPTIONS, REGION_OPTIONS } from "../lib/constants";
+import { cn } from "@/shared/lib/utils";
 
 type SortBarProps = {
   sort: SortOption;
@@ -21,18 +28,13 @@ type SortBarProps = {
   onFilterClick?: () => void;
 };
 
-const SORT_OPTIONS: { value: SortOption; label: string }[] = [
-  { value: "best", label: "Best" },
-  { value: "hot", label: "Hot" },
-  { value: "new", label: "New" },
-  { value: "rising", label: "Rising" },
-  { value: "top", label: "Top" },
-];
-
-const REGION_OPTIONS: { value: RegionOption; label: string }[] = [
-  { value: "global", label: "Global" },
-  { value: "my-country", label: "My Country" },
-];
+const sortIcons: Record<string, React.ElementType> = {
+  best: Star,
+  hot: Flame,
+  new: Sparkles,
+  top: TrendingUp,
+  rising: Clock,
+};
 
 export const SortBar = ({
   sort,
@@ -41,95 +43,90 @@ export const SortBar = ({
   onRegionChange,
   onFilterClick,
 }: SortBarProps) => {
-  const { data: place } = useUserPlaceQuery(region === "my-country");
-
-  const currentRegionLabel =
-    region === "my-country"
-      ? (place?.displayName ??
-        REGION_OPTIONS.find((opt) => opt.value === region)?.label)
-      : REGION_OPTIONS.find((opt) => opt.value === region)?.label;
+  const { currentRegionLabel, place } = useSortBar({ region });
 
   return (
     <nav
-      className="flex items-center justify-between py-4 border-b"
+      className="flex items-center gap-2 py-3 px-1"
       aria-label="Feed sorting and filtering options"
     >
-      <div className="flex items-center gap-4">
-        {/* Sort Tabs */}
-        <fieldset className="space-y-2">
-          <legend className="sr-only">Sort posts by</legend>
-          <Tabs
-            value={sort}
-            onValueChange={(value) => onSortChange(value as SortOption)}
-          >
-            <TabsList
-              className="grid w-full grid-cols-5"
-              role="tablist"
-              aria-label="Sort options"
-            >
-              {SORT_OPTIONS.map((option) => (
-                <TabsTrigger
-                  key={option.value}
-                  value={option.value}
-                  className="text-sm focus-visible:ring-2 focus-visible:ring-orange-500"
-                  aria-selected={sort === option.value}
-                >
-                  {option.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-        </fieldset>
+      <div className="flex items-center gap-1 flex-1 overflow-x-auto no-scrollbar">
+        {SORT_OPTIONS.map((option) => {
+          const Icon = sortIcons[option.value] || Star;
+          const isActive = sort === option.value;
 
-        {/* Region Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2 focus-visible:ring-2 focus-visible:ring-blue-500"
-              aria-label={`Current region: ${currentRegionLabel}. Click to change region`}
+          return (
+            <button
+              key={option.value}
+              onClick={() => onSortChange(option.value)}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium",
+                "transition-all duration-150 whitespace-nowrap",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                isActive
+                  ? "bg-foreground text-background"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent",
+              )}
+              aria-pressed={isActive}
             >
-              <MapPin className="h-4 w-4" aria-hidden="true" />
-              <span className="hidden sm:inline">{currentRegionLabel}</span>
-              <ChevronDown className="h-4 w-4" aria-hidden="true" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            {REGION_OPTIONS.map((option) => (
-              <DropdownMenuItem
-                key={option.value}
-                onClick={() => onRegionChange(option.value)}
-                className="flex items-center gap-2 focus-visible:bg-accent focus-visible:text-accent-foreground"
-                aria-selected={region === option.value}
-              >
-                <MapPin className="h-4 w-4" aria-hidden="true" />
+              <Icon
+                className={cn(
+                  "h-4 w-4",
+                  isActive && option.value === "hot" && "text-orange-400",
+                  isActive && option.value === "new" && "text-green-400",
+                )}
+              />
+              <span className="hidden sm:inline">{option.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="gap-1.5 text-muted-foreground"
+            aria-label={`Current region: ${currentRegionLabel}`}
+          >
+            <MapPin className="h-4 w-4" />
+            <span className="hidden md:inline max-w-[100px] truncate">
+              {currentRegionLabel}
+            </span>
+            <ChevronDown className="h-3 w-3" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="min-w-[160px]">
+          {REGION_OPTIONS.map((option) => (
+            <DropdownMenuItem
+              key={option.value}
+              onClick={() => onRegionChange(option.value)}
+              className={cn("gap-2", region === option.value && "bg-accent")}
+            >
+              <MapPin className="h-4 w-4" />
+              <span>
                 {option.value === "my-country" && place?.displayName
                   ? place.displayName
                   : option.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+              </span>
+              {region === option.value && (
+                <span className="ml-auto h-1.5 w-1.5 rounded-full bg-brand" />
+              )}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-      {/* Filter Button */}
       <Button
-        variant="outline"
+        variant="ghost"
         size="sm"
         onClick={onFilterClick}
-        className="gap-2 focus-visible:ring-2 focus-visible:ring-purple-500"
+        className="gap-1.5 text-muted-foreground"
         aria-label="Open filters menu"
       >
-        <Filter className="h-4 w-4" aria-hidden="true" />
-        <span className="hidden sm:inline">Filters</span>
-        <Badge
-          variant="secondary"
-          className="ml-1 h-5 w-5 rounded-full p-0 text-xs"
-          aria-label="No active filters"
-        >
-          0
-        </Badge>
+        <SlidersHorizontal className="h-4 w-4" />
+        <span className="hidden sm:inline">Filter</span>
       </Button>
     </nav>
   );

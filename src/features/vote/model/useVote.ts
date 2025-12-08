@@ -1,51 +1,85 @@
 import { useCallback } from "react";
-import { useVotePostMutation } from "@/shared/api";
-import { usePostVote, clientStateActions } from "@/shared/stores";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  useVotePostMutation,
+  useVoteCommentMutation,
+} from "@/shared/api/gql/query-hooks";
+import { queryKeys } from "@/shared/api/query-keys";
 import { VoteType } from "@/shared/api/gql";
+import { usePostVote, clientStateActions } from "@/shared/stores";
+import { calculateVoteValue, getVoteState } from "../lib/vote-utils";
+import { logger } from "@/shared/services/logger";
 
 export const useVote = (postId: string) => {
   const currentVote = usePostVote(postId);
-  const [, executeMutation] = useVotePostMutation();
+  const queryClient = useQueryClient();
+  const votePostMutation = useVotePostMutation();
 
   const vote = useCallback(
     async (direction: "up" | "down") => {
-      const voteValue = direction === "up" ? 1 : -1;
-
       const oldVote = currentVote;
-
-      let newVote: -1 | 0 | 1 = 0;
-      if (currentVote === voteValue) {
-        newVote = 0;
-      } else {
-        newVote = voteValue as -1 | 1;
-      }
+      const newVote = calculateVoteValue(currentVote, direction);
 
       clientStateActions.votePost(postId, newVote);
 
       try {
-        const voteType: VoteType =
+        const voteType =
           direction === "up" ? VoteType.Upvote : VoteType.Downvote;
 
-        const result = await executeMutation({
+        await votePostMutation.mutateAsync({
           postId,
           voteType,
         });
 
-        if (result.error) {
-          throw result.error;
-        }
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.posts.lists(),
+          refetchType: "none",
+        });
       } catch (error) {
         clientStateActions.votePost(postId, oldVote);
+        logger.error("Failed to vote on post:", error);
         throw error;
       }
     },
-    [postId, currentVote, executeMutation],
+    [postId, currentVote, votePostMutation, queryClient],
   );
 
   return {
     vote,
     currentVote,
-    hasUpvoted: currentVote === 1,
-    hasDownvoted: currentVote === -1,
+    isPending: votePostMutation.isPending,
+    ...getVoteState(currentVote),
+  };
+};
+
+export const useCommentVote = (commentId: string, postId: string) => {
+  const queryClient = useQueryClient();
+  const voteCommentMutation = useVoteCommentMutation();
+
+  const vote = useCallback(
+    async (direction: "up" | "down") => {
+      try {
+        const voteType =
+          direction === "up" ? VoteType.Upvote : VoteType.Downvote;
+
+        await voteCommentMutation.mutateAsync({
+          commentId,
+          voteType,
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.comments.byPost(postId),
+        });
+      } catch (error) {
+        logger.error("Failed to vote on comment:", error);
+        throw error;
+      }
+    },
+    [commentId, postId, voteCommentMutation, queryClient],
+  );
+
+  return {
+    vote,
+    isPending: voteCommentMutation.isPending,
   };
 };

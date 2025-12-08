@@ -1,34 +1,55 @@
-import { useCreateCommentMutation } from "@/shared/api";
+import { useCallback } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useSessionUser } from "@/entities/session";
-import type { CreateCommentInput } from "@/shared/api/gql";
+import { useCreateCommentMutation } from "@/shared/api/gql/query-hooks";
+import { queryKeys } from "@/shared/api/query-keys";
+import { logger } from "@/shared/services/logger";
 
 export const useCreateComment = (postId: string) => {
   const user = useSessionUser();
-  const [, executeMutation] = useCreateCommentMutation();
+  const queryClient = useQueryClient();
+  const createCommentMutation = useCreateCommentMutation();
 
-  const createComment = async (content: string, parentId?: string) => {
-    if (!user) {
-      throw new Error("User must be authenticated to create comments");
-    }
+  const createComment = useCallback(
+    async (content: string, parentId?: string) => {
+      if (!user) {
+        const authError = new Error(
+          "User must be authenticated to create comments",
+        );
+        logger.error("Create comment failed:", authError);
+        throw authError;
+      }
 
-    const input: CreateCommentInput = {
-      postId,
-      content,
-      parentId: parentId ?? undefined,
-    };
+      try {
+        const result = await createCommentMutation.mutateAsync({
+          input: {
+            postId,
+            content,
+            parentId: parentId ?? undefined,
+          },
+        });
 
-    const result = await executeMutation({ input });
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.comments.byPost(postId),
+        });
 
-    if (result.error) {
-      throw result.error;
-    }
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.posts.detail(postId),
+        });
 
-    return result.data;
-  };
+        logger.info("Comment created successfully");
+        return result.createComment;
+      } catch (error) {
+        logger.error("Failed to create comment:", error);
+        throw error instanceof Error ? error : new Error(String(error));
+      }
+    },
+    [postId, user, createCommentMutation, queryClient],
+  );
 
   return {
     createComment,
-    isPending: false,
-    error: null,
+    isPending: createCommentMutation.isPending,
+    error: createCommentMutation.error,
   };
 };

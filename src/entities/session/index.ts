@@ -6,6 +6,7 @@ export {
   useLoginMutation,
   useRegisterMutation,
   useLogoutMutation,
+  useLogout,
 } from "./api/mutations";
 
 export {
