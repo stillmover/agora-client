@@ -10,15 +10,13 @@ export const useUser = (userId: string) => {
     enabled: Boolean(userId),
   });
 
-  const user = useMemo(() => {
-    return data ? mapUser(data) : null;
-  }, [data]);
+  const user = useMemo(() => (data ? mapUser(data) : undefined), [data]);
 
   return {
-    user,
-    isLoading,
     error,
+    isLoading,
     refetch,
+    user,
   };
 };
 
@@ -27,14 +25,12 @@ export const useUserByUsername = (username: string) => {
     enabled: Boolean(username),
   });
 
-  const user = useMemo(() => {
-    return data ? mapUser(data) : null;
-  }, [data]);
+  const user = useMemo(() => (data ? mapUser(data) : undefined), [data]);
 
   return {
-    user,
-    isLoading,
     error,
+    isLoading,
     refetch,
+    user,
   };
 };

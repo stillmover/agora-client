@@ -1,13 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import {
-  Card,
-  Badge,
-  Button,
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-  Skeleton,
-} from "@/shared/ui";
+import { Card, Badge, Button, Avatar, AvatarFallback, AvatarImage, Skeleton } from "@/shared/ui";
 import {
   ChevronLeft,
   ChevronRight,
@@ -36,7 +28,7 @@ const LoadingSkeleton = () => (
 );
 
 export const HeroCarousel = () => {
-  const { visibleStories, isLoading, error, stories, nextSlide, prevSlide } =
+  const { visibleStories, isLoading, error, stories, nextSlide, prevSlide, canNavigate, refetch } =
     useHeroCarousel();
 
   if (isLoading) {
@@ -47,9 +39,17 @@ export const HeroCarousel = () => {
     return (
       <div className="bg-gradient-to-b from-destructive/5 to-transparent py-8 border-b border-border/50">
         <div className="max-w-[1600px] mx-auto px-4">
-          <div className="flex items-center justify-center gap-2 text-muted-foreground">
+          <div className="flex flex-col items-center justify-center gap-3 text-muted-foreground">
             <AlertCircle className="h-5 w-5" />
             <span>Unable to load trending posts</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetch()}
+              aria-label="Retry loading stories"
+            >
+              Try again
+            </Button>
           </div>
         </div>
       </div>
@@ -57,7 +57,13 @@ export const HeroCarousel = () => {
   }
 
   if (stories.length === 0) {
-    return null;
+    return (
+      <div className="bg-gradient-to-b from-muted/20 to-transparent py-6 border-b border-border/50">
+        <div className="max-w-[1600px] mx-auto px-4 text-center text-muted-foreground text-sm">
+          No trending stories yet. Check back soon.
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -69,12 +75,8 @@ export const HeroCarousel = () => {
               <Flame className="h-5 w-5 text-brand" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-foreground">
-                Trending Today
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                Top stories across all communities
-              </p>
+              <h2 className="text-lg font-bold text-foreground">Trending Today</h2>
+              <p className="text-xs text-muted-foreground">Top stories across all communities</p>
             </div>
           </div>
 
@@ -84,6 +86,8 @@ export const HeroCarousel = () => {
               size="icon-sm"
               onClick={prevSlide}
               className="rounded-full"
+              aria-label="Previous trending story"
+              disabled={!canNavigate}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -92,6 +96,8 @@ export const HeroCarousel = () => {
               size="icon-sm"
               onClick={nextSlide}
               className="rounded-full"
+              aria-label="Next trending story"
+              disabled={!canNavigate}
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -143,7 +149,7 @@ export const HeroCarousel = () => {
                       </span>
                       <span className="flex items-center gap-1">
                         <MessageSquare className="h-3.5 w-3.5" />
-                        {story.comments?.toLocaleString() ?? 0}
+                        {story.commentCount.toLocaleString()}
                       </span>
                     </div>
                   </div>
@@ -155,7 +161,7 @@ export const HeroCarousel = () => {
                         "h-7 w-7 rounded-lg font-bold text-sm",
                         index === 0 && "bg-amber-500 text-white",
                         index === 1 && "bg-gray-300 text-gray-800",
-                        index === 2 && "bg-amber-700 text-white",
+                        index === 2 && "bg-amber-700 text-white"
                       )}
                     >
                       {index + 1}

@@ -3,21 +3,18 @@ import { ChevronUp, ChevronDown } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { calculateVoteChange } from "../lib/vote-calculator";
-import {
-  VOTE_BUTTON_SIZES,
-  VOTE_BUTTON_ORIENTATIONS,
-  type VoteButtonSize,
-  type VoteButtonOrientation,
-  type VoteDirection,
-} from "@/shared/constants";
+import { VOTE_BUTTON_SIZES, VOTE_BUTTON_ORIENTATIONS } from "@/shared/constants";
+import type { VoteButtonSize, VoteButtonOrientation, VoteDirection } from "@/shared/constants";
+import { useIsAuthenticated } from "@/entities/session";
+import { useNavigate } from "@tanstack/react-router";
 
-type VoteButtonProps = {
+interface VoteButtonProps {
   votes: number;
   onVote: (direction: VoteDirection) => void;
   userVote?: VoteDirection | null;
   size?: VoteButtonSize;
   orientation?: VoteButtonOrientation;
-};
+}
 
 const SIZE_CLASSES: Record<VoteButtonSize, string> = {
   [VOTE_BUTTON_SIZES.SM]: "h-4 w-4",
@@ -28,14 +25,14 @@ const SIZE_CLASSES: Record<VoteButtonSize, string> = {
 export const VoteButton = ({
   votes,
   onVote,
-  userVote = null,
+  userVote,
   size = VOTE_BUTTON_SIZES.MD,
   orientation = VOTE_BUTTON_ORIENTATIONS.VERTICAL,
 }: VoteButtonProps) => {
   const [localVotes, setLocalVotes] = useState(votes);
-  const [localUserVote, setLocalUserVote] = useState<VoteDirection | null>(
-    userVote,
-  );
+  const [localUserVote, setLocalUserVote] = useState<VoteDirection | null>(userVote ?? null);
+  const isAuthenticated = useIsAuthenticated();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setLocalVotes(votes);
@@ -46,9 +43,19 @@ export const VoteButton = ({
   }, [userVote]);
 
   const handleVote = (direction: VoteDirection) => {
+    if (!isAuthenticated) {
+      navigate({
+        to: "/login",
+        search: {
+          redirect: window.location.pathname + window.location.search,
+        },
+      });
+      return;
+    }
+
     const result = calculateVoteChange(
       { currentVotes: localVotes, userVote: localUserVote },
-      direction,
+      direction
     );
 
     setLocalVotes(result.newVoteCount);
@@ -64,17 +71,17 @@ export const VoteButton = ({
   const voteButtonBaseClasses = "h-8 w-8";
   const upVoteButtonClasses = cn(
     voteButtonBaseClasses,
-    isUpVoted && "text-orange-500 hover:text-orange-500",
+    isUpVoted && "text-orange-500 hover:text-orange-500"
   );
   const downVoteButtonClasses = cn(
     voteButtonBaseClasses,
-    isDownVoted && "text-blue-500 hover:text-blue-500",
+    isDownVoted && "text-blue-500 hover:text-blue-500"
   );
 
   const voteCountClasses = cn(
     "text-sm font-medium",
     isPositive && "text-orange-500",
-    isNegative && "text-blue-500",
+    isNegative && "text-blue-500"
   );
 
   if (orientation === VOTE_BUTTON_ORIENTATIONS.HORIZONTAL) {
@@ -83,18 +90,22 @@ export const VoteButton = ({
         <Button
           variant="ghost"
           size="icon-sm"
-          onClick={() => handleVote("up")}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleVote("up");
+          }}
           className={cn(voteButtonBaseClasses, isUpVoted && "text-orange-500")}
         >
           <ChevronUp className={SIZE_CLASSES[size]} />
         </Button>
-        <span className={cn(voteCountClasses, "min-w-[2ch] text-center")}>
-          {localVotes}
-        </span>
+        <span className={cn(voteCountClasses, "min-w-[2ch] text-center")}>{localVotes}</span>
         <Button
           variant="ghost"
           size="icon-sm"
-          onClick={() => handleVote("down")}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleVote("down");
+          }}
           className={cn(voteButtonBaseClasses, isDownVoted && "text-blue-500")}
         >
           <ChevronDown className={SIZE_CLASSES[size]} />
@@ -108,7 +119,10 @@ export const VoteButton = ({
       <Button
         variant="ghost"
         size="icon-sm"
-        onClick={() => handleVote("up")}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleVote("up");
+        }}
         className={upVoteButtonClasses}
       >
         <ChevronUp className={SIZE_CLASSES[size]} />
@@ -117,7 +131,10 @@ export const VoteButton = ({
       <Button
         variant="ghost"
         size="icon-sm"
-        onClick={() => handleVote("down")}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleVote("down");
+        }}
         className={downVoteButtonClasses}
       >
         <ChevronDown className={SIZE_CLASSES[size]} />

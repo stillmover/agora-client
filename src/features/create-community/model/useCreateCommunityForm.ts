@@ -4,58 +4,50 @@ import { useNavigate } from "@tanstack/react-router";
 import { useCreateCommunityMutation } from "@/shared/api/gql/query-hooks";
 import { notificationActions } from "@/shared/stores";
 import { logger } from "@/shared/services/logger";
-import {
-  createCommunitySchema,
-  type CreateCommunityValues,
-} from "../lib/schemas";
+import { createCommunitySchema } from "../lib/schemas";
+import type { CreateCommunityValues } from "../lib/schemas";
 
-type UseCreateCommunityFormOptions = {
+interface UseCreateCommunityFormOptions {
   onSuccess?: (communityName: string) => void;
   navigateOnSuccess?: boolean;
-};
+}
 
 const DEFAULT_VALUES: CreateCommunityValues = {
-  name: "",
-  displayName: "",
-  description: "",
   communityType: "public",
+  description: "",
+  displayName: "",
+  name: "",
 };
 
-export const useCreateCommunityForm = (
-  options?: UseCreateCommunityFormOptions,
-) => {
+export const useCreateCommunityForm = (options?: UseCreateCommunityFormOptions) => {
   const createCommunityMutation = useCreateCommunityMutation();
   const navigate = useNavigate();
 
   const form = useForm({
     defaultValues: DEFAULT_VALUES,
-    validators: {
-      onSubmit: createCommunitySchema,
-    },
     onSubmit: async ({ value }) => {
-      if (createCommunityMutation.isPending) return;
+      if (createCommunityMutation.isPending) {
+        return;
+      }
 
       try {
         const result = await createCommunityMutation.mutateAsync({
           input: {
-            name: value.name.toLowerCase(),
-            displayName: value.displayName,
             description: value.description || undefined,
+            displayName: value.displayName,
+            name: value.name.toLowerCase(),
           },
         });
 
         if (result.createCommunity) {
           const communityName = result.createCommunity.name;
-          notificationActions.success(
-            "Community created!",
-            `r/${communityName} is ready`,
-          );
+          notificationActions.success("Community created!", `r/${communityName} is ready`);
           options?.onSuccess?.(communityName);
 
           if (options?.navigateOnSuccess !== false) {
             navigate({
-              to: "/r/$communityId",
               params: { communityId: communityName },
+              to: "/r/$communityId",
             });
           }
         }
@@ -63,10 +55,13 @@ export const useCreateCommunityForm = (
         logger.error("Failed to create community:", error);
         notificationActions.error(
           "Failed to create community",
-          error instanceof Error ? error.message : "Please try again later",
+          error instanceof Error ? error.message : "Please try again later"
         );
         throw error;
       }
+    },
+    validators: {
+      onSubmit: createCommunitySchema,
     },
   });
 
@@ -75,9 +70,9 @@ export const useCreateCommunityForm = (
   }, [form]);
 
   return {
+    error: createCommunityMutation.error,
     form,
     isSubmitting: createCommunityMutation.isPending,
-    error: createCommunityMutation.error,
     reset,
   };
 };

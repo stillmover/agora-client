@@ -2,7 +2,8 @@ import { useState, useCallback } from "react";
 import { PenLine } from "lucide-react";
 
 import { useCreatePostForm, POST_LIMITS } from "@/features/create-post";
-import { useCommunities, type Community } from "@/entities/community";
+import { useCommunities } from "@/entities/community";
+import type { Community } from "@/entities/community";
 import {
   Modal,
   Button,
@@ -12,32 +13,41 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectEmpty,
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui";
 import { cn } from "@/shared/lib/utils";
 
 const getErrorMessage = (error: unknown): string | undefined => {
-  if (!error) return undefined;
-  if (typeof error === "string") return error;
+  if (!error) {
+    return undefined;
+  }
+  if (typeof error === "string") {
+    return error;
+  }
   if (typeof error === "object" && "message" in error) {
     return String((error as { message: unknown }).message);
   }
   return undefined;
 };
 
-type CreatePostModalProps = {
+interface CreatePostModalProps {
   trigger?: React.ReactNode;
   defaultCommunityId?: string;
   onSuccess?: (postId: string) => void;
-};
+  defaultOpen?: boolean;
+  onClose?: VoidFunction;
+}
 
 export const CreatePostModal = ({
   trigger,
   defaultCommunityId,
   onSuccess,
+  defaultOpen = false,
+  onClose,
 }: CreatePostModalProps) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const { communities } = useCommunities();
 
   const { form, isSubmitting, reset } = useCreatePostForm({
@@ -50,35 +60,42 @@ export const CreatePostModal = ({
   });
 
   const handleClose = useCallback(() => {
-    if (isSubmitting) return;
+    if (isSubmitting) {
+      return;
+    }
     setOpen(false);
     reset();
-  }, [reset, isSubmitting]);
+    onClose?.();
+  }, [reset, isSubmitting, onClose]);
 
   const handleOpenChange = useCallback(
     (isOpen: boolean) => {
-      if (isSubmitting) return;
+      if (isSubmitting) {
+        return;
+      }
       if (!isOpen) {
         handleClose();
       } else {
         setOpen(true);
       }
     },
-    [handleClose, isSubmitting],
+    [handleClose, isSubmitting]
   );
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      if (isSubmitting) return;
+      if (isSubmitting) {
+        return;
+      }
       form.handleSubmit();
     },
-    [form, isSubmitting],
+    [form, isSubmitting]
   );
 
   return (
     <Modal open={open} onOpenChange={handleOpenChange}>
-      <Modal.Trigger asChild>{trigger}</Modal.Trigger>
+      {trigger ? <Modal.Trigger asChild>{trigger}</Modal.Trigger> : null}
 
       <Modal.Content size="xl">
         <Modal.Header>
@@ -120,19 +137,22 @@ export const CreatePostModal = ({
                         id={field.name}
                         className={cn(
                           "w-full",
-                          errorMessage &&
-                            "border-destructive focus:ring-destructive/50",
+                          errorMessage && "border-destructive focus:ring-destructive/50"
                         )}
                         aria-invalid={!!errorMessage}
                       >
                         <SelectValue placeholder="Select a community" />
                       </SelectTrigger>
                       <SelectContent>
-                        {communities.map((community: Community) => (
-                          <SelectItem key={community.id} value={community.id}>
-                            r/{community.name}
-                          </SelectItem>
-                        ))}
+                        {communities.length ? (
+                          communities.map((community: Community) => (
+                            <SelectItem key={community.id} value={community.id}>
+                              r/{community.name}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectEmpty>No communities available</SelectEmpty>
+                        )}
                       </SelectContent>
                     </Select>
                   </FormField>
@@ -167,8 +187,7 @@ export const CreatePostModal = ({
                       disabled={isSubmitting}
                       className={cn(
                         "text-base",
-                        errorMessage &&
-                          "border-destructive focus-visible:ring-destructive/50",
+                        errorMessage && "border-destructive focus-visible:ring-destructive/50"
                       )}
                       aria-invalid={!!errorMessage}
                     />
@@ -201,8 +220,7 @@ export const CreatePostModal = ({
                       disabled={isSubmitting}
                       className={cn(
                         "resize-none min-h-[200px]",
-                        errorMessage &&
-                          "border-destructive focus-visible:ring-destructive/50",
+                        errorMessage && "border-destructive focus-visible:ring-destructive/50"
                       )}
                       aria-invalid={!!errorMessage}
                     />
@@ -213,19 +231,10 @@ export const CreatePostModal = ({
           </Modal.Body>
 
           <Modal.Footer>
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={handleClose}
-              disabled={isSubmitting}
-            >
+            <Button type="button" variant="ghost" onClick={handleClose} disabled={isSubmitting}>
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="min-w-[100px]"
-            >
+            <Button type="submit" disabled={isSubmitting} className="min-w-[100px]">
               {isSubmitting ? (
                 <span className="flex items-center gap-2">
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground" />

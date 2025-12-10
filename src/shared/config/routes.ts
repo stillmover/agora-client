@@ -2,6 +2,7 @@ export const ROUTES = {
   COMMUNITY: "/r/",
   CREATE_POST: "/submit",
   HOME: "/",
+  MESSAGES: "/messages",
   LOGIN: "/login",
   NOT_FOUND: "*",
   POST: "/post/",

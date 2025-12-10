@@ -12,26 +12,22 @@ import { Button } from "@/shared/ui/button";
 import { CreatePostModal } from "@/widgets/create-post-modal";
 
 const fadeAnimation = {
-  initial: { opacity: 0 },
   animate: { opacity: 1 },
   exit: { opacity: 0 },
+  initial: { opacity: 0 },
   transition: { duration: 0.15 },
 };
 
-type CommunityInfoModalProps = {
+interface CommunityInfoModalProps {
   communityName: string;
   trigger: React.ReactNode;
-};
+}
 
-export const CommunityInfoModal = ({
-  communityName,
-  trigger,
-}: CommunityInfoModalProps) => {
+export const CommunityInfoModal = ({ communityName, trigger }: CommunityInfoModalProps) => {
   const [open, setOpen] = useState(false);
   const { community, isLoading } = useCommunityByName(communityName);
   const isAuthenticated = useIsAuthenticated();
 
-  // Use the community actions hook for join/leave with optimistic updates
   const {
     toggleJoin,
     isJoined,
@@ -39,7 +35,9 @@ export const CommunityInfoModal = ({
   } = useCommunityActions(community?.id ?? "");
 
   const handleJoinToggle = useCallback(async () => {
-    if (!community) return;
+    if (!community) {
+      return;
+    }
     await toggleJoin();
   }, [community, toggleJoin]);
 
@@ -51,8 +49,12 @@ export const CommunityInfoModal = ({
     handleOpenChange(false);
   }, [handleOpenChange]);
 
-  // Determine join state - prefer optimistic state, fallback to server state
   const joined = community?.id ? isJoined || community.isJoined : false;
+  const memberCount =
+    typeof community?.memberCount === "number" && Number.isFinite(community.memberCount)
+      ? community.memberCount
+      : 0;
+  const createdAt = community?.createdAt ? new Date(community.createdAt) : null;
 
   return (
     <DialogPrimitive.Root open={open} onOpenChange={handleOpenChange}>
@@ -74,10 +76,13 @@ export const CommunityInfoModal = ({
                 {...fadeAnimation}
                 className="fixed inset-0 flex items-center justify-center z-50 p-4"
               >
-                <div
-                  className="relative w-full max-w-md rounded-xl bg-white dark:bg-[#1a1a1b] shadow-xl overflow-hidden"
-                  onClick={(e) => e.stopPropagation()}
-                >
+                <div className="relative w-full max-w-md rounded-xl bg-white dark:bg-[#1a1a1b] shadow-xl overflow-hidden">
+                  <DialogPrimitive.Title className="sr-only">
+                    {community ? `Community info for r/${community.name}` : "Community information"}
+                  </DialogPrimitive.Title>
+                  <DialogPrimitive.Description className="sr-only">
+                    Details about the community and actions like join or create post
+                  </DialogPrimitive.Description>
                   {/* Banner */}
                   <div className="h-24 bg-gradient-to-r from-blue-500 to-purple-600">
                     {community?.bannerUrl && (
@@ -134,20 +139,14 @@ export const CommunityInfoModal = ({
                         <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
                           <div className="flex items-center gap-1">
                             <Users className="h-4 w-4" />
-                            <span>
-                              {community.memberCount.toLocaleString()} members
-                            </span>
+                            <span>{memberCount.toLocaleString()} members</span>
                           </div>
                           <div className="flex items-center gap-1">
                             <Calendar className="h-4 w-4" />
                             <span>
-                              Created{" "}
-                              {formatDistanceToNow(
-                                new Date(community.createdAt),
-                                {
-                                  addSuffix: true,
-                                },
-                              )}
+                              {createdAt
+                                ? `Created ${formatDistanceToNow(createdAt, { addSuffix: true })}`
+                                : "Created date unavailable"}
                             </span>
                           </div>
                         </div>

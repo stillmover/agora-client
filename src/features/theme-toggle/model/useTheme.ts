@@ -1,18 +1,15 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
-import {
-  getStoredTheme,
-  saveTheme,
-  getNextTheme,
-  shouldApplyDarkTheme,
-  type Theme,
-} from "../lib/theme-utils";
+import { getStoredTheme, saveTheme, getNextTheme, shouldApplyDarkTheme } from "../lib/theme-utils";
+import type { Theme } from "../lib/theme-utils";
 
 export const useTheme = () => {
   const [theme, setTheme] = useState<Theme>(getStoredTheme);
   const [isDark, setIsDark] = useState(false);
 
   const systemPrefersDark = useMemo(() => {
-    if (typeof window === "undefined") return false;
+    if (typeof window === "undefined") {
+      return false;
+    }
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   }, []);
 
@@ -21,10 +18,7 @@ export const useTheme = () => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
     const applyTheme = (currentTheme: Theme) => {
-      const shouldBeDark = shouldApplyDarkTheme(
-        currentTheme,
-        systemPrefersDark,
-      );
+      const shouldBeDark = shouldApplyDarkTheme(currentTheme, systemPrefersDark);
 
       if (shouldBeDark) {
         root.classList.add("dark");
@@ -58,8 +52,8 @@ export const useTheme = () => {
   }, []);
 
   return {
-    theme,
-    isDark,
     cycleTheme,
+    isDark,
+    theme,
   };
 };

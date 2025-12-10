@@ -6,7 +6,7 @@ import {
   useCommunityByNameQuery as useCommunityByNameGql,
   useFlairsByCommunityQuery as useFlairsByCommunityGql,
 } from "@/shared/api/gql/query-hooks";
-import { mapCommunity } from "../api/mappers";
+import { mapCommunity, hydrateJoinedCommunity } from "../api/mappers";
 
 export const useCommunities = (limit = 20, offset = 0) => {
   const { data, isLoading, error, refetch } = useCommunitiesGql({
@@ -15,13 +15,14 @@ export const useCommunities = (limit = 20, offset = 0) => {
   });
 
   const communities = useMemo(() => {
+    (data ?? []).forEach(hydrateJoinedCommunity);
     return (data ?? []).map(mapCommunity);
   }, [data]);
 
   return {
     communities,
-    isLoading,
     error,
+    isLoading,
     refetch,
   };
 };
@@ -30,13 +31,14 @@ export const usePopularCommunities = (limit = 10) => {
   const { data, isLoading, error, refetch } = usePopularCommunitiesGql(limit);
 
   const communities = useMemo(() => {
+    (data ?? []).forEach(hydrateJoinedCommunity);
     return (data ?? []).map(mapCommunity);
   }, [data]);
 
   return {
     communities,
-    isLoading,
     error,
+    isLoading,
     refetch,
   };
 };
@@ -46,14 +48,12 @@ export const useCommunity = (communityId: string) => {
     enabled: Boolean(communityId),
   });
 
-  const community = useMemo(() => {
-    return data ? mapCommunity(data) : null;
-  }, [data]);
+  const community = useMemo(() => (data ? mapCommunity(data) : undefined), [data]);
 
   return {
     community,
-    isLoading,
     error,
+    isLoading,
     refetch,
   };
 };
@@ -63,30 +63,25 @@ export const useCommunityByName = (name: string) => {
     enabled: Boolean(name),
   });
 
-  const community = useMemo(() => {
-    return data ? mapCommunity(data) : null;
-  }, [data]);
+  const community = useMemo(() => (data ? mapCommunity(data) : undefined), [data]);
 
   return {
     community,
-    isLoading,
     error,
+    isLoading,
     refetch,
   };
 };
 
 export const useFlairsByCommunity = (communityId: string) => {
-  const { data, isLoading, error, refetch } = useFlairsByCommunityGql(
-    communityId,
-    {
-      enabled: Boolean(communityId),
-    },
-  );
+  const { data, isLoading, error, refetch } = useFlairsByCommunityGql(communityId, {
+    enabled: Boolean(communityId),
+  });
 
   return {
+    error,
     flairs: data ?? [],
     isLoading,
-    error,
     refetch,
   };
 };

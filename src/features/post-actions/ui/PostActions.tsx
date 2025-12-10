@@ -1,11 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import {
-  MessageSquare,
-  Share2,
-  Bookmark,
-  Gift,
-  MoreHorizontal,
-} from "lucide-react";
+import { MessageSquare, Share2, Bookmark, Gift, MoreHorizontal } from "lucide-react";
 
 import { cn } from "@/shared/lib/utils";
 import { formatCommentCount } from "@/shared/services";
@@ -13,17 +7,17 @@ import { logger } from "@/shared/services/logger";
 import { usePostActions } from "../model/usePostActions";
 import type { Post } from "@/entities/post";
 
-type PostActionsProps = {
+interface PostActionsProps {
   post: Post;
-};
+}
 
-type ActionButtonProps = {
-  onClick?: () => void;
+interface ActionButtonProps {
+  onClick?: VoidFunction;
   isActive?: boolean;
   activeColor?: string;
   children: React.ReactNode;
   className?: string;
-};
+}
 
 const ActionButton = ({
   onClick,
@@ -41,7 +35,7 @@ const ActionButton = ({
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
       "active:scale-95",
       isActive ? activeColor : "text-muted-foreground hover:text-foreground",
-      className,
+      className
     )}
   >
     {children}
@@ -65,7 +59,7 @@ export const PostActions = ({ post }: PostActionsProps) => {
           "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium",
           "text-muted-foreground hover:text-foreground hover:bg-accent",
           "transition-all duration-150",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         )}
       >
         <MessageSquare className="h-4 w-4" />

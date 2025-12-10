@@ -5,26 +5,26 @@ import { X } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
 const overlayVariants = {
+  exit: { opacity: 0 },
   hidden: { opacity: 0 },
   visible: { opacity: 1 },
-  exit: { opacity: 0 },
 };
 
 const contentVariants = {
+  exit: { opacity: 0, scale: 0.95, transition: { duration: 0.15 }, y: 10 },
   hidden: { opacity: 0, scale: 0.95, y: 10 },
   visible: {
     opacity: 1,
     scale: 1,
+    transition: { damping: 25, stiffness: 300, type: "spring" },
     y: 0,
-    transition: { type: "spring", damping: 25, stiffness: 300 },
   },
-  exit: { opacity: 0, scale: 0.95, y: 10, transition: { duration: 0.15 } },
 };
 
-type ModalContextValue = {
+interface ModalContextValue {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-};
+}
 
 const ModalContext = React.createContext<ModalContextValue | null>(null);
 
@@ -36,12 +36,12 @@ const useModalContext = () => {
   return context;
 };
 
-type ModalProps = {
+interface ModalProps {
   children: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   defaultOpen?: boolean;
-};
+}
 
 const Modal = ({ children, open, onOpenChange, defaultOpen }: ModalProps) => {
   const [internalOpen, setInternalOpen] = React.useState(defaultOpen ?? false);
@@ -55,13 +55,11 @@ const Modal = ({ children, open, onOpenChange, defaultOpen }: ModalProps) => {
       }
       onOpenChange?.(newOpen);
     },
-    [isControlled, onOpenChange],
+    [isControlled, onOpenChange]
   );
 
   return (
-    <ModalContext.Provider
-      value={{ open: isOpen, onOpenChange: handleOpenChange }}
-    >
+    <ModalContext.Provider value={{ onOpenChange: handleOpenChange, open: isOpen }}>
       <DialogPrimitive.Root open={isOpen} onOpenChange={handleOpenChange}>
         {children}
       </DialogPrimitive.Root>
@@ -71,19 +69,19 @@ const Modal = ({ children, open, onOpenChange, defaultOpen }: ModalProps) => {
 
 const ModalTrigger = DialogPrimitive.Trigger;
 
-type ModalContentProps = {
+interface ModalContentProps {
   children: React.ReactNode;
   className?: string;
   size?: "sm" | "md" | "lg" | "xl" | "full";
   showCloseButton?: boolean;
-};
+}
 
 const sizeClasses = {
-  sm: "max-w-sm",
-  md: "max-w-md",
-  lg: "max-w-lg",
-  xl: "max-w-xl",
   full: "max-w-4xl",
+  lg: "max-w-lg",
+  md: "max-w-md",
+  sm: "max-w-sm",
+  xl: "max-w-xl",
 };
 
 const ModalContent = ({
@@ -123,7 +121,7 @@ const ModalContent = ({
                   "ring-1 ring-black/5 dark:ring-white/10",
                   "max-h-[90vh] overflow-hidden",
                   sizeClasses[size],
-                  className,
+                  className
                 )}
                 variants={contentVariants}
                 initial="hidden"
@@ -144,7 +142,7 @@ const ModalContent = ({
                         "dark:hover:bg-zinc-700 dark:hover:text-zinc-200",
                         "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
                         "dark:focus:ring-offset-zinc-900",
-                        "cursor-pointer",
+                        "cursor-pointer"
                       )}
                     >
                       <X className="h-4 w-4" />
@@ -161,42 +159,42 @@ const ModalContent = ({
   );
 };
 
-type ModalHeaderProps = {
+interface ModalHeaderProps {
   children: React.ReactNode;
   className?: string;
-};
+}
 
 const ModalHeader = ({ children, className }: ModalHeaderProps) => (
   <div
     className={cn(
       "sticky top-0 z-10 border-b border-zinc-200 bg-white px-6 py-5 dark:border-zinc-800 dark:bg-zinc-900",
-      className,
+      className
     )}
   >
     {children}
   </div>
 );
 
-type ModalTitleProps = {
+interface ModalTitleProps {
   children: React.ReactNode;
   className?: string;
-};
+}
 
 const ModalTitle = ({ children, className }: ModalTitleProps) => (
   <DialogPrimitive.Title
     className={cn(
       "text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50",
-      className,
+      className
     )}
   >
     {children}
   </DialogPrimitive.Title>
 );
 
-type ModalDescriptionProps = {
+interface ModalDescriptionProps {
   children: React.ReactNode;
   className?: string;
-};
+}
 
 const ModalDescription = ({ children, className }: ModalDescriptionProps) => (
   <DialogPrimitive.Description
@@ -206,25 +204,25 @@ const ModalDescription = ({ children, className }: ModalDescriptionProps) => (
   </DialogPrimitive.Description>
 );
 
-type ModalBodyProps = {
+interface ModalBodyProps {
   children: React.ReactNode;
   className?: string;
-};
+}
 
 const ModalBody = ({ children, className }: ModalBodyProps) => (
   <div className={cn("overflow-y-auto px-6 py-6", className)}>{children}</div>
 );
 
-type ModalFooterProps = {
+interface ModalFooterProps {
   children: React.ReactNode;
   className?: string;
-};
+}
 
 const ModalFooter = ({ children, className }: ModalFooterProps) => (
   <div
     className={cn(
       "sticky bottom-0 flex items-center justify-end gap-3 border-t border-zinc-200 bg-zinc-50 px-6 py-4 dark:border-zinc-800 dark:bg-zinc-900/50",
-      className,
+      className
     )}
   >
     {children}

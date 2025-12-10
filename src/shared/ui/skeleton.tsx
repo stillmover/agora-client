@@ -1,9 +1,9 @@
 import { cn } from "@/shared/lib/utils";
 
-type SkeletonProps = {
+interface SkeletonProps {
   className?: string;
   animate?: boolean;
-};
+}
 
 export const Skeleton = ({ className, animate = true }: SkeletonProps) => (
   <div
@@ -25,10 +25,7 @@ export const SkeletonText = ({
     {Array.from({ length: lines }).map((_, i) => (
       <Skeleton
         key={i}
-        className={cn(
-          "h-4",
-          i === lines - 1 && lines > 1 ? `w-[${lastLineWidth}]` : "w-full",
-        )}
+        className={cn("h-4", i === lines - 1 && lines > 1 ? `w-[${lastLineWidth}]` : "w-full")}
       />
     ))}
   </div>
@@ -42,16 +39,14 @@ export const SkeletonAvatar = ({
   className?: string;
 }) => {
   const sizeClasses = {
-    xs: "h-6 w-6",
-    sm: "h-8 w-8",
-    md: "h-10 w-10",
     lg: "h-12 w-12",
+    md: "h-10 w-10",
+    sm: "h-8 w-8",
     xl: "h-16 w-16",
+    xs: "h-6 w-6",
   };
 
-  return (
-    <Skeleton className={cn("rounded-full", sizeClasses[size], className)} />
-  );
+  return <Skeleton className={cn("rounded-full", sizeClasses[size], className)} />;
 };
 
 export const SkeletonButton = ({
@@ -62,9 +57,9 @@ export const SkeletonButton = ({
   className?: string;
 }) => {
   const sizeClasses = {
-    sm: "h-8 w-16",
     default: "h-10 w-24",
     lg: "h-12 w-32",
+    sm: "h-8 w-16",
   };
 
   return <Skeleton className={cn(sizeClasses[size], className)} />;
@@ -149,11 +144,7 @@ export const SkeletonCommunityList = ({
   </div>
 );
 
-export const SkeletonProfileHeader = ({
-  className,
-}: {
-  className?: string;
-}) => (
+export const SkeletonProfileHeader = ({ className }: { className?: string }) => (
   <div className={cn("rounded-xl border bg-card p-6", className)}>
     <div className="flex items-start gap-4">
       <SkeletonAvatar size="xl" />

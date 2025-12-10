@@ -9,9 +9,7 @@ interface OAuthButtonsProps {
   showEmailLink?: boolean;
 }
 
-export default function OAuthButtons({
-  showEmailLink = false,
-}: OAuthButtonsProps) {
+export default function OAuthButtons({ showEmailLink = false }: OAuthButtonsProps) {
   const { initiateGoogleOAuth } = useGoogleOAuth();
   return (
     <div className="flex flex-col gap-2">

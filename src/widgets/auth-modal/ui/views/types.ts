@@ -1,6 +1,8 @@
-export type AuthView = "login" | "register" | "reset";
+type AuthView = "login" | "register" | "reset";
 
-export type AuthViewProps = {
-  onSuccess: () => void;
+interface AuthViewProps {
+  onSuccess: VoidFunction;
   onViewChange: (view: AuthView) => void;
-};
+}
+
+export type { AuthView, AuthViewProps };

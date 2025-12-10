@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { Plus, TrendingUp, Sparkles, ChevronRight, Trophy } from "lucide-react";
 
-import { usePopularCommunities, type Community } from "@/entities/community";
+import { usePopularCommunities } from "@/entities/community";
+import type { Community } from "@/entities/community";
 import { useCommunityActions } from "@/features/community";
 import {
   Button,
@@ -18,13 +19,7 @@ import {
 import { logger } from "@/shared/services/logger";
 import { cn } from "@/shared/lib/utils";
 
-const CommunityItem = ({
-  community,
-  rank,
-}: {
-  community: Community;
-  rank: number;
-}) => {
+const CommunityItem = ({ community, rank }: { community: Community; rank: number }) => {
   const { toggleJoin, isJoined, joinLabel } = useCommunityActions(community.id);
 
   const handleJoin = async () => {
@@ -40,7 +35,7 @@ const CommunityItem = ({
       <span
         className={cn(
           "w-5 text-center text-sm font-bold",
-          rank <= 3 ? "text-brand" : "text-muted-foreground",
+          rank <= 3 ? "text-brand" : "text-muted-foreground"
         )}
       >
         {rank}
@@ -71,7 +66,7 @@ const CommunityItem = ({
         variant={isJoined ? "subtle" : "brand"}
         className={cn(
           "opacity-0 group-hover:opacity-100 transition-opacity",
-          isJoined && "opacity-100",
+          isJoined && "opacity-100"
         )}
         onClick={handleJoin}
       >
@@ -96,9 +91,7 @@ export const RightSidebar = () => {
         <CardContent className="pt-0">
           {error ? (
             <div className="py-4 text-center">
-              <p className="text-sm text-muted-foreground">
-                Failed to load communities
-              </p>
+              <p className="text-sm text-muted-foreground">Failed to load communities</p>
               <Button
                 variant="ghost"
                 size="sm"
@@ -113,11 +106,7 @@ export const RightSidebar = () => {
           ) : (
             <div className="space-y-1">
               {communities.slice(0, 5).map((community, index) => (
-                <CommunityItem
-                  key={community.id}
-                  community={community}
-                  rank={index + 1}
-                />
+                <CommunityItem key={community.id} community={community} rank={index + 1} />
               ))}
               <Link
                 to="/search"
@@ -125,7 +114,7 @@ export const RightSidebar = () => {
                 className={cn(
                   "flex items-center justify-between py-2 px-1 mt-2",
                   "text-sm text-muted-foreground hover:text-foreground",
-                  "transition-colors rounded-lg hover:bg-accent",
+                  "transition-colors rounded-lg hover:bg-accent"
                 )}
               >
                 <span>See all communities</span>
@@ -143,18 +132,14 @@ export const RightSidebar = () => {
               className={cn(
                 "flex h-12 w-12 items-center justify-center rounded-xl",
                 "bg-brand text-white shadow-lg",
-                "group-hover:scale-105 transition-transform",
+                "group-hover:scale-105 transition-transform"
               )}
             >
               <Sparkles className="h-6 w-6" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-foreground">
-                Create a Community
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                Build your own space
-              </p>
+              <h3 className="font-semibold text-foreground">Create a Community</h3>
+              <p className="text-xs text-muted-foreground">Build your own space</p>
             </div>
           </div>
           <Button variant="brand" size="sm" className="w-full mt-4" asChild>
@@ -175,9 +160,7 @@ export const RightSidebar = () => {
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <h3 className="font-semibold text-foreground">Agora Premium</h3>
-                <Badge className="bg-amber-500 text-white text-[10px]">
-                  NEW
-                </Badge>
+                <Badge className="bg-amber-500 text-white text-[10px]">NEW</Badge>
               </div>
               <p className="text-xs text-muted-foreground mb-3">
                 Ad-free browsing, exclusive features, and more.
@@ -192,19 +175,26 @@ export const RightSidebar = () => {
 
       <div className="text-xs text-muted-foreground space-y-2 px-1">
         <div className="flex flex-wrap gap-x-3 gap-y-1">
-          <a href="#" className="hover:text-foreground transition-colors">
+          <a
+            href="https://www.redditinc.com/policies/content-policy"
+            className="hover:text-foreground transition-colors"
+          >
             Content Policy
           </a>
-          <a href="#" className="hover:text-foreground transition-colors">
+          <a
+            href="https://www.redditinc.com/policies/privacy-policy"
+            className="hover:text-foreground transition-colors"
+          >
             Privacy Policy
           </a>
-          <a href="#" className="hover:text-foreground transition-colors">
+          <a
+            href="https://www.redditinc.com/policies/user-agreement"
+            className="hover:text-foreground transition-colors"
+          >
             User Agreement
           </a>
         </div>
-        <p className="text-muted-foreground/60">
-          © 2025 Agora Inc. All rights reserved.
-        </p>
+        <p className="text-muted-foreground/60">© 2025 Agora Inc. All rights reserved.</p>
       </div>
     </div>
   );

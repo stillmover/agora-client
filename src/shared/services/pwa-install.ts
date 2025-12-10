@@ -7,14 +7,11 @@ type BeforeInstallPromptEvent = Event & {
 
 export class PWAInstallManager {
   private deferredPrompt: BeforeInstallPromptEvent | null = null;
-  private installHandlers: Array<() => void> = [];
+  private installHandlers: VoidFunction[] = [];
 
   constructor() {
     if (typeof window !== "undefined") {
-      window.addEventListener(
-        "beforeinstallprompt",
-        this.handleBeforeInstallPrompt.bind(this),
-      );
+      window.addEventListener("beforeinstallprompt", this.handleBeforeInstallPrompt.bind(this));
     }
   }
 
@@ -32,7 +29,7 @@ export class PWAInstallManager {
     try {
       await this.deferredPrompt.prompt();
       const choiceResult = await this.deferredPrompt.userChoice;
-      this.deferredPrompt = null;
+      this.deferredPrompt = undefined;
       return choiceResult.outcome === "accepted";
     } catch (error) {
       console.error("PWA installation failed:", error);
@@ -55,7 +52,7 @@ export class PWAInstallManager {
     );
   }
 
-  onInstallAvailable(handler: () => void): () => void {
+  onInstallAvailable(handler: VoidFunction): VoidFunction {
     this.installHandlers.push(handler);
     return () => {
       this.installHandlers = this.installHandlers.filter((h) => h !== handler);
@@ -72,9 +69,9 @@ export class PWAInstallManager {
     canInstall: boolean;
   }> {
     return {
+      canInstall: this.isInstallable() && !this.isInstalled(),
       installable: this.isInstallable(),
       installed: this.isInstalled(),
-      canInstall: this.isInstallable() && !this.isInstalled(),
     };
   }
 }
@@ -106,9 +103,9 @@ export function usePWAInstall() {
   }, []);
 
   return {
+    canInstall: installable && !installed,
+    install,
     installable,
     installed,
-    install,
-    canInstall: installable && !installed,
   };
 }

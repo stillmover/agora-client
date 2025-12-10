@@ -32,7 +32,7 @@ export const FloatingInput = ({
         className={cn(
           "peer rounded-full px-6 pt-5 pb-2 text-sm bg-[#E5EBEE] hover:bg-[#DBE4E9] dark:border-none dark:bg-[#2a3236] h-14 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
           hasError && "border-destructive focus-visible:ring-destructive/50",
-          className,
+          className
         )}
       />
 
@@ -45,7 +45,7 @@ export const FloatingInput = ({
             : "top-1/2 -translate-y-1/2 text-sm peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-xs",
           hasError
             ? "text-destructive"
-            : "text-gray-500 dark:text-[#D7DADC] peer-focus:text-gray-500",
+            : "text-gray-500 dark:text-[#D7DADC] peer-focus:text-gray-500"
         )}
       >
         {label} {required && <span className="text-destructive">*</span>}

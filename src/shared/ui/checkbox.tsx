@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
-type CheckboxProps = {
+interface CheckboxProps {
   checked: boolean;
   onChange: (checked: boolean) => void;
   label?: React.ReactNode;
@@ -13,26 +13,26 @@ type CheckboxProps = {
   className?: string;
   id?: string;
   name?: string;
-};
+}
 
 const sizeClasses = {
-  sm: {
-    box: "h-4 w-4",
-    icon: "h-2.5 w-2.5",
-    label: "text-sm",
-    description: "text-xs",
+  lg: {
+    box: "h-6 w-6",
+    description: "text-sm",
+    icon: "h-3.5 w-3.5",
+    label: "text-base font-medium",
   },
   md: {
     box: "h-5 w-5",
+    description: "text-xs",
     icon: "h-3 w-3",
     label: "text-sm font-medium",
-    description: "text-xs",
   },
-  lg: {
-    box: "h-6 w-6",
-    icon: "h-3.5 w-3.5",
-    label: "text-base font-medium",
-    description: "text-sm",
+  sm: {
+    box: "h-4 w-4",
+    description: "text-xs",
+    icon: "h-2.5 w-2.5",
+    label: "text-sm",
   },
 };
 
@@ -48,19 +48,8 @@ export const Checkbox = ({
   name,
 }: CheckboxProps) => {
   const config = sizeClasses[size];
-  const inputId = id ?? React.useId();
-
-  const handleKeyDown = React.useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        if (!disabled) {
-          onChange(!checked);
-        }
-      }
-    },
-    [checked, disabled, onChange],
-  );
+  const generatedId = React.useId();
+  const inputId = id ?? generatedId;
 
   return (
     <label
@@ -68,7 +57,7 @@ export const Checkbox = ({
       className={cn(
         "flex cursor-pointer items-start gap-3",
         disabled && "cursor-not-allowed opacity-50",
-        className,
+        className
       )}
     >
       <input
@@ -82,12 +71,7 @@ export const Checkbox = ({
       />
 
       <motion.div
-        role="checkbox"
-        aria-checked={checked}
-        aria-disabled={disabled}
-        tabIndex={disabled ? -1 : 0}
-        onClick={() => !disabled && onChange(!checked)}
-        onKeyDown={handleKeyDown}
+        aria-hidden="true"
         whileTap={disabled ? undefined : { scale: 0.9 }}
         className={cn(
           "flex-shrink-0 rounded-md border-2 transition-all duration-200",
@@ -96,32 +80,23 @@ export const Checkbox = ({
           config.box,
           checked
             ? "border-primary bg-primary"
-            : "border-muted-foreground/50 bg-background hover:border-muted-foreground",
+            : "border-muted-foreground/50 bg-background hover:border-muted-foreground"
         )}
       >
         <motion.div
           initial={false}
-          animate={{ scale: checked ? 1 : 0, opacity: checked ? 1 : 0 }}
-          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+          animate={{ opacity: checked ? 1 : 0, scale: checked ? 1 : 0 }}
+          transition={{ damping: 30, stiffness: 500, type: "spring" }}
         >
-          <Check
-            className={cn("text-primary-foreground", config.icon)}
-            strokeWidth={3}
-          />
+          <Check className={cn("text-primary-foreground", config.icon)} strokeWidth={3} />
         </motion.div>
       </motion.div>
 
       {(label || description) && (
         <div className="flex-1 min-w-0 pt-0.5">
-          {label && (
-            <span className={cn("text-foreground", config.label)}>{label}</span>
-          )}
+          {label && <span className={cn("text-foreground", config.label)}>{label}</span>}
           {description && (
-            <p
-              className={cn("mt-0.5 text-muted-foreground", config.description)}
-            >
-              {description}
-            </p>
+            <p className={cn("mt-0.5 text-muted-foreground", config.description)}>{description}</p>
           )}
         </div>
       )}

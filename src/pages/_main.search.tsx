@@ -1,19 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import {
-  useSearchPosts,
-  useSearchCommunities,
-  useSearchUsers,
-  type SearchType,
-} from "@/features/search";
+import { useSearchPosts, useSearchCommunities, useSearchUsers } from "@/features/search";
+import type { SearchType } from "@/features/search";
 import { PostCard } from "@/widgets/post-card";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/shared/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Badge } from "@/shared/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
@@ -95,41 +85,26 @@ function SearchPage() {
       </Card>
 
       {isSearching && (
-        <Tabs
-          value={activeTab}
-          onValueChange={(v) => setActiveTab(v as SearchType)}
-        >
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as SearchType)}>
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="posts" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
               <span>Posts</span>
-              <Badge
-                variant="secondary"
-                className={cn("ml-1", postsLoading && "opacity-50")}
-              >
+              <Badge variant="secondary" className={cn("ml-1", postsLoading && "opacity-50")}>
                 {posts.length}
               </Badge>
             </TabsTrigger>
-            <TabsTrigger
-              value="communities"
-              className="flex items-center gap-2"
-            >
+            <TabsTrigger value="communities" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
               <span>Communities</span>
-              <Badge
-                variant="secondary"
-                className={cn("ml-1", communitiesLoading && "opacity-50")}
-              >
+              <Badge variant="secondary" className={cn("ml-1", communitiesLoading && "opacity-50")}>
                 {communities.length}
               </Badge>
             </TabsTrigger>
             <TabsTrigger value="users" className="flex items-center gap-2">
               <User className="h-4 w-4" />
               <span>Users</span>
-              <Badge
-                variant="secondary"
-                className={cn("ml-1", usersLoading && "opacity-50")}
-              >
+              <Badge variant="secondary" className={cn("ml-1", usersLoading && "opacity-50")}>
                 {users.length}
               </Badge>
             </TabsTrigger>
@@ -139,27 +114,17 @@ function SearchPage() {
             {postsLoading ? (
               <div className="space-y-4">
                 {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="h-32 bg-muted animate-pulse rounded"
-                  />
+                  <div key={i} className="h-32 bg-muted animate-pulse rounded" />
                 ))}
               </div>
             ) : posts.length === 0 ? (
               <Card>
                 <CardContent className="p-6 text-center">
-                  <p className="text-muted-foreground">
-                    No posts found for "{query}"
-                  </p>
+                  <p className="text-muted-foreground">No posts found for "{query}"</p>
                 </CardContent>
               </Card>
             ) : (
-              <div
-                className={cn(
-                  "space-y-4",
-                  postsSearching && "opacity-75 transition-opacity",
-                )}
-              >
+              <div className={cn("space-y-4", postsSearching && "opacity-75 transition-opacity")}>
                 {posts.map((post) => (
                   <PostCard key={post.id} post={post} showCommunity />
                 ))}
@@ -171,26 +136,18 @@ function SearchPage() {
             {communitiesLoading ? (
               <div className="space-y-4">
                 {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="h-20 bg-muted animate-pulse rounded"
-                  />
+                  <div key={i} className="h-20 bg-muted animate-pulse rounded" />
                 ))}
               </div>
             ) : communities.length === 0 ? (
               <Card>
                 <CardContent className="p-6 text-center">
-                  <p className="text-muted-foreground">
-                    No communities found for "{query}"
-                  </p>
+                  <p className="text-muted-foreground">No communities found for "{query}"</p>
                 </CardContent>
               </Card>
             ) : (
               <div
-                className={cn(
-                  "space-y-4",
-                  communitiesSearching && "opacity-75 transition-opacity",
-                )}
+                className={cn("space-y-4", communitiesSearching && "opacity-75 transition-opacity")}
               >
                 {communities.map((community) => (
                   <Link
@@ -214,9 +171,7 @@ function SearchPage() {
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <Badge variant="secondary">
-                                r/{community.name}
-                              </Badge>
+                              <Badge variant="secondary">r/{community.name}</Badge>
                               <span className="text-sm text-muted-foreground">
                                 {community.members.toLocaleString()} members
                               </span>
@@ -240,33 +195,19 @@ function SearchPage() {
             {usersLoading ? (
               <div className="space-y-4">
                 {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="h-20 bg-muted animate-pulse rounded"
-                  />
+                  <div key={i} className="h-20 bg-muted animate-pulse rounded" />
                 ))}
               </div>
             ) : users.length === 0 ? (
               <Card>
                 <CardContent className="p-6 text-center">
-                  <p className="text-muted-foreground">
-                    No users found for "{query}"
-                  </p>
+                  <p className="text-muted-foreground">No users found for "{query}"</p>
                 </CardContent>
               </Card>
             ) : (
-              <div
-                className={cn(
-                  "space-y-4",
-                  usersSearching && "opacity-75 transition-opacity",
-                )}
-              >
+              <div className={cn("space-y-4", usersSearching && "opacity-75 transition-opacity")}>
                 {users.map((user) => (
-                  <Link
-                    key={user.id}
-                    to="/u/$username"
-                    params={{ username: user.username }}
-                  >
+                  <Link key={user.id} to="/u/$username" params={{ username: user.username }}>
                     <Card className="hover:bg-muted/50 transition-colors">
                       <CardContent className="p-4">
                         <div className="flex items-center gap-4">
@@ -283,9 +224,7 @@ function SearchPage() {
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <span className="font-medium">
-                                u/{user.username}
-                              </span>
+                              <span className="font-medium">u/{user.username}</span>
                               <span className="text-sm text-muted-foreground">
                                 {user.karma.toLocaleString()} karma
                               </span>

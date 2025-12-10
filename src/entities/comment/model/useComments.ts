@@ -10,17 +10,15 @@ export const useComments = (postId: string, limit = 50, offset = 0) => {
   const { data, isLoading, error, refetch } = useCommentsGql(
     postId,
     { limit, offset },
-    { enabled: Boolean(postId) },
+    { enabled: Boolean(postId) }
   );
 
-  const comments = useMemo(() => {
-    return (data ?? []).map(mapComment);
-  }, [data]);
+  const comments = useMemo(() => (data ?? []).map(mapComment), [data]);
 
   return {
     comments,
-    isLoading,
     error,
+    isLoading,
     refetch,
   };
 };
@@ -30,33 +28,30 @@ export const useComment = (commentId: string) => {
     enabled: Boolean(commentId),
   });
 
-  const comment = useMemo(() => {
-    return data ? mapComment(data) : null;
-  }, [data]);
+  const comment = useMemo(() => (data ? mapComment(data) : undefined), [data]);
 
   return {
     comment,
-    isLoading,
     error,
+    isLoading,
     refetch,
   };
 };
 
 export const useUserComments = (userId: string, limit = 20, offset = 0) => {
-  const { data, isLoading, error, refetch } = useUserCommentsGql(
-    userId,
-    { limit, offset },
-    { enabled: Boolean(userId) },
-  );
+  const {
+    data = [],
+    isLoading,
+    error,
+    refetch,
+  } = useUserCommentsGql(userId, { limit, offset }, { enabled: Boolean(userId) });
 
-  const comments = useMemo(() => {
-    return (data ?? []).map(mapComment);
-  }, [data]);
+  const comments = useMemo(() => data.map(mapComment), [data]);
 
   return {
     comments,
-    isLoading,
     error,
+    isLoading,
     refetch,
   };
 };

@@ -1,9 +1,4 @@
-import {
-  Outlet,
-  createFileRoute,
-  useNavigate,
-  useSearch,
-} from "@tanstack/react-router";
+import { Outlet, createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { logger } from "@/shared/services/logger";
@@ -18,8 +13,8 @@ export const Route = createFileRoute("/_auth")({
   component: AuthLayout,
   validateSearch: (search) => ({
     code: (search.code as string) || undefined,
-    state: (search.state as string) || undefined,
     error: (search.error as string) || undefined,
+    state: (search.state as string) || undefined,
   }),
 });
 
@@ -39,29 +34,26 @@ function AuthLayout() {
       if (storedState !== search.state) {
         logger.error("OAuth state mismatch");
         navigate({
-          to: "/login",
           search: {
-            error: "auth_failed",
             code: undefined,
-            state: undefined,
+            error: "auth_failed",
             redirect: undefined,
+            state: undefined,
           },
+          to: "/login",
         });
         return;
       }
 
       localStorage.removeItem("oauth_state");
 
-      const callbackUrl = new URL(
-        getGetApiAuthGoogleCallbackUrl(),
-        env.BACKEND_URL,
-      );
+      const callbackUrl = new URL(getGetApiAuthGoogleCallbackUrl(), env.BACKEND_URL);
       callbackUrl.searchParams.set("code", search.code);
       callbackUrl.searchParams.set("state", search.state);
 
       fetch(callbackUrl.toString(), {
-        method: "GET",
         credentials: "include",
+        method: "GET",
       })
         .then((response) => {
           if (!response.ok) {
@@ -76,9 +68,9 @@ function AuthLayout() {
 
             if (userData) {
               sessionActions.login({
+                email: userData.email ?? undefined,
                 id: String(userData.id),
                 username: userData.username,
-                email: userData.email ?? undefined,
               });
 
               queryClient.setQueryData(sessionKeys.me(), userResponse);
@@ -86,36 +78,33 @@ function AuthLayout() {
               logger.info("OAuth authentication successful", {
                 userId: userData.id,
               });
-              navigate({ to: "/", replace: true });
+              navigate({ replace: true, to: "/" });
             } else {
               throw new Error("OAuth successful but failed to fetch user data");
             }
           } catch (error) {
-            logger.error(
-              "Failed to fetch user data after OAuth authentication",
-              error,
-            );
+            logger.error("Failed to fetch user data after OAuth authentication", error);
             navigate({
-              to: "/login",
               search: {
-                error: "auth_failed",
                 code: undefined,
-                state: undefined,
+                error: "auth_failed",
                 redirect: undefined,
+                state: undefined,
               },
+              to: "/login",
             });
           }
         })
         .catch((error) => {
           logger.error("OAuth authentication failed", error);
           navigate({
-            to: "/login",
             search: {
-              error: "auth_failed",
               code: undefined,
-              state: undefined,
+              error: "auth_failed",
               redirect: undefined,
+              state: undefined,
             },
+            to: "/login",
           });
         });
     }

@@ -1,10 +1,7 @@
 import { useState, useCallback } from "react";
 import { Globe, Eye, Lock, Users, Sparkles } from "lucide-react";
 
-import {
-  useCreateCommunityForm,
-  COMMUNITY_LIMITS,
-} from "@/features/create-community";
+import { useCreateCommunityForm, COMMUNITY_LIMITS } from "@/features/create-community";
 import {
   Modal,
   Button,
@@ -17,8 +14,12 @@ import {
 import { cn } from "@/shared/lib/utils";
 
 const getErrorMessage = (error: unknown): string | undefined => {
-  if (!error) return undefined;
-  if (typeof error === "string") return error;
+  if (!error) {
+    return undefined;
+  }
+  if (typeof error === "string") {
+    return error;
+  }
   if (typeof error === "object" && "message" in error) {
     return String((error as { message: unknown }).message);
   }
@@ -27,10 +28,10 @@ const getErrorMessage = (error: unknown): string | undefined => {
 
 type CommunityType = "public" | "restricted" | "private";
 
-type CreateCommunityModalProps = {
+interface CreateCommunityModalProps {
   trigger?: React.ReactNode;
   onSuccess?: (communityName: string) => void;
-};
+}
 
 const VISIBILITY_OPTIONS: {
   value: CommunityType;
@@ -39,29 +40,26 @@ const VISIBILITY_OPTIONS: {
   icon: React.ElementType;
 }[] = [
   {
-    value: "public",
-    label: "Public",
     description: "Anyone can view, post, and comment",
     icon: Globe,
+    label: "Public",
+    value: "public",
   },
   {
-    value: "restricted",
-    label: "Restricted",
     description: "Anyone can view, but only approved users can post",
     icon: Eye,
+    label: "Restricted",
+    value: "restricted",
   },
   {
-    value: "private",
-    label: "Private",
     description: "Only approved users can view and participate",
     icon: Lock,
+    label: "Private",
+    value: "private",
   },
 ];
 
-export const CreateCommunityModal = ({
-  trigger,
-  onSuccess,
-}: CreateCommunityModalProps) => {
+export const CreateCommunityModal = ({ trigger, onSuccess }: CreateCommunityModalProps) => {
   const [open, setOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string>();
   const [bannerUrl, setBannerUrl] = useState<string>();
@@ -75,7 +73,9 @@ export const CreateCommunityModal = ({
   });
 
   const handleClose = useCallback(() => {
-    if (isSubmitting) return;
+    if (isSubmitting) {
+      return;
+    }
     setOpen(false);
     setAvatarUrl(undefined);
     setBannerUrl(undefined);
@@ -84,23 +84,27 @@ export const CreateCommunityModal = ({
 
   const handleOpenChange = useCallback(
     (isOpen: boolean) => {
-      if (isSubmitting) return;
+      if (isSubmitting) {
+        return;
+      }
       if (!isOpen) {
         handleClose();
       } else {
         setOpen(true);
       }
     },
-    [handleClose, isSubmitting],
+    [handleClose, isSubmitting]
   );
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      if (isSubmitting) return;
+      if (isSubmitting) {
+        return;
+      }
       form.handleSubmit();
     },
-    [form, isSubmitting],
+    [form, isSubmitting]
   );
 
   return (
@@ -165,11 +169,7 @@ export const CreateCommunityModal = ({
                     label="Community name"
                     hint="Choose a unique name. This cannot be changed later."
                     error={errorMessage}
-                    success={
-                      isValid
-                        ? `r/${field.state.value} is available`
-                        : undefined
-                    }
+                    success={isValid ? `r/${field.state.value} is available` : undefined}
                     required
                     charCount={field.state.value.length}
                     charMax={COMMUNITY_LIMITS.NAME_MAX}
@@ -184,19 +184,15 @@ export const CreateCommunityModal = ({
                         placeholder="community_name"
                         value={field.state.value}
                         onChange={(e) =>
-                          field.handleChange(
-                            e.target.value.replace(/\s/g, "_").toLowerCase(),
-                          )
+                          field.handleChange(e.target.value.replaceAll(/\s/g, "_").toLowerCase())
                         }
                         onBlur={field.handleBlur}
                         maxLength={COMMUNITY_LIMITS.NAME_MAX}
                         disabled={isSubmitting}
                         className={cn(
                           "pl-8",
-                          errorMessage &&
-                            "border-destructive focus-visible:ring-destructive/50",
-                          isValid &&
-                            "border-emerald-500 focus-visible:ring-emerald-500/50",
+                          errorMessage && "border-destructive focus-visible:ring-destructive/50",
+                          isValid && "border-emerald-500 focus-visible:ring-emerald-500/50"
                         )}
                         aria-invalid={!!errorMessage}
                       />
@@ -230,8 +226,7 @@ export const CreateCommunityModal = ({
                       maxLength={COMMUNITY_LIMITS.DISPLAY_NAME_MAX}
                       disabled={isSubmitting}
                       className={cn(
-                        errorMessage &&
-                          "border-destructive focus-visible:ring-destructive/50",
+                        errorMessage && "border-destructive focus-visible:ring-destructive/50"
                       )}
                       aria-invalid={!!errorMessage}
                     />
@@ -267,8 +262,7 @@ export const CreateCommunityModal = ({
                       disabled={isSubmitting}
                       className={cn(
                         "resize-none",
-                        errorMessage &&
-                          "border-destructive focus-visible:ring-destructive/50",
+                        errorMessage && "border-destructive focus-visible:ring-destructive/50"
                       )}
                       aria-invalid={!!errorMessage}
                     />
@@ -297,19 +291,10 @@ export const CreateCommunityModal = ({
           </Modal.Body>
 
           <Modal.Footer>
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={handleClose}
-              disabled={isSubmitting}
-            >
+            <Button type="button" variant="ghost" onClick={handleClose} disabled={isSubmitting}>
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="min-w-[140px]"
-            >
+            <Button type="submit" disabled={isSubmitting} className="min-w-[140px]">
               {isSubmitting ? (
                 <span className="flex items-center gap-2">
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground" />

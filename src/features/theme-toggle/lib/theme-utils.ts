@@ -23,19 +23,18 @@ export const saveTheme = (theme: Theme): void => {
 
 export const getNextTheme = (current: Theme): Theme => {
   switch (current) {
-    case "light":
+    case "light": {
       return "dark";
-    case "dark":
+    }
+    case "dark": {
       return "system";
+    }
     case "system":
-    default:
+    default: {
       return "light";
+    }
   }
 };
 
-export const shouldApplyDarkTheme = (
-  theme: Theme,
-  systemPrefersDark: boolean,
-): boolean => {
-  return theme === "dark" || (theme === "system" && systemPrefersDark);
-};
+export const shouldApplyDarkTheme = (theme: Theme, systemPrefersDark: boolean): boolean =>
+  theme === "dark" || (theme === "system" && systemPrefersDark);

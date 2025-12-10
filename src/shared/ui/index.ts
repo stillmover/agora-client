@@ -16,12 +16,7 @@ export { Avatar, AvatarImage, AvatarFallback } from "./avatar";
 export { Badge, badgeVariants } from "./badge";
 export { FlairBadge } from "./flair-badge";
 
-export {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "./accordion";
+export { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./accordion";
 export { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
 
 export {
@@ -44,6 +39,7 @@ export {
 export {
   Select,
   SelectContent,
+  SelectEmpty,
   SelectGroup,
   SelectItem,
   SelectLabel,
@@ -84,3 +80,4 @@ export {
 } from "./empty-state";
 
 export { ErrorBoundary, useErrorHandler } from "./error-boundary";
+export { ErrorButton } from "./error-button";

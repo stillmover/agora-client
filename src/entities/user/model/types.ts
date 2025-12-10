@@ -1,4 +1,4 @@
-export type User = {
+export interface User {
   id: string;
   username: string;
   name: string | null;
@@ -6,4 +6,4 @@ export type User = {
   avatarUrl: string | null;
   karma: number;
   createdAt: string;
-};
+}

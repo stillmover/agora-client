@@ -33,15 +33,9 @@ export const Route = createFileRoute("/_main/notifications")({
   component: NotificationsPage,
 });
 
-type NotificationType =
-  | "comment"
-  | "reply"
-  | "upvote"
-  | "mention"
-  | "follow"
-  | "award";
+type NotificationType = "comment" | "reply" | "upvote" | "mention" | "follow" | "award";
 
-type Notification = {
+interface Notification {
   id: string;
   type: NotificationType;
   title: string;
@@ -53,94 +47,106 @@ type Notification = {
   link: string;
   createdAt: string;
   read: boolean;
-};
+}
 
 const mockNotifications: Notification[] = [
   {
-    id: "1",
-    type: "comment",
-    title: "New comment on your post",
-    message: 'Someone commented on "Best practices for React in 2025"',
-    from: { username: "johndoe" },
-    link: "/post/1",
     createdAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
+    from: { username: "johndoe" },
+    id: "1",
+    link: "/post/1",
+    message: 'Someone commented on "Best practices for React in 2025"',
     read: false,
+    title: "New comment on your post",
+    type: "comment",
   },
   {
-    id: "2",
-    type: "upvote",
-    title: "Your post is trending!",
-    message: "Your post received 100 upvotes",
-    from: { username: "system" },
-    link: "/post/2",
     createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+    from: { username: "system" },
+    id: "2",
+    link: "/post/2",
+    message: "Your post received 100 upvotes",
     read: false,
+    title: "Your post is trending!",
+    type: "upvote",
   },
   {
-    id: "3",
-    type: "mention",
-    title: "You were mentioned",
-    message: "@jane mentioned you in a comment",
-    from: { username: "jane" },
-    link: "/post/3",
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+    from: { username: "jane" },
+    id: "3",
+    link: "/post/3",
+    message: "@jane mentioned you in a comment",
     read: true,
+    title: "You were mentioned",
+    type: "mention",
   },
   {
-    id: "4",
-    type: "follow",
-    title: "New follower",
-    message: "mike started following you",
-    from: { username: "mike" },
-    link: "/u/mike",
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+    from: { username: "mike" },
+    id: "4",
+    link: "/u/mike",
+    message: "mike started following you",
     read: true,
+    title: "New follower",
+    type: "follow",
   },
   {
-    id: "5",
-    type: "award",
-    title: "You received an award!",
-    message: "Someone gave you a Gold award",
-    from: { username: "anonymous" },
-    link: "/post/5",
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
+    from: { username: "anonymous" },
+    id: "5",
+    link: "/post/5",
+    message: "Someone gave you a Gold award",
     read: true,
+    title: "You received an award!",
+    type: "award",
   },
 ];
 
 const getNotificationIcon = (type: NotificationType) => {
   switch (type) {
     case "comment":
-    case "reply":
+    case "reply": {
       return MessageSquare;
-    case "upvote":
+    }
+    case "upvote": {
       return ArrowBigUp;
-    case "mention":
+    }
+    case "mention": {
       return AtSign;
-    case "follow":
+    }
+    case "follow": {
       return UserPlus;
-    case "award":
+    }
+    case "award": {
       return Award;
-    default:
+    }
+    default: {
       return Bell;
+    }
   }
 };
 
 const getNotificationColor = (type: NotificationType) => {
   switch (type) {
     case "comment":
-    case "reply":
+    case "reply": {
       return "text-blue-500 bg-blue-500/10";
-    case "upvote":
+    }
+    case "upvote": {
       return "text-brand bg-brand/10";
-    case "mention":
+    }
+    case "mention": {
       return "text-purple-500 bg-purple-500/10";
-    case "follow":
+    }
+    case "follow": {
       return "text-green-500 bg-green-500/10";
-    case "award":
+    }
+    case "award": {
       return "text-amber-500 bg-amber-500/10";
-    default:
+    }
+    default: {
       return "text-muted-foreground bg-muted";
+    }
   }
 };
 
@@ -160,7 +166,7 @@ function NotificationItem({
       className={cn(
         "flex items-start gap-4 p-4 rounded-xl transition-all duration-150",
         "hover:bg-accent",
-        !notification.read && "bg-accent/50",
+        !notification.read && "bg-accent/50"
       )}
       onClick={() => !notification.read && onMarkRead(notification.id)}
     >
@@ -171,21 +177,12 @@ function NotificationItem({
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div>
-            <p
-              className={cn(
-                "text-sm",
-                !notification.read ? "font-semibold" : "font-medium",
-              )}
-            >
+            <p className={cn("text-sm", !notification.read ? "font-semibold" : "font-medium")}>
               {notification.title}
             </p>
-            <p className="text-sm text-muted-foreground mt-0.5">
-              {notification.message}
-            </p>
+            <p className="text-sm text-muted-foreground mt-0.5">{notification.message}</p>
           </div>
-          {!notification.read && (
-            <span className="flex-shrink-0 h-2 w-2 rounded-full bg-brand" />
-          )}
+          {!notification.read && <span className="flex-shrink-0 h-2 w-2 rounded-full bg-brand" />}
         </div>
         <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
           <Avatar className="h-4 w-4">
@@ -210,8 +207,7 @@ function NotificationItem({
 function NotificationsPage() {
   const navigate = useNavigate();
   const isAuthenticated = useIsAuthenticated();
-  const [notifications, setNotifications] =
-    useState<Notification[]>(mockNotifications);
+  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
   const [activeTab, setActiveTab] = useState<"all" | "unread">("all");
 
   if (!isAuthenticated) {
@@ -221,9 +217,7 @@ function NotificationsPage() {
           <div className="mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
             <Bell className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h2 className="text-xl font-semibold mb-2">
-            Sign in to view notifications
-          </h2>
+          <h2 className="text-xl font-semibold mb-2">Sign in to view notifications</h2>
           <p className="text-muted-foreground mb-6">
             You need to be logged in to see your notifications.
           </p>
@@ -237,14 +231,10 @@ function NotificationsPage() {
 
   const unreadCount = notifications.filter((n) => !n.read).length;
   const filteredNotifications =
-    activeTab === "unread"
-      ? notifications.filter((n) => !n.read)
-      : notifications;
+    activeTab === "unread" ? notifications.filter((n) => !n.read) : notifications;
 
   const handleMarkRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
-    );
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
   };
 
   const handleMarkAllRead = () => {
@@ -273,10 +263,7 @@ function NotificationsPage() {
         </Button>
       </div>
 
-      <Tabs
-        value={activeTab}
-        onValueChange={(v) => setActiveTab(v as "all" | "unread")}
-      >
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "all" | "unread")}>
         <div className="flex items-center justify-between gap-4">
           <TabsList>
             <TabsTrigger value="all" className="gap-2">
@@ -289,11 +276,7 @@ function NotificationsPage() {
             </TabsTrigger>
             <TabsTrigger value="unread" className="gap-2">
               Unread
-              {unreadCount > 0 && (
-                <Badge className="ml-1 bg-brand text-white">
-                  {unreadCount}
-                </Badge>
-              )}
+              {unreadCount > 0 && <Badge className="ml-1 bg-brand text-white">{unreadCount}</Badge>}
             </TabsTrigger>
           </TabsList>
 
@@ -319,10 +302,7 @@ function NotificationsPage() {
         </div>
 
         <TabsContent value="all" className="mt-4">
-          <NotificationsList
-            notifications={filteredNotifications}
-            onMarkRead={handleMarkRead}
-          />
+          <NotificationsList notifications={filteredNotifications} onMarkRead={handleMarkRead} />
         </TabsContent>
 
         <TabsContent value="unread" className="mt-4">

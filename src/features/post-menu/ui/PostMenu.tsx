@@ -1,11 +1,4 @@
-import {
-  MoreHorizontal,
-  Bookmark,
-  Eye,
-  Flag,
-  UserX,
-  Share,
-} from "lucide-react";
+import { MoreHorizontal, Bookmark, Eye, Flag, UserX, Share } from "lucide-react";
 
 import { Button } from "@/shared/ui/button";
 import {
@@ -19,9 +12,9 @@ import { logger } from "@/shared/services/logger";
 import { usePostActions } from "@/features/post-actions";
 import type { Post } from "@/entities/post";
 
-type PostMenuProps = {
+interface PostMenuProps {
   post: Post;
-};
+}
 
 export const PostMenu = ({ post }: PostMenuProps) => {
   const { save, share, saveLabel } = usePostActions(post.id);
@@ -67,10 +60,7 @@ export const PostMenu = ({ post }: PostMenuProps) => {
           <span>Share</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={handleBlockUser}
-          className="text-destructive"
-        >
+        <DropdownMenuItem onClick={handleBlockUser} className="text-destructive">
           <UserX className="mr-2 h-4 w-4" />
           <span>Block u/{post.author.name}</span>
         </DropdownMenuItem>

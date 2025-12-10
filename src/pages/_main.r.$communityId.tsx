@@ -2,13 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCommunityByName } from "@/entities/community";
 import { Feed } from "@/widgets/feed";
 import { useIsAuthenticated } from "@/entities/session";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/shared/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Users, Loader2 } from "lucide-react";
@@ -39,9 +33,7 @@ function CommunityLoadingSkeleton() {
         <CardContent>
           <div className="flex items-center gap-2">
             <Loader2 className="h-4 w-4 animate-spin" />
-            <span className="text-sm text-muted-foreground">
-              Loading community...
-            </span>
+            <span className="text-sm text-muted-foreground">Loading community...</span>
           </div>
         </CardContent>
       </Card>
@@ -84,9 +76,7 @@ function CommunityPage() {
               </div>
               <CardTitle className="text-2xl mb-2">{community.name}</CardTitle>
               {community.description && (
-                <CardDescription className="text-base">
-                  {community.description}
-                </CardDescription>
+                <CardDescription className="text-base">{community.description}</CardDescription>
               )}
             </div>
           </div>
@@ -106,8 +96,8 @@ function CommunityPage() {
               <Button
                 onClick={() =>
                   navigate({
-                    to: "/submit",
                     search: { communityId: community.id },
+                    to: "/submit",
                   })
                 }
                 className="w-full"

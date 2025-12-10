@@ -1,15 +1,15 @@
 import { useEffect, useRef, useCallback } from "react";
 
-export type UseInfiniteScrollOptions = {
+export interface UseInfiniteScrollOptions {
   hasMore: boolean;
   isLoading: boolean;
   threshold?: number;
   rootMargin?: string;
-};
+}
 
 export const useInfiniteScroll = <T extends HTMLElement = HTMLDivElement>(
-  onLoadMore: () => void,
-  options: UseInfiniteScrollOptions,
+  onLoadMore: VoidFunction,
+  options: UseInfiniteScrollOptions
 ) => {
   const { hasMore, isLoading, threshold = 0.1, rootMargin = "0px" } = options;
   const targetRef = useRef<T>(null);
@@ -22,7 +22,7 @@ export const useInfiniteScroll = <T extends HTMLElement = HTMLDivElement>(
         onLoadMore();
       }
     },
-    [onLoadMore, hasMore, isLoading],
+    [onLoadMore, hasMore, isLoading]
   );
 
   useEffect(() => {
@@ -37,15 +37,15 @@ export const useInfiniteScroll = <T extends HTMLElement = HTMLDivElement>(
     }
 
     observerRef.current = new IntersectionObserver(handleIntersection, {
-      threshold,
       rootMargin,
+      threshold,
     });
 
     observerRef.current.observe(target);
 
     return () => {
       observerRef.current?.disconnect();
-      observerRef.current = null;
+      observerRef.current = undefined;
     };
   }, [handleIntersection, hasMore, isLoading, threshold, rootMargin]);
 

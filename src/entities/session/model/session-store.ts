@@ -7,7 +7,9 @@ const STORAGE_KEY = "session_user";
 const getStoredUser = (): SessionUser | null => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return null;
+    if (!stored) {
+      return;
+    }
 
     const parsed = JSON.parse(stored) as unknown;
 
@@ -23,10 +25,10 @@ const getStoredUser = (): SessionUser | null => {
     }
 
     localStorage.removeItem(STORAGE_KEY);
-    return null;
+    return;
   } catch {
     localStorage.removeItem(STORAGE_KEY);
-    return null;
+    return;
   }
 };
 
@@ -45,18 +47,18 @@ const getInitialState = (): SessionState => {
 
   if (storedUser) {
     return {
+      error: undefined,
       isAuthenticated: true,
-      user: storedUser,
       isLoading: false,
-      error: null,
+      user: storedUser,
     };
   }
 
   return {
+    error: undefined,
     isAuthenticated: false,
-    user: null,
     isLoading: false,
-    error: null,
+    user: undefined,
   };
 };
 
@@ -64,33 +66,26 @@ export const sessionStore = new Store<SessionState>(getInitialState());
 
 sessionStore.subscribe(() => {
   const state = sessionStore.state;
-  persistUser(state.isAuthenticated ? state.user : null);
+  persistUser(state.isAuthenticated ? state.user : undefined);
 });
 
 export const sessionActions = {
   login: (user: SessionUser) => {
     sessionStore.setState({
+      error: undefined,
       isAuthenticated: true,
-      user,
       isLoading: false,
-      error: null,
+      user,
     });
   },
 
   logout: () => {
     sessionStore.setState({
+      error: undefined,
       isAuthenticated: false,
-      user: null,
       isLoading: false,
-      error: null,
+      user: undefined,
     });
-  },
-
-  setLoading: (isLoading: boolean) => {
-    sessionStore.setState((prev) => ({
-      ...prev,
-      isLoading,
-    }));
   },
 
   setError: (error: string | null) => {
@@ -98,6 +93,13 @@ export const sessionActions = {
       ...prev,
       error,
       isLoading: false,
+    }));
+  },
+
+  setLoading: (isLoading: boolean) => {
+    sessionStore.setState((prev) => ({
+      ...prev,
+      isLoading,
     }));
   },
 } as const;

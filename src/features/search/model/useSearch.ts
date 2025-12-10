@@ -21,19 +21,17 @@ export const useSearchPosts = (query: string, limit = 20, offset = 0) => {
   const { data, isLoading, isFetching, error, refetch } = useSearchPostsQuery(
     debouncedQuery,
     { limit, offset },
-    { enabled: isValidQuery },
+    { enabled: isValidQuery }
   );
 
-  const posts = useMemo(() => {
-    return (data ?? []).map(mapPost);
-  }, [data]);
+  const posts = useMemo(() => (data ?? []).map(mapPost), [data]);
 
   return {
-    posts,
-    isLoading: isValidQuery && isLoading,
-    isSearching: isFetching,
-    isPending: query !== debouncedQuery && query.length >= MIN_SEARCH_LENGTH,
     error,
+    isLoading: isValidQuery && isLoading,
+    isPending: query !== debouncedQuery && query.length >= MIN_SEARCH_LENGTH,
+    isSearching: isFetching,
+    posts,
     refetch,
   };
 };
@@ -42,23 +40,20 @@ export const useSearchCommunities = (query: string, limit = 20, offset = 0) => {
   const debouncedQuery = useDebounce(query, SEARCH_DEBOUNCE_MS);
   const isValidQuery = debouncedQuery.length >= MIN_SEARCH_LENGTH;
 
-  const { data, isLoading, isFetching, error, refetch } =
-    useSearchCommunitiesQuery(
-      debouncedQuery,
-      { limit, offset },
-      { enabled: isValidQuery },
-    );
+  const { data, isLoading, isFetching, error, refetch } = useSearchCommunitiesQuery(
+    debouncedQuery,
+    { limit, offset },
+    { enabled: isValidQuery }
+  );
 
-  const communities = useMemo(() => {
-    return (data ?? []).map(mapCommunity);
-  }, [data]);
+  const communities = useMemo(() => (data ?? []).map(mapCommunity), [data]);
 
   return {
     communities,
-    isLoading: isValidQuery && isLoading,
-    isSearching: isFetching,
-    isPending: query !== debouncedQuery && query.length >= MIN_SEARCH_LENGTH,
     error,
+    isLoading: isValidQuery && isLoading,
+    isPending: query !== debouncedQuery && query.length >= MIN_SEARCH_LENGTH,
+    isSearching: isFetching,
     refetch,
   };
 };
@@ -70,20 +65,18 @@ export const useSearchUsers = (query: string, limit = 20, offset = 0) => {
   const { data, isLoading, isFetching, error, refetch } = useSearchUsersQuery(
     debouncedQuery,
     { limit, offset },
-    { enabled: isValidQuery },
+    { enabled: isValidQuery }
   );
 
-  const users = useMemo(() => {
-    return (data ?? []).map(mapUser);
-  }, [data]);
+  const users = useMemo(() => (data ?? []).map(mapUser), [data]);
 
   return {
-    users,
-    isLoading: isValidQuery && isLoading,
-    isSearching: isFetching,
-    isPending: query !== debouncedQuery && query.length >= MIN_SEARCH_LENGTH,
     error,
+    isLoading: isValidQuery && isLoading,
+    isPending: query !== debouncedQuery && query.length >= MIN_SEARCH_LENGTH,
+    isSearching: isFetching,
     refetch,
+    users,
   };
 };
 
@@ -101,11 +94,7 @@ export const useSearch = (query: string, limit = 10) => {
     data: communitiesData,
     isLoading: communitiesLoading,
     isFetching: communitiesFetching,
-  } = useSearchCommunitiesQuery(
-    debouncedQuery,
-    { limit },
-    { enabled: isValidQuery },
-  );
+  } = useSearchCommunitiesQuery(debouncedQuery, { limit }, { enabled: isValidQuery });
 
   const {
     data: usersData,
@@ -114,26 +103,21 @@ export const useSearch = (query: string, limit = 10) => {
   } = useSearchUsersQuery(debouncedQuery, { limit }, { enabled: isValidQuery });
 
   const posts = useMemo(() => (postsData ?? []).map(mapPost), [postsData]);
-  const communities = useMemo(
-    () => (communitiesData ?? []).map(mapCommunity),
-    [communitiesData],
-  );
+  const communities = useMemo(() => (communitiesData ?? []).map(mapCommunity), [communitiesData]);
   const users = useMemo(() => (usersData ?? []).map(mapUser), [usersData]);
 
-  const isLoading =
-    isValidQuery && (postsLoading || communitiesLoading || usersLoading);
+  const isLoading = isValidQuery && (postsLoading || communitiesLoading || usersLoading);
   const isFetching = postsFetching || communitiesFetching || usersFetching;
-  const isPending =
-    query !== debouncedQuery && query.length >= MIN_SEARCH_LENGTH;
+  const isPending = query !== debouncedQuery && query.length >= MIN_SEARCH_LENGTH;
 
   return {
-    posts,
     communities,
-    users,
-    isLoading,
-    isFetching,
-    isPending,
-    hasResults: posts.length > 0 || communities.length > 0 || users.length > 0,
     debouncedQuery,
+    hasResults: posts.length > 0 || communities.length > 0 || users.length > 0,
+    isFetching,
+    isLoading,
+    isPending,
+    posts,
+    users,
   };
 };

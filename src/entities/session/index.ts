@@ -9,8 +9,4 @@ export {
   useLogout,
 } from "./api/mutations";
 
-export {
-  sessionActions,
-  useIsAuthenticated,
-  useSessionUser,
-} from "./model/session-store";
+export { sessionActions, useIsAuthenticated, useSessionUser } from "./model/session-store";

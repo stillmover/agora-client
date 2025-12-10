@@ -6,20 +6,15 @@ import { useRegisterForm } from "../model/useRegisterForm";
 interface RegisterFormProps {
   setView?: (view: "login" | "register" | "reset") => void;
   redirect?: string;
-  onSuccess?: () => void;
+  onSuccess?: VoidFunction;
 }
 
-export const RegisterForm = ({
-  setView,
-  redirect,
-  onSuccess,
-}: RegisterFormProps) => {
-  const { form, isPending } = useRegisterForm({ redirect, onSuccess });
+export const RegisterForm = ({ setView, redirect, onSuccess }: RegisterFormProps) => {
+  const { form, isPending } = useRegisterForm({ onSuccess, redirect });
   const navigate = useNavigate();
 
   const navigateToLogin = () =>
     navigate({
-      to: "/login",
       search: (prev) => ({
         ...prev,
         redirect: redirect ?? prev.redirect,
@@ -27,6 +22,7 @@ export const RegisterForm = ({
         state: undefined,
         error: undefined,
       }),
+      to: "/login",
     });
   return (
     <div className="space-y-6">
@@ -109,17 +105,16 @@ export const RegisterForm = ({
 
         <form.Subscribe
           selector={(state) => ({
-            values: state.values,
             canSubmit: state.canSubmit,
             isSubmitting: state.isSubmitting,
+            values: state.values,
           })}
         >
           {({ values, canSubmit, isSubmitting }) => {
             const username = values?.username ?? "";
             const email = values?.email ?? "";
             const password = values?.password ?? "";
-            const isEmpty =
-              !username.trim() || !password.trim() || !email.trim();
+            const isEmpty = !username.trim() || !password.trim() || !email.trim();
 
             const active = canSubmit && !isEmpty && !isSubmitting && !isPending;
 

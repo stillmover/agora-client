@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { VoteColumn } from "@/features/vote";
-import { Card, CardContent, CardHeader } from "@/shared/ui/card";
-import { Badge } from "@/shared/ui/badge";
+import { Card, CardContent, CardHeader, Badge } from "@/shared/ui";
 import { Clock, MessageSquare } from "lucide-react";
 import { formatRelativeTime, formatCommentCount } from "@/shared/services";
 import type { Post } from "@/entities/post";
@@ -31,9 +30,7 @@ export const PostDetailWidget = ({ post }: PostDetailWidgetProps) => {
                   r/{post.community.name}
                 </Badge>
               </Link>
-              <span className="text-xs text-muted-foreground">
-                Posted by {post.author.name}
-              </span>
+              <span className="text-xs text-muted-foreground">Posted by {post.author.name}</span>
               <span className="text-xs text-muted-foreground flex items-center gap-1">
                 <Clock className="h-3 w-3" />
                 {timeAgo}

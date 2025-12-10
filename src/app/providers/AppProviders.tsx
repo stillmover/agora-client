@@ -6,24 +6,26 @@ import { TanStackDevtools } from "@tanstack/react-devtools";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
-export const AppProviders = ({ children }: PropsWithChildren) => {
-  return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-      <Toaster
-        position="top-right"
-        expand={false}
-        richColors
-        closeButton
-        toastOptions={{
-          className: "font-sans",
-        }}
-      />
+const isDev = import.meta.env.DEV;
+
+export const AppProviders = ({ children }: PropsWithChildren) => (
+  <QueryClientProvider client={queryClient}>
+    {children}
+    <Toaster
+      position="top-right"
+      expand={false}
+      richColors
+      closeButton
+      toastOptions={{
+        className: "font-sans",
+      }}
+    />
+    {isDev && (
       <TanStackDevtools
         config={{
+          defaultOpen: false,
           requireUrlFlag: true,
           urlFlag: "devtools",
-          defaultOpen: false,
         }}
         plugins={[
           { name: "TanStack Query", render: <ReactQueryDevtoolsPanel /> },
@@ -33,6 +35,6 @@ export const AppProviders = ({ children }: PropsWithChildren) => {
           },
         ]}
       />
-    </QueryClientProvider>
-  );
-};
+    )}
+  </QueryClientProvider>
+);

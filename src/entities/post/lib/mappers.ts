@@ -3,18 +3,21 @@ import type { RegionOption } from "@/shared/types";
 
 export const mapRegionOptionToRegion = (
   region?: RegionOption,
-  userRegion: Region | null = null,
+  userRegion: Region | null = undefined
 ): Region | undefined => {
   if (!region) {
     return undefined;
   }
 
   switch (region) {
-    case "global":
+    case "global": {
       return Region.All;
-    case "my-country":
+    }
+    case "my-country": {
       return userRegion ?? undefined;
-    default:
+    }
+    default: {
       return undefined;
+    }
   }
 };

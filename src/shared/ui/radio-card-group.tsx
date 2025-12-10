@@ -3,15 +3,15 @@ import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
-type RadioOption<T extends string = string> = {
+interface RadioOption<T extends string = string> {
   value: T;
   label: string;
   description?: string;
   icon?: React.ElementType;
   disabled?: boolean;
-};
+}
 
-type RadioCardGroupProps<T extends string = string> = {
+interface RadioCardGroupProps<T extends string = string> {
   value: T;
   onChange: (value: T) => void;
   options: RadioOption<T>[];
@@ -20,35 +20,35 @@ type RadioCardGroupProps<T extends string = string> = {
   className?: string;
   name?: string;
   disabled?: boolean;
-};
+}
 
 const sizeClasses = {
-  sm: {
-    container: "gap-2",
-    card: "p-3",
-    radio: "h-4 w-4",
-    inner: "h-1.5 w-1.5",
-    icon: "h-4 w-4",
-    label: "text-sm",
-    description: "text-xs",
+  lg: {
+    card: "p-5",
+    container: "gap-4",
+    description: "text-sm",
+    icon: "h-6 w-6",
+    inner: "h-2.5 w-2.5",
+    label: "text-base font-medium",
+    radio: "h-6 w-6",
   },
   md: {
-    container: "gap-3",
     card: "p-4",
-    radio: "h-5 w-5",
-    inner: "h-2 w-2",
-    icon: "h-5 w-5",
-    label: "text-sm font-medium",
+    container: "gap-3",
     description: "text-xs",
+    icon: "h-5 w-5",
+    inner: "h-2 w-2",
+    label: "text-sm font-medium",
+    radio: "h-5 w-5",
   },
-  lg: {
-    container: "gap-4",
-    card: "p-5",
-    radio: "h-6 w-6",
-    inner: "h-2.5 w-2.5",
-    icon: "h-6 w-6",
-    label: "text-base font-medium",
-    description: "text-sm",
+  sm: {
+    card: "p-3",
+    container: "gap-2",
+    description: "text-xs",
+    icon: "h-4 w-4",
+    inner: "h-1.5 w-1.5",
+    label: "text-sm",
+    radio: "h-4 w-4",
   },
 };
 
@@ -68,7 +68,7 @@ export const RadioCardGroup = <T extends string = string>({
     (e: React.KeyboardEvent, currentIndex: number) => {
       const enabledOptions = options.filter((o) => !o.disabled);
       const currentEnabledIndex = enabledOptions.findIndex(
-        (o) => o.value === options[currentIndex].value,
+        (o) => o.value === options[currentIndex].value
       );
 
       let newIndex = currentEnabledIndex;
@@ -78,16 +78,14 @@ export const RadioCardGroup = <T extends string = string>({
         newIndex = (currentEnabledIndex + 1) % enabledOptions.length;
       } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
         e.preventDefault();
-        newIndex =
-          (currentEnabledIndex - 1 + enabledOptions.length) %
-          enabledOptions.length;
+        newIndex = (currentEnabledIndex - 1 + enabledOptions.length) % enabledOptions.length;
       }
 
       if (newIndex !== currentEnabledIndex) {
         onChange(enabledOptions[newIndex].value);
       }
     },
-    [options, onChange],
+    [options, onChange]
   );
 
   return (
@@ -98,7 +96,7 @@ export const RadioCardGroup = <T extends string = string>({
         "flex",
         direction === "horizontal" ? "flex-row flex-wrap" : "flex-col",
         config.container,
-        className,
+        className
       )}
     >
       {options.map((option, index) => {
@@ -127,7 +125,7 @@ export const RadioCardGroup = <T extends string = string>({
                 ? "border-primary bg-primary/5"
                 : "border-border bg-background hover:border-muted-foreground/50 hover:bg-muted/50",
               isDisabled && "cursor-not-allowed opacity-50",
-              direction === "horizontal" && "flex-1 min-w-[200px]",
+              direction === "horizontal" && "flex-1 min-w-[200px]"
             )}
           >
             <div
@@ -137,20 +135,17 @@ export const RadioCardGroup = <T extends string = string>({
                 config.radio,
                 isSelected
                   ? "border-primary bg-primary"
-                  : "border-muted-foreground/50 bg-background",
+                  : "border-muted-foreground/50 bg-background"
               )}
             >
               <motion.div
                 initial={false}
                 animate={{
-                  scale: isSelected ? 1 : 0,
                   opacity: isSelected ? 1 : 0,
+                  scale: isSelected ? 1 : 0,
                 }}
-                transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                className={cn(
-                  "rounded-full bg-primary-foreground",
-                  config.inner,
-                )}
+                transition={{ damping: 30, stiffness: 500, type: "spring" }}
+                className={cn("rounded-full bg-primary-foreground", config.inner)}
               />
             </div>
 
@@ -160,26 +155,18 @@ export const RadioCardGroup = <T extends string = string>({
                   <Icon
                     className={cn(
                       config.icon,
-                      isSelected ? "text-primary" : "text-muted-foreground",
+                      isSelected ? "text-primary" : "text-muted-foreground"
                     )}
                   />
                 )}
                 <span
-                  className={cn(
-                    config.label,
-                    isSelected ? "text-foreground" : "text-foreground",
-                  )}
+                  className={cn(config.label, isSelected ? "text-foreground" : "text-foreground")}
                 >
                   {option.label}
                 </span>
               </div>
               {option.description && (
-                <p
-                  className={cn(
-                    "mt-0.5 text-muted-foreground",
-                    config.description,
-                  )}
-                >
+                <p className={cn("mt-0.5 text-muted-foreground", config.description)}>
                   {option.description}
                 </p>
               )}
@@ -188,10 +175,10 @@ export const RadioCardGroup = <T extends string = string>({
             <motion.div
               initial={false}
               animate={{
-                scale: isSelected ? 1 : 0,
                 opacity: isSelected ? 1 : 0,
+                scale: isSelected ? 1 : 0,
               }}
-              transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              transition={{ damping: 30, stiffness: 500, type: "spring" }}
               className="flex-shrink-0"
             >
               <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary">

@@ -1,26 +1,24 @@
-export type AuthUserData = {
+export interface AuthUserData {
   id: number;
   username: string;
   email?: string;
-};
+}
 
-export type AuthSuccessResponse = {
+export interface AuthSuccessResponse {
   success: true;
   data: {
     user: AuthUserData;
   };
-};
+}
 
-export type AuthErrorResponse = {
+export interface AuthErrorResponse {
   success: false;
   error?: string;
-};
+}
 
 export type AuthResponse = AuthSuccessResponse | AuthErrorResponse;
 
-export const isAuthSuccessResponse = (
-  response: unknown,
-): response is AuthSuccessResponse => {
+export const isAuthSuccessResponse = (response: unknown): response is AuthSuccessResponse => {
   if (typeof response !== "object" || response === null) {
     return false;
   }
@@ -50,11 +48,9 @@ export const isAuthSuccessResponse = (
   );
 };
 
-export const extractUserFromResponse = (
-  response: unknown,
-): AuthUserData | null => {
+export const extractUserFromResponse = (response: unknown): AuthUserData | null => {
   if (isAuthSuccessResponse(response)) {
     return response.data.user;
   }
-  return null;
+  return;
 };

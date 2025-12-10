@@ -5,23 +5,19 @@ import { PostActions } from "@/features/post-actions";
 import { PostMenu } from "@/features/post-menu";
 import { PostCardContent } from "./PostCardContent";
 
-type PostCardProps = {
+interface PostCardProps {
   post: Post;
   showCommunity?: boolean;
-};
+}
 
-export const PostCard = memo(
-  ({ post, showCommunity = true }: PostCardProps) => {
-    return (
-      <PostCardContent
-        post={post}
-        showCommunity={showCommunity}
-        voteColumn={<VoteColumn postId={post.id} score={post.score} />}
-        postMenu={<PostMenu post={post} />}
-        postActions={<PostActions post={post} />}
-      />
-    );
-  },
-);
+export const PostCard = memo(({ post, showCommunity = true }: PostCardProps) => (
+  <PostCardContent
+    post={post}
+    showCommunity={showCommunity}
+    voteColumn={<VoteColumn postId={post.id} score={post.score} />}
+    postMenu={<PostMenu post={post} />}
+    postActions={<PostActions post={post} />}
+  />
+));
 
 PostCard.displayName = "PostCard";

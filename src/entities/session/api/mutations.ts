@@ -4,40 +4,42 @@ import { sessionApi } from "./sessionApi";
 import { sessionKeys } from "./query-keys";
 import { sessionActions, sessionStore } from "../model/session-store";
 import { logger } from "@/shared/services/logger";
+import { notificationActions } from "@/shared/stores/notification-store";
 import { extractUserFromResponse } from "./types";
-import type {
-  PostApiLoginBodyOne,
-  PostApiRegisterBodyOne,
-} from "@/shared/api/models";
+import type { PostApiLoginBodyOne, PostApiRegisterBodyOne } from "@/shared/api/models";
 
 const setLoadingState = () => {
   sessionStore.setState((prev) => ({
     ...prev,
     isLoading: true,
-    error: null,
+    error: undefined,
   }));
 };
 
 const setErrorState = (error: unknown, fallbackMessage: string) => {
+  const message = error instanceof Error ? error.message : fallbackMessage;
+
   sessionStore.setState((prev) => ({
     ...prev,
     isLoading: false,
-    error: error instanceof Error ? error.message : fallbackMessage,
+    error: message,
   }));
+
+  notificationActions.error(fallbackMessage, message === fallbackMessage ? undefined : message);
 };
 
 const syncUserAfterAuth = async (
   queryClient: ReturnType<typeof useQueryClient>,
-  actionName: string,
+  actionName: string
 ): Promise<void> => {
   const userResponse = await sessionApi.getCurrentUser();
   const userData = extractUserFromResponse(userResponse);
 
   if (userData) {
     sessionActions.login({
+      email: userData.email ?? undefined,
       id: String(userData.id),
       username: userData.username,
-      email: userData.email ?? undefined,
     });
 
     queryClient.setQueryData(sessionKeys.me(), userResponse);
@@ -47,9 +49,7 @@ const syncUserAfterAuth = async (
   }
 };
 
-const handlePostAuth = async (
-  queryClient: ReturnType<typeof useQueryClient>,
-): Promise<void> => {
+const handlePostAuth = async (queryClient: ReturnType<typeof useQueryClient>): Promise<void> => {
   try {
     await syncUserAfterAuth(queryClient, "authenticated");
   } catch (error) {
@@ -57,11 +57,9 @@ const handlePostAuth = async (
   }
 };
 
-const createAuthMutation = <TPayload>(
-  authFn: (payload: TPayload) => Promise<unknown>,
-  actionName: string,
-) => {
-  return () => {
+const createAuthMutation =
+  <TPayload>(authFn: (payload: TPayload) => Promise<unknown>, actionName: string) =>
+  () => {
     const queryClient = useQueryClient();
 
     return useMutation({
@@ -72,10 +70,7 @@ const createAuthMutation = <TPayload>(
         try {
           await syncUserAfterAuth(queryClient, actionName);
         } catch (error) {
-          setErrorState(
-            error,
-            `Failed to fetch user data after ${actionName.toLowerCase()}`,
-          );
+          setErrorState(error, `Failed to fetch user data after ${actionName.toLowerCase()}`);
           throw error;
         }
 
@@ -87,16 +82,12 @@ const createAuthMutation = <TPayload>(
       },
     });
   };
-};
 
-const useLoginMutation = createAuthMutation<PostApiLoginBodyOne>(
-  sessionApi.login,
-  "Login",
-);
+const useLoginMutation = createAuthMutation<PostApiLoginBodyOne>(sessionApi.login, "Login");
 
 const useRegisterMutation = createAuthMutation<PostApiRegisterBodyOne>(
   sessionApi.register,
-  "Registration",
+  "Registration"
 );
 
 const useLogoutMutation = () => {
@@ -107,21 +98,20 @@ const useLogoutMutation = () => {
       setLoadingState();
       return await sessionApi.logout();
     },
+    onError: (error) => {
+      setErrorState(error, "Logout failed");
+      logger.error("Logout failed", error);
+    },
     onSettled: async () => {
       sessionActions.logout();
       await queryClient.cancelQueries();
       queryClient.removeQueries({ queryKey: sessionKeys.all });
       queryClient.invalidateQueries({
         predicate: ({ queryKey }) =>
-          !Array.isArray(queryKey) ||
-          (queryKey[0] as string | undefined) !== sessionKeys.all[0],
+          !Array.isArray(queryKey) || (queryKey[0] as string | undefined) !== sessionKeys.all[0],
         refetchType: "none",
       });
       logger.info("User logged out successfully");
-    },
-    onError: (error) => {
-      setErrorState(error, "Logout failed");
-      logger.error("Logout failed", error);
     },
   });
 };
@@ -129,16 +119,11 @@ const useLogoutMutation = () => {
 export const useLogout = () => {
   const mutation = useLogoutMutation();
   return {
+    isPending: mutation.isPending,
     logout: async () => {
       await mutation.mutateAsync();
     },
-    isPending: mutation.isPending,
   };
 };
 
-export {
-  handlePostAuth,
-  useLoginMutation,
-  useRegisterMutation,
-  useLogoutMutation,
-};
+export { handlePostAuth, useLoginMutation, useRegisterMutation, useLogoutMutation };

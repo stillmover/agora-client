@@ -1,6 +1,26 @@
 import { env, isDevelopment } from "@/shared/utils/env";
 import { logger } from "@/shared/services/logger";
 
+const sanitizeBody = (body: BodyInit | null | undefined): unknown => {
+  if (!body) return body;
+  if (typeof body === "string") {
+    try {
+      const parsed = JSON.parse(body);
+      if (typeof parsed === "object" && parsed !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const sanitized = { ...parsed } as any;
+        if ("password" in sanitized) sanitized.password = "***";
+        if ("token" in sanitized) sanitized.token = "***";
+        if ("code" in sanitized) sanitized.code = "***";
+        return sanitized;
+      }
+    } catch {
+      return body;
+    }
+  }
+  return body;
+};
+
 export const apiMutator = async <T>(
   url: string,
   options: RequestInit = {},
@@ -25,7 +45,7 @@ export const apiMutator = async <T>(
         `API Request: ${options.method || "GET"} ${urlObj.toString()}`,
         {
           headers: requestHeaders,
-          body: requestOptions.body,
+          body: sanitizeBody(requestOptions.body),
         },
       );
     }

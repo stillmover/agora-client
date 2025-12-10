@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AlertCircle, Check } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
-type FormFieldProps = {
+interface FormFieldProps {
   label?: string;
   hint?: string;
   error?: string;
@@ -14,7 +14,7 @@ type FormFieldProps = {
   className?: string;
   children: React.ReactNode;
   htmlFor?: string;
-};
+}
 
 export const FormField = ({
   label,
@@ -36,10 +36,7 @@ export const FormField = ({
     <div className={cn("space-y-2", className)}>
       {label && (
         <div className="flex items-baseline justify-between gap-2">
-          <label
-            htmlFor={htmlFor}
-            className="text-sm font-medium text-foreground"
-          >
+          <label htmlFor={htmlFor} className="text-sm font-medium text-foreground">
             {label}
             {required && <span className="ml-1 text-destructive">*</span>}
           </label>
@@ -47,9 +44,7 @@ export const FormField = ({
             <span
               className={cn(
                 "text-xs tabular-nums transition-colors",
-                isOverLimit
-                  ? "text-destructive font-medium"
-                  : "text-muted-foreground",
+                isOverLimit ? "text-destructive font-medium" : "text-muted-foreground"
               )}
             >
               {charCount}/{charMax}
@@ -58,9 +53,7 @@ export const FormField = ({
         </div>
       )}
 
-      {hint && !error && (
-        <p className="text-xs text-muted-foreground">{hint}</p>
-      )}
+      {hint && !error && <p className="text-xs text-muted-foreground">{hint}</p>}
 
       <div className="relative">{children}</div>
 

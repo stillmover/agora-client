@@ -34,6 +34,8 @@
     "@radix-ui/react-slot": "^1.2.4",
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-visually-hidden": "^1.2.4",
+    "@sentry/react": "^10.29.0",
+    "@sentry/types": "^10.29.0",
     "@tailwindcss/vite": "^4.1.17",
     "@tanstack/react-devtools": "^0.8.4",
     "@tanstack/react-form": "^1.27.2",

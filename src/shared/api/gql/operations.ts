@@ -23,6 +23,8 @@ export const PostFragment = gql`
       name
       displayName
       iconUrl
+      isJoined
+      memberCount
     }
     flairs {
       id

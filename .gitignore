@@ -13,9 +13,9 @@ dist
 dev-dist
 dist-ssr
 coverage
-*.local
-*.production
+.env.local
 .env
+
 .vercel
 
 /cypress/videos/

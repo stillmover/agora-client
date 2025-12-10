@@ -6,13 +6,13 @@ import { logger } from "@/shared/services/logger";
 import { useVote } from "../model/useVote";
 import type { VoteDirection } from "@/shared/constants";
 
-type VoteColumnProps = {
+interface VoteColumnProps {
   postId: string;
   score: number;
-};
+}
 
 const formatScore = (score: number): string => {
-  if (Math.abs(score) >= 10000) {
+  if (Math.abs(score) >= 10_000) {
     return `${(score / 1000).toFixed(0)}k`;
   }
   if (Math.abs(score) >= 1000) {
@@ -32,7 +32,7 @@ export const VoteColumn = memo(({ postId, score }: VoteColumnProps) => {
         logger.error("Failed to vote:", error);
       }
     },
-    [vote],
+    [vote]
   );
 
   const handleUpvote = useCallback(() => handleVote("up"), [handleVote]);
@@ -53,9 +53,7 @@ export const VoteColumn = memo(({ postId, score }: VoteColumnProps) => {
           "p-1 rounded-md transition-all duration-150",
           "hover:bg-vote-up/10 active:scale-90",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vote-up",
-          hasUpvoted
-            ? "text-vote-up bg-vote-up/10"
-            : "text-muted-foreground hover:text-vote-up",
+          hasUpvoted ? "text-vote-up bg-vote-up/10" : "text-muted-foreground hover:text-vote-up"
         )}
         aria-label={`Upvote (${optimisticScore} points)`}
         aria-pressed={hasUpvoted}
@@ -63,7 +61,7 @@ export const VoteColumn = memo(({ postId, score }: VoteColumnProps) => {
         <ArrowBigUp
           className={cn(
             "h-6 w-6 transition-transform duration-150",
-            hasUpvoted && "fill-current scale-110",
+            hasUpvoted && "fill-current scale-110"
           )}
         />
       </button>
@@ -74,7 +72,7 @@ export const VoteColumn = memo(({ postId, score }: VoteColumnProps) => {
           "transition-colors duration-150",
           hasUpvoted && "text-vote-up",
           hasDownvoted && "text-vote-down",
-          !hasUpvoted && !hasDownvoted && "text-foreground",
+          !hasUpvoted && !hasDownvoted && "text-foreground"
         )}
         aria-label={`${optimisticScore} votes`}
       >
@@ -89,7 +87,7 @@ export const VoteColumn = memo(({ postId, score }: VoteColumnProps) => {
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vote-down",
           hasDownvoted
             ? "text-vote-down bg-vote-down/10"
-            : "text-muted-foreground hover:text-vote-down",
+            : "text-muted-foreground hover:text-vote-down"
         )}
         aria-label={`Downvote (${optimisticScore} points)`}
         aria-pressed={hasDownvoted}
@@ -97,7 +95,7 @@ export const VoteColumn = memo(({ postId, score }: VoteColumnProps) => {
         <ArrowBigDown
           className={cn(
             "h-6 w-6 transition-transform duration-150",
-            hasDownvoted && "fill-current scale-110",
+            hasDownvoted && "fill-current scale-110"
           )}
         />
       </button>

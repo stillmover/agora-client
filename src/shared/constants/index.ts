@@ -1,39 +1,37 @@
 export const API_DELAYS = {
-  POSTS: 300,
-  POST: 300,
+  COMMENTS: 200,
   COMMUNITIES: 200,
   COMMUNITY: 200,
-  COMMENTS: 200,
-  CREATE_POST: 500,
   CREATE_COMMENT: 300,
+  CREATE_POST: 500,
+  POST: 300,
+  POSTS: 300,
 } as const;
 
 export const VOTE_VALUES = {
-  UP_INCREMENT: 1,
   DOWN_INCREMENT: -1,
+  UP_INCREMENT: 1,
   VOTE_CHANGE_MULTIPLIER: 2,
 } as const;
 
 export const VOTE_DIRECTIONS = {
-  UP: "up",
   DOWN: "down",
+  UP: "up",
 } as const;
 
-export type VoteDirection =
-  (typeof VOTE_DIRECTIONS)[keyof typeof VOTE_DIRECTIONS];
+export type VoteDirection = (typeof VOTE_DIRECTIONS)[keyof typeof VOTE_DIRECTIONS];
 
 export const VOTE_BUTTON_SIZES = {
-  SM: "sm",
-  MD: "md",
   LG: "lg",
+  MD: "md",
+  SM: "sm",
 } as const;
 
-export type VoteButtonSize =
-  (typeof VOTE_BUTTON_SIZES)[keyof typeof VOTE_BUTTON_SIZES];
+export type VoteButtonSize = (typeof VOTE_BUTTON_SIZES)[keyof typeof VOTE_BUTTON_SIZES];
 
 export const VOTE_BUTTON_ORIENTATIONS = {
-  VERTICAL: "vertical",
   HORIZONTAL: "horizontal",
+  VERTICAL: "vertical",
 } as const;
 
 export type VoteButtonOrientation =
@@ -45,56 +43,56 @@ export const COMMENT_FORM_PLACEHOLDER = "Write a comment...";
 export const REPLY_FORM_PLACEHOLDER = "Write a reply...";
 
 export const TIME_CONSTANTS = {
-  MILLISECOND: 1,
-  SECOND: 1000,
-  MINUTE: 60 * 1000,
-  HOUR: 60 * 60 * 1000,
   DAY: 24 * 60 * 60 * 1000,
+  HOUR: 60 * 60 * 1000,
+  MILLISECOND: 1,
+  MINUTE: 60 * 1000,
+  SECOND: 1000,
 } as const;
 
 export const UI_TEXT = {
-  POST: {
-    NO_POSTS: "No posts yet. Be the first to post!",
-    NOT_FOUND: "Post not found",
-    CREATING: "Posting...",
-    CREATE: "Post",
-  },
   COMMENT: {
+    COMMENT_COUNT: {
+      PLURAL: "comments",
+      SINGULAR: "comment",
+    },
+    COMMENT_FORM_PLACEHOLDER: "Write a comment...",
+    HIDE_REPLIES: "Hide",
     NO_COMMENTS: "No comments yet. Be the first to comment!",
-    SINGULAR: "Comment",
     PLURAL: "Comments",
     REPLY: "Reply",
-    SUBMIT: "Comment",
-    HIDE_REPLIES: "Hide",
-    SHOW_REPLIES: "Show",
-    REPLY_SINGULAR: "reply",
     REPLY_PLURAL: "replies",
-    COMMENT_FORM_PLACEHOLDER: "Write a comment...",
-    COMMENT_COUNT: {
-      SINGULAR: "comment",
-      PLURAL: "comments",
-    },
+    REPLY_SINGULAR: "reply",
+    SHOW_REPLIES: "Show",
+    SINGULAR: "Comment",
+    SUBMIT: "Comment",
   },
   LOADING: {
     SKELETON_COUNT: 3,
   },
+  POST: {
+    CREATE: "Post",
+    CREATING: "Posting...",
+    NOT_FOUND: "Post not found",
+    NO_POSTS: "No posts yet. Be the first to post!",
+  },
 } as const;
 
 export const VOTE_COLORS = {
-  UP: "orange-500",
   DOWN: "blue-500",
+  UP: "orange-500",
 } as const;
 
 export const AVATAR_SIZES = {
-  SMALL: "h-6 w-6",
-  MEDIUM: "h-8 w-8",
   LARGE: "h-9 w-9",
+  MEDIUM: "h-8 w-8",
+  SMALL: "h-6 w-6",
 } as const;
 
 export const AVATAR_FONT_SIZES = {
-  SMALL: "text-xs",
-  MEDIUM: "text-sm",
   LARGE: "text-base",
+  MEDIUM: "text-sm",
+  SMALL: "text-xs",
 } as const;
 
 export const DATE_FORMAT_OPTIONS = {

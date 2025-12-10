@@ -1,9 +1,6 @@
 import { useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  useVotePostMutation,
-  useVoteCommentMutation,
-} from "@/shared/api/gql/query-hooks";
+import { useVotePostMutation, useVoteCommentMutation } from "@/shared/api/gql/query-hooks";
 import { queryKeys } from "@/shared/api/query-keys";
 import { VoteType } from "@/shared/api/gql";
 import { usePostVote, clientStateActions } from "@/shared/stores";
@@ -23,8 +20,7 @@ export const useVote = (postId: string) => {
       clientStateActions.votePost(postId, newVote);
 
       try {
-        const voteType =
-          direction === "up" ? VoteType.Upvote : VoteType.Downvote;
+        const voteType = direction === "up" ? VoteType.Upvote : VoteType.Downvote;
 
         await votePostMutation.mutateAsync({
           postId,
@@ -41,7 +37,7 @@ export const useVote = (postId: string) => {
         throw error;
       }
     },
-    [postId, currentVote, votePostMutation, queryClient],
+    [postId, currentVote, votePostMutation, queryClient]
   );
 
   return {
@@ -59,8 +55,7 @@ export const useCommentVote = (commentId: string, postId: string) => {
   const vote = useCallback(
     async (direction: "up" | "down") => {
       try {
-        const voteType =
-          direction === "up" ? VoteType.Upvote : VoteType.Downvote;
+        const voteType = direction === "up" ? VoteType.Upvote : VoteType.Downvote;
 
         await voteCommentMutation.mutateAsync({
           commentId,
@@ -75,11 +70,11 @@ export const useCommentVote = (commentId: string, postId: string) => {
         throw error;
       }
     },
-    [commentId, postId, voteCommentMutation, queryClient],
+    [commentId, postId, voteCommentMutation, queryClient]
   );
 
   return {
-    vote,
     isPending: voteCommentMutation.isPending,
+    vote,
   };
 };

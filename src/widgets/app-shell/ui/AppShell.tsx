@@ -5,12 +5,12 @@ import { RightSidebar } from "@/widgets/right-sidebar";
 import { HeroCarousel } from "@/features/hero-carousel";
 import { cn } from "@/shared/lib/utils";
 
-type AppShellProps = {
+interface AppShellProps {
   children: ReactNode;
   showHeroCarousel?: boolean;
   showRightSidebar?: boolean;
   fullWidth?: boolean;
-};
+}
 
 export const AppShell = ({
   children,
@@ -23,18 +23,13 @@ export const AppShell = ({
 
     {showHeroCarousel && <HeroCarousel />}
 
-    <div
-      className={cn(
-        "mx-auto w-full",
-        fullWidth ? "max-w-full" : "max-w-[1600px]",
-      )}
-    >
+    <div className={cn("mx-auto w-full", fullWidth ? "max-w-full" : "max-w-[1600px]")}>
       <div
         className={cn(
           "grid gap-6 px-4 py-6",
           fullWidth
             ? "grid-cols-1"
-            : "grid-cols-1 lg:grid-cols-[280px_1fr] xl:grid-cols-[280px_1fr_320px]",
+            : "grid-cols-1 lg:grid-cols-[280px_1fr] xl:grid-cols-[280px_1fr_320px]"
         )}
       >
         {!fullWidth && (
@@ -45,12 +40,7 @@ export const AppShell = ({
           </aside>
         )}
 
-        <main
-          className={cn(
-            "min-w-0",
-            !fullWidth && "lg:max-w-2xl xl:max-w-3xl mx-auto w-full",
-          )}
-        >
+        <main className={cn("min-w-0", !fullWidth && "lg:max-w-2xl xl:max-w-3xl mx-auto w-full")}>
           {children}
         </main>
 

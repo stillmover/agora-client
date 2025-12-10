@@ -3,7 +3,7 @@ import { useStore } from "@tanstack/react-store";
 
 import type { Region } from "@/shared/api/gql";
 
-export type ClientState = {
+export interface ClientState {
   optimistic: {
     joinedCommunities: Set<string>;
     savedPosts: Set<string>;
@@ -15,18 +15,18 @@ export type ClientState = {
     theme: "light" | "dark" | "system";
     userRegion: Region | null;
   };
-};
+}
 
 const initialState: ClientState = {
   optimistic: {
     joinedCommunities: new Set(),
-    savedPosts: new Set(),
     postVotes: new Map(),
+    savedPosts: new Set(),
   },
   ui: {
     sidebarCollapsed: false,
     theme: "system",
-    userRegion: null,
+    userRegion: undefined,
   },
 };
 
@@ -38,10 +38,7 @@ export const clientStateActions = {
       ...prev,
       optimistic: {
         ...prev.optimistic,
-        joinedCommunities: new Set([
-          ...prev.optimistic.joinedCommunities,
-          communityId,
-        ]),
+        joinedCommunities: new Set([...prev.optimistic.joinedCommunities, communityId]),
       },
     }));
   },
@@ -66,30 +63,6 @@ export const clientStateActions = {
       optimistic: {
         ...prev.optimistic,
         savedPosts: new Set([...prev.optimistic.savedPosts, postId]),
-      },
-    }));
-  },
-
-  unsavePost: (postId: string) => {
-    clientStateStore.setState((prev) => {
-      const newSaved = new Set(prev.optimistic.savedPosts);
-      newSaved.delete(postId);
-      return {
-        ...prev,
-        optimistic: {
-          ...prev.optimistic,
-          savedPosts: newSaved,
-        },
-      };
-    });
-  },
-
-  votePost: (postId: string, vote: -1 | 0 | 1) => {
-    clientStateStore.setState((prev) => ({
-      ...prev,
-      optimistic: {
-        ...prev.optimistic,
-        postVotes: new Map(prev.optimistic.postVotes).set(postId, vote),
       },
     }));
   },
@@ -120,6 +93,30 @@ export const clientStateActions = {
       ui: {
         ...prev.ui,
         userRegion: region,
+      },
+    }));
+  },
+
+  unsavePost: (postId: string) => {
+    clientStateStore.setState((prev) => {
+      const newSaved = new Set(prev.optimistic.savedPosts);
+      newSaved.delete(postId);
+      return {
+        ...prev,
+        optimistic: {
+          ...prev.optimistic,
+          savedPosts: newSaved,
+        },
+      };
+    });
+  },
+
+  votePost: (postId: string, vote: -1 | 0 | 1) => {
+    clientStateStore.setState((prev) => ({
+      ...prev,
+      optimistic: {
+        ...prev.optimistic,
+        postVotes: new Map(prev.optimistic.postVotes).set(postId, vote),
       },
     }));
   },

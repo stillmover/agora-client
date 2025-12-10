@@ -1,15 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { useSavedPosts, type Post } from "@/entities/post";
+import { useSavedPosts } from "@/entities/post";
+import type { Post } from "@/entities/post";
 import { useIsAuthenticated } from "@/entities/session";
 import { PostCard } from "@/widgets/post-card";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/shared/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Bookmark, LogIn, AlertCircle, RefreshCw } from "lucide-react";
 
@@ -17,14 +12,14 @@ export const Route = createFileRoute("/_main/saved")({
   component: SavedPostsPage,
 });
 
+const redirectToLogin = () => {
+  window.location.href = "/login?redirect=/saved";
+};
+
 function SavedPostsPage() {
   const navigate = useNavigate();
   const isAuthenticated = useIsAuthenticated();
-  const { posts, isLoading, error, refetch } = useSavedPosts(
-    20,
-    0,
-    isAuthenticated,
-  );
+  const { posts, isLoading, error, refetch } = useSavedPosts(20, 0, isAuthenticated);
   const [isRetrying, setIsRetrying] = useState(false);
 
   const handleRetry = async () => {
@@ -33,22 +28,16 @@ function SavedPostsPage() {
     setIsRetrying(false);
   };
 
-  const handleSignIn = () => {
-    window.location.href = "/login?redirect=/saved";
-  };
-
   if (!isAuthenticated) {
     return (
       <Card>
         <CardContent className="p-8 text-center">
           <LogIn className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-          <h2 className="text-xl font-semibold mb-2">
-            Sign in to view saved posts
-          </h2>
+          <h2 className="text-xl font-semibold mb-2">Sign in to view saved posts</h2>
           <p className="text-muted-foreground mb-4">
             You need to be logged in to access your saved posts.
           </p>
-          <Button onClick={handleSignIn}>Sign In</Button>
+          <Button onClick={redirectToLogin}>Sign In</Button>
         </CardContent>
       </Card>
     );
@@ -88,20 +77,12 @@ function SavedPostsPage() {
         <Card>
           <CardContent className="p-8 text-center">
             <AlertCircle className="h-12 w-12 mx-auto text-destructive mb-4" />
-            <h2 className="text-xl font-semibold mb-2">
-              Failed to load saved posts
-            </h2>
+            <h2 className="text-xl font-semibold mb-2">Failed to load saved posts</h2>
             <p className="text-muted-foreground mb-4">
               {error.message || "Something went wrong. Please try again."}
             </p>
-            <Button
-              onClick={handleRetry}
-              disabled={isRetrying}
-              className="gap-2"
-            >
-              <RefreshCw
-                className={`h-4 w-4 ${isRetrying ? "animate-spin" : ""}`}
-              />
+            <Button onClick={handleRetry} disabled={isRetrying} className="gap-2">
+              <RefreshCw className={`h-4 w-4 ${isRetrying ? "animate-spin" : ""}`} />
               {isRetrying ? "Retrying..." : "Try Again"}
             </Button>
           </CardContent>

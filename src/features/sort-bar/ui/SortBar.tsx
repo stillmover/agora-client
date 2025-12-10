@@ -20,20 +20,20 @@ import { useSortBar } from "../model/useSortBar";
 import { SORT_OPTIONS, REGION_OPTIONS } from "../lib/constants";
 import { cn } from "@/shared/lib/utils";
 
-type SortBarProps = {
+interface SortBarProps {
   sort: SortOption;
   region: RegionOption;
   onSortChange: (sort: SortOption) => void;
   onRegionChange: (region: RegionOption) => void;
-  onFilterClick?: () => void;
-};
+  onFilterClick?: VoidFunction;
+}
 
 const sortIcons: Record<string, React.ElementType> = {
   best: Star,
   hot: Flame,
   new: Sparkles,
-  top: TrendingUp,
   rising: Clock,
+  top: TrendingUp,
 };
 
 export const SortBar = ({
@@ -65,7 +65,7 @@ export const SortBar = ({
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 isActive
                   ? "bg-foreground text-background"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent",
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
               )}
               aria-pressed={isActive}
             >
@@ -73,7 +73,7 @@ export const SortBar = ({
                 className={cn(
                   "h-4 w-4",
                   isActive && option.value === "hot" && "text-orange-400",
-                  isActive && option.value === "new" && "text-green-400",
+                  isActive && option.value === "new" && "text-green-400"
                 )}
               />
               <span className="hidden sm:inline">{option.label}</span>
@@ -91,9 +91,7 @@ export const SortBar = ({
             aria-label={`Current region: ${currentRegionLabel}`}
           >
             <MapPin className="h-4 w-4" />
-            <span className="hidden md:inline max-w-[100px] truncate">
-              {currentRegionLabel}
-            </span>
+            <span className="hidden md:inline max-w-[100px] truncate">{currentRegionLabel}</span>
             <ChevronDown className="h-3 w-3" />
           </Button>
         </DropdownMenuTrigger>

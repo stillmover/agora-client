@@ -1,9 +1,6 @@
 import { useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  useJoinCommunityMutation,
-  useLeaveCommunityMutation,
-} from "@/shared/api/gql/query-hooks";
+import { useJoinCommunityMutation, useLeaveCommunityMutation } from "@/shared/api/gql/query-hooks";
 import { queryKeys } from "@/shared/api/query-keys";
 import { useIsCommunityJoined, clientStateActions } from "@/shared/stores";
 import { logger } from "@/shared/services/logger";
@@ -73,12 +70,12 @@ export const useCommunityActions = (communityId: string) => {
   const isPending = joinMutation.isPending || leaveMutation.isPending;
 
   return {
-    join,
-    leave,
-    toggleJoin,
+    actionLabel: isJoined ? "Leave" : "Join",
     isJoined,
     isPending,
+    join,
     joinLabel: isJoined ? "Joined" : "Join",
-    actionLabel: isJoined ? "Leave" : "Join",
+    leave,
+    toggleJoin,
   };
 };

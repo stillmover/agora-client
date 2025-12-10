@@ -1,13 +1,13 @@
-type CacheSizeResponse = {
-  sizes: Array<{ name: string; size: number }>;
-};
+interface CacheSizeResponse {
+  sizes: { name: string; size: number }[];
+}
 
-type ClearCacheResponse = {
+interface ClearCacheResponse {
   success: boolean;
-};
+}
 
 export class ServiceWorkerManager {
-  private registration: ServiceWorkerRegistration | null = null;
+  private registration: ServiceWorkerRegistration | null = undefined;
   private readonly swPath: string;
 
   constructor(swPath = "/sw.js") {
@@ -16,7 +16,7 @@ export class ServiceWorkerManager {
 
   async register(): Promise<ServiceWorkerRegistration | null> {
     if (!("serviceWorker" in navigator)) {
-      return null;
+      return;
     }
 
     try {
@@ -28,10 +28,7 @@ export class ServiceWorkerManager {
         const newWorker = this.registration?.installing;
         if (newWorker) {
           newWorker.addEventListener("statechange", () => {
-            if (
-              newWorker.state === "installed" &&
-              navigator.serviceWorker.controller
-            ) {
+            if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
               this.onUpdateAvailable();
             }
           });
@@ -49,7 +46,7 @@ export class ServiceWorkerManager {
       return this.registration;
     } catch (error) {
       console.error("Service Worker registration failed:", error);
-      return null;
+      return;
     }
   }
 
@@ -60,7 +57,7 @@ export class ServiceWorkerManager {
 
     try {
       const unregistered = await this.registration.unregister();
-      this.registration = null;
+      this.registration = undefined;
       return unregistered;
     } catch (error) {
       console.error("Service Worker unregistration failed:", error);
@@ -95,9 +92,7 @@ export class ServiceWorkerManager {
         }
       });
 
-      this.registration?.waiting?.postMessage({ type: "SKIP_WAITING" }, [
-        channel.port2,
-      ]);
+      this.registration?.waiting?.postMessage({ type: "SKIP_WAITING" }, [channel.port2]);
     });
   }
 
@@ -108,38 +103,28 @@ export class ServiceWorkerManager {
 
     return new Promise((resolve) => {
       const channel = new MessageChannel();
-      channel.port1.addEventListener(
-        "message",
-        (event: MessageEvent<ClearCacheResponse>) => {
-          resolve(event.data.success);
-        },
-      );
+      channel.port1.addEventListener("message", (event: MessageEvent<ClearCacheResponse>) => {
+        resolve(event.data.success);
+      });
 
-      this.registration?.active?.postMessage({ type: "CLEAR_CACHE" }, [
-        channel.port2,
-      ]);
+      this.registration?.active?.postMessage({ type: "CLEAR_CACHE" }, [channel.port2]);
 
       setTimeout(() => resolve(false), 5000);
     });
   }
 
-  async getCacheSizes(): Promise<Array<{ name: string; size: number }>> {
+  async getCacheSizes(): Promise<{ name: string; size: number }[]> {
     if (!this.registration?.active) {
       return [];
     }
 
     return new Promise((resolve) => {
       const channel = new MessageChannel();
-      channel.port1.addEventListener(
-        "message",
-        (event: MessageEvent<CacheSizeResponse>) => {
-          resolve(event.data.sizes);
-        },
-      );
+      channel.port1.addEventListener("message", (event: MessageEvent<CacheSizeResponse>) => {
+        resolve(event.data.sizes);
+      });
 
-      this.registration?.active?.postMessage({ type: "CACHE_SIZE" }, [
-        channel.port2,
-      ]);
+      this.registration?.active?.postMessage({ type: "CACHE_SIZE" }, [channel.port2]);
 
       setTimeout(() => resolve([]), 5000);
     });

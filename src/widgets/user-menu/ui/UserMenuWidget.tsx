@@ -1,19 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
-import {
-  User,
-  LogOut,
-  Settings,
-  Bookmark,
-  FileText,
-  MessageSquare,
-} from "lucide-react";
+import { User, LogOut, Settings, Bookmark, FileText, MessageSquare } from "lucide-react";
 
-import {
-  useSessionUser,
-  useIsAuthenticated,
-  useLogoutMutation,
-} from "@/entities/session";
-import { ROUTES } from "@/shared/config";
+import { useSessionUser, useIsAuthenticated, useLogoutMutation } from "@/entities/session";
 import { Button } from "@/shared/ui/button";
 import {
   DropdownMenu,
@@ -36,10 +24,10 @@ export const UserMenuWidget = () => {
   const handleLogout = async () => {
     try {
       await logoutMutation.mutateAsync();
-      navigate({ to: ROUTES.HOME });
+      window.location.assign("/login");
     } catch (error) {
       logger.error("Error during logout:", error);
-      navigate({ to: ROUTES.HOME });
+      window.location.assign("/login");
     }
   };
 
@@ -52,7 +40,7 @@ export const UserMenuWidget = () => {
   }
 
   if (!user) {
-    return null;
+    return;
   }
 
   return (
@@ -75,8 +63,8 @@ export const UserMenuWidget = () => {
         <DropdownMenuItem
           onClick={() =>
             navigate({
-              to: "/u/$username",
               params: { username: user.username },
+              to: "/u/$username",
             })
           }
         >
@@ -91,15 +79,15 @@ export const UserMenuWidget = () => {
         <DropdownMenuItem
           onClick={() =>
             navigate({
-              to: "/u/$username",
               params: { username: user.username },
+              to: "/u/$username",
             })
           }
         >
           <FileText className="mr-2 h-4 w-4" />
           My Posts
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate({ to: "/messages" })}>
           <MessageSquare className="mr-2 h-4 w-4" />
           Messages
         </DropdownMenuItem>

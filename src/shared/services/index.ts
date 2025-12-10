@@ -6,15 +6,7 @@ export {
   formatReplyCount,
   getInitials,
 } from "./formatter";
-export {
-  detectUserRegion,
-  getRegionFromCountryCode,
-  detectUserPlace,
-} from "./geolocation";
+export { detectUserRegion, getRegionFromCountryCode, detectUserPlace } from "./geolocation";
 export { useUserPlaceQuery } from "./useUserPlace";
 export { serviceWorkerManager, ServiceWorkerManager } from "./service-worker";
-export {
-  pwaInstallManager,
-  PWAInstallManager,
-  usePWAInstall,
-} from "./pwa-install";
+export { pwaInstallManager, PWAInstallManager, usePWAInstall } from "./pwa-install";

@@ -22,8 +22,7 @@ const defaultQueryOptions = {
 
     return failureCount < 3;
   },
-  retryDelay: (attemptIndex: number) =>
-    Math.min(TIME_CONSTANTS.SECOND * 2 ** attemptIndex, 30000),
+  retryDelay: (attemptIndex: number) => Math.min(TIME_CONSTANTS.SECOND * 2 ** attemptIndex, 30_000),
   staleTime: 5 * TIME_CONSTANTS.MINUTE,
 };
 
@@ -33,11 +32,7 @@ const defaultMutationOptions = {
 };
 
 const globalErrorHandler = (error: unknown) => {
-  if (
-    error instanceof Error &&
-    "status" in error &&
-    (error as ErrorWithStatus).status === 401
-  ) {
+  if (error instanceof Error && "status" in error && (error as ErrorWithStatus).status === 401) {
     return;
   }
 

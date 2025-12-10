@@ -8,14 +8,10 @@ const FIRST_ERROR_INDEX = 0;
 interface LoginFormProps {
   setView?: (view: "login" | "register" | "reset") => void;
   redirect?: string;
-  onSuccess?: () => void;
+  onSuccess?: VoidFunction;
 }
 
-const LoginFormFields = ({
-  form,
-}: {
-  form: ReturnType<typeof useLoginForm>["form"];
-}) => (
+const LoginFormFields = ({ form }: { form: ReturnType<typeof useLoginForm>["form"] }) => (
   <>
     <form.Field name="usernameOrEmail">
       {(field) => (
@@ -70,7 +66,6 @@ const LoginFormFooter = ({
 
   const navigateTo = (to: "/reset" | "/register") =>
     navigate({
-      to,
       search: (prev) => ({
         ...prev,
         redirect: redirect ?? prev.redirect,
@@ -78,6 +73,7 @@ const LoginFormFooter = ({
         state: undefined,
         error: undefined,
       }),
+      to,
     });
 
   return (
@@ -94,9 +90,7 @@ const LoginFormFooter = ({
         New to Reddit?{" "}
         <button
           type="button"
-          onClick={() =>
-            setView ? setView("register") : navigateTo("/register")
-          }
+          onClick={() => (setView ? setView("register") : navigateTo("/register"))}
           className="text-blue-600 hover:underline cursor-pointer dark:text-[#648efc]"
         >
           Sign Up
@@ -115,9 +109,9 @@ const LoginSubmitButton = ({
 }) => (
   <form.Subscribe
     selector={(state) => ({
-      values: state.values,
       canSubmit: state.canSubmit,
       isSubmitting: state.isSubmitting,
+      values: state.values,
     })}
   >
     {({ values, canSubmit, isSubmitting }) => {
@@ -162,7 +156,7 @@ const LoginSubmitButton = ({
 );
 
 export const LoginForm = ({ setView, redirect, onSuccess }: LoginFormProps) => {
-  const { form, isPending } = useLoginForm({ redirect, onSuccess });
+  const { form, isPending } = useLoginForm({ onSuccess, redirect });
 
   return (
     <div className="space-y-6">

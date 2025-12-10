@@ -1,50 +1,41 @@
-import { VOTE_VALUES, type VoteDirection } from "@/shared/constants";
+import { VOTE_VALUES } from "@/shared/constants";
+import type { VoteDirection } from "@/shared/constants";
 
-export type VoteState = {
+export interface VoteState {
   currentVotes: number;
   userVote: VoteDirection | null;
-};
+}
 
-export type VoteResult = {
+export interface VoteResult {
   newVoteCount: number;
   newUserVote: VoteDirection | null;
-};
+}
 
-export function calculateVoteChange(
-  currentState: VoteState,
-  direction: VoteDirection,
-): VoteResult {
+export function calculateVoteChange(currentState: VoteState, direction: VoteDirection): VoteResult {
   const { currentVotes, userVote } = currentState;
 
   if (userVote === direction) {
     return {
+      newUserVote: null,
       newVoteCount:
         currentVotes +
-        (direction === "up"
-          ? -VOTE_VALUES.UP_INCREMENT
-          : -VOTE_VALUES.DOWN_INCREMENT),
-      newUserVote: null,
+        (direction === "up" ? -VOTE_VALUES.UP_INCREMENT : -VOTE_VALUES.DOWN_INCREMENT),
     };
   }
 
   if (userVote === null) {
     return {
-      newVoteCount:
-        currentVotes +
-        (direction === "up"
-          ? VOTE_VALUES.UP_INCREMENT
-          : VOTE_VALUES.DOWN_INCREMENT),
       newUserVote: direction,
+      newVoteCount:
+        currentVotes + (direction === "up" ? VOTE_VALUES.UP_INCREMENT : VOTE_VALUES.DOWN_INCREMENT),
     };
   }
 
   const voteChange =
-    direction === "up"
-      ? VOTE_VALUES.VOTE_CHANGE_MULTIPLIER
-      : -VOTE_VALUES.VOTE_CHANGE_MULTIPLIER;
+    direction === "up" ? VOTE_VALUES.VOTE_CHANGE_MULTIPLIER : -VOTE_VALUES.VOTE_CHANGE_MULTIPLIER;
 
   return {
-    newVoteCount: currentVotes + voteChange,
     newUserVote: direction,
+    newVoteCount: currentVotes + voteChange,
   };
 }

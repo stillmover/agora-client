@@ -4,13 +4,7 @@ import { useUserByUsername } from "@/entities/user";
 import { useUserPosts } from "@/entities/post";
 import { useUserComments } from "@/entities/comment";
 import { PostCard } from "@/widgets/post-card";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/shared/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { Calendar, Award, MessageSquare, FileText } from "lucide-react";
@@ -25,16 +19,8 @@ function UserProfilePage() {
   const [activeTab, setActiveTab] = useState<"posts" | "comments">("posts");
 
   const { user, isLoading: userLoading } = useUserByUsername(username);
-  const { posts, isLoading: postsLoading } = useUserPosts(
-    user?.id ?? "",
-    20,
-    0,
-  );
-  const { comments, isLoading: commentsLoading } = useUserComments(
-    user?.id ?? "",
-    20,
-    0,
-  );
+  const { posts, isLoading: postsLoading } = useUserPosts(user?.id ?? "", 20, 0);
+  const { comments, isLoading: commentsLoading } = useUserComments(user?.id ?? "", 20, 0);
 
   if (userLoading) {
     return (
@@ -80,13 +66,9 @@ function UserProfilePage() {
             <div className="flex-1">
               <CardTitle className="text-2xl">u/{user.username}</CardTitle>
               {user.name && (
-                <CardDescription className="text-base mt-1">
-                  {user.name}
-                </CardDescription>
+                <CardDescription className="text-base mt-1">{user.name}</CardDescription>
               )}
-              {user.bio && (
-                <p className="text-sm text-muted-foreground mt-2">{user.bio}</p>
-              )}
+              {user.bio && <p className="text-sm text-muted-foreground mt-2">{user.bio}</p>}
             </div>
           </div>
         </CardHeader>
@@ -109,10 +91,7 @@ function UserProfilePage() {
         </CardContent>
       </Card>
 
-      <Tabs
-        value={activeTab}
-        onValueChange={(v) => setActiveTab(v as "posts" | "comments")}
-      >
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "posts" | "comments")}>
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="posts" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
@@ -138,9 +117,7 @@ function UserProfilePage() {
               </CardContent>
             </Card>
           ) : (
-            posts.map((post) => (
-              <PostCard key={post.id} post={post} showCommunity />
-            ))
+            posts.map((post) => <PostCard key={post.id} post={post} showCommunity />)
           )}
         </TabsContent>
 

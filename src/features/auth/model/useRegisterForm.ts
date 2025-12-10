@@ -4,39 +4,27 @@ import { useRegisterMutation } from "@/entities/session";
 import { registerSchema } from "../lib/schemas";
 import { logger } from "@/shared/services";
 
-type UseRegisterFormOptions = {
+interface UseRegisterFormOptions {
   redirect?: string;
   onSuccess?: VoidFunction;
-};
+}
 
-/**
- * Form hook for registration using TanStack Form + TanStack Query mutation.
- * Optimized to only validate on blur and submit (not onChange).
- */
-export const useRegisterForm = ({
-  redirect,
-  onSuccess,
-}: UseRegisterFormOptions = {}) => {
+export const useRegisterForm = ({ redirect, onSuccess }: UseRegisterFormOptions = {}) => {
   const navigate = useNavigate();
   const registerMutation = useRegisterMutation();
 
   const form = useForm({
     defaultValues: {
       email: "",
-      username: "",
       password: "",
-    },
-    validators: {
-      // Only validate on blur and submit to reduce re-renders
-      onBlur: registerSchema,
-      onSubmit: registerSchema,
+      username: "",
     },
     onSubmit: async ({ value }) => {
       try {
         await registerMutation.mutateAsync({
           email: value.email,
-          username: value.username,
           password: value.password,
+          username: value.username,
         });
 
         onSuccess?.();
@@ -48,11 +36,16 @@ export const useRegisterForm = ({
         throw error;
       }
     },
+    validators: {
+      onChange: registerSchema,
+      onBlur: registerSchema,
+      onSubmit: registerSchema,
+    },
   });
 
   return {
+    error: registerMutation.error,
     form,
     isPending: registerMutation.isPending,
-    error: registerMutation.error,
   };
 };

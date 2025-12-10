@@ -1,69 +1,63 @@
+import * as Sentry from "@sentry/react";
+
 type LogLevel = "debug" | "info" | "warn" | "error";
 
-type LoggerConfig = {
-  enabled: boolean;
-  level: LogLevel;
+type SentryLogger = typeof Sentry.logger & {
+  fmt?: (strings: TemplateStringsArray, ...values: unknown[]) => unknown;
 };
 
-const DEFAULT_CONFIG: LoggerConfig = {
-  enabled: true,
-  level: "info",
+const sentryLogger = Sentry.logger as SentryLogger;
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+const toContext = (payload: unknown[]): Record<string, unknown> | undefined => {
+  if (!payload.length) {
+    return undefined;
+  }
+
+  if (payload.length === 1 && isRecord(payload[0])) {
+    return payload[0];
+  }
+
+  return {
+    payload: payload.map((value) =>
+      value instanceof Error
+        ? { message: value.message, name: value.name, stack: value.stack }
+        : value
+    ),
+  };
 };
 
-class Logger {
-  private config: LoggerConfig;
-
-  constructor(config?: LoggerConfig) {
-    this.config = config ?? DEFAULT_CONFIG;
+const formatMessage = (message: string, context?: Record<string, unknown>) => {
+  if (typeof sentryLogger.fmt === "function") {
+    return context ? sentryLogger.fmt`${message} ${context}` : sentryLogger.fmt`${message}`;
   }
 
-  private shouldLog(level: LogLevel): boolean {
-    if (!this.config.enabled) {
-      return false;
-    }
+  return message;
+};
 
-    const levels: Record<LogLevel, number> = {
-      debug: 0,
-      error: 3,
-      info: 1,
-      warn: 2,
-    };
+const log = (level: LogLevel, message: string, ...payload: unknown[]) => {
+  const context = toContext(payload);
+  const formattedMessage = formatMessage(message, context);
+  const fn =
+    level === "debug"
+      ? sentryLogger.debug
+      : level === "info"
+        ? (sentryLogger.info ?? sentryLogger.debug)
+        : level === "warn"
+          ? sentryLogger.warn
+          : sentryLogger.error;
 
-    return levels[level] >= levels[this.config.level];
-  }
+  fn?.(formattedMessage as string, context);
+};
 
-  debug(message: string, ...args: unknown[]): void {
-    if (this.shouldLog("debug")) {
-      console.debug(`[DEBUG] ${message}`, ...args);
-    }
-  }
+export const logger = {
+  debug: (message: string, ...payload: unknown[]) => log("debug", message, ...payload),
+  info: (message: string, ...payload: unknown[]) => log("info", message, ...payload),
+  warn: (message: string, ...payload: unknown[]) => log("warn", message, ...payload),
+  error: (message: string, ...payload: unknown[]) => log("error", message, ...payload),
+  fmt: sentryLogger.fmt,
+};
 
-  info(message: string, ...args: unknown[]): void {
-    if (this.shouldLog("info")) {
-      console.info(`[INFO] ${message}`, ...args);
-    }
-  }
-
-  warn(message: string, ...args: unknown[]): void {
-    if (this.shouldLog("warn")) {
-      console.warn(`[WARN] ${message}`, ...args);
-    }
-  }
-
-  error(message: string, error?: Error | unknown, ...args: unknown[]): void {
-    if (this.shouldLog("error")) {
-      console.error(`[ERROR] ${message}`, error, ...args);
-    }
-  }
-
-  setConfig(config: Partial<LoggerConfig>): void {
-    this.config = { ...this.config, ...config };
-  }
-}
-
-export const logger = new Logger({
-  enabled: import.meta.env.DEV,
-  level: import.meta.env.DEV ? "debug" : "error",
-});
-
-export type ILogger = Pick<Logger, "debug" | "info" | "warn" | "error">;
+export type ILogger = Pick<typeof logger, "debug" | "info" | "warn" | "error">;

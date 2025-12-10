@@ -8,22 +8,16 @@ import { ExternalLink, Image as ImageIcon, Play, Link2 } from "lucide-react";
 import { formatRelativeTime } from "@/shared/services";
 import type { ReactNode } from "react";
 
-type PostCardContentProps = {
+interface PostCardContentProps {
   post: Post;
   showCommunity?: boolean;
   voteColumn: ReactNode;
   postMenu: ReactNode;
   postActions: ReactNode;
-};
+}
 
 export const PostCardContent = memo(
-  ({
-    post,
-    showCommunity = true,
-    voteColumn,
-    postMenu,
-    postActions,
-  }: PostCardContentProps) => {
+  ({ post, showCommunity = true, voteColumn, postMenu, postActions }: PostCardContentProps) => {
     const timeAgo = formatRelativeTime(post.createdAt);
 
     return (
@@ -32,9 +26,7 @@ export const PostCardContent = memo(
         className="group overflow-hidden focus-within:ring-2 focus-within:ring-brand/50"
       >
         <div className="flex">
-          <div className="flex-shrink-0 bg-muted/30 dark:bg-muted/10 py-3 px-2">
-            {voteColumn}
-          </div>
+          <div className="flex-shrink-0 bg-muted/30 dark:bg-muted/10 py-3 px-2">{voteColumn}</div>
 
           <div className="flex-1 min-w-0 p-4">
             <header className="flex items-center gap-2 mb-3 text-xs">
@@ -78,9 +70,7 @@ export const PostCardContent = memo(
                 {timeAgo}
               </time>
 
-              <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                {postMenu}
-              </div>
+              <div className="opacity-0 group-hover:opacity-100 transition-opacity">{postMenu}</div>
             </header>
 
             {post.flairs && post.flairs.length > 0 && (
@@ -124,37 +114,37 @@ export const PostCardContent = memo(
               </Link>
             )}
 
-            <footer
-              className="mt-4 -mx-1"
-              role="contentinfo"
-              aria-label="Post actions"
-            >
+            <footer className="mt-4 -mx-1" role="contentinfo" aria-label="Post actions">
               {postActions}
             </footer>
           </div>
         </div>
       </Card>
     );
-  },
+  }
 );
 
 PostCardContent.displayName = "PostCardContent";
 
 const MediaPreview = ({ media }: { media: Post["media"] }) => {
   if (!media) {
-    return null;
+    return;
   }
 
   const getMediaIcon = () => {
     switch (media.type) {
-      case "image":
+      case "image": {
         return <ImageIcon className="h-8 w-8" aria-hidden="true" />;
-      case "video":
+      }
+      case "video": {
         return <Play className="h-8 w-8" aria-hidden="true" />;
-      case "link":
+      }
+      case "link": {
         return <Link2 className="h-8 w-8" aria-hidden="true" />;
-      default:
+      }
+      default: {
         return <ExternalLink className="h-8 w-8" aria-hidden="true" />;
+      }
     }
   };
 
@@ -163,7 +153,7 @@ const MediaPreview = ({ media }: { media: Post["media"] }) => {
       <div className="relative rounded-xl overflow-hidden bg-muted aspect-video">
         <img
           src={media.thumb}
-          alt="Post image"
+          alt="Post media preview"
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           loading="lazy"
         />
@@ -199,12 +189,8 @@ const MediaPreview = ({ media }: { media: Post["media"] }) => {
         {getMediaIcon()}
       </div>
       <div className="flex-1 min-w-0">
-        <span className="text-sm font-medium text-foreground capitalize">
-          {media.type} content
-        </span>
-        <span className="text-xs text-muted-foreground block truncate">
-          Click to view
-        </span>
+        <span className="text-sm font-medium text-foreground capitalize">{media.type} content</span>
+        <span className="text-xs text-muted-foreground block truncate">Click to view</span>
       </div>
       <ExternalLink className="h-4 w-4 text-muted-foreground" />
     </div>

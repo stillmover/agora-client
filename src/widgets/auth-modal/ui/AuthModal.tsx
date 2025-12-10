@@ -3,12 +3,13 @@ import { X } from "lucide-react";
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/shared/ui/button";
-import { LoginView, RegisterView, ResetView, type AuthView } from "./views";
+import { LoginView, RegisterView, ResetView } from "./views";
+import type { AuthView } from "./views";
 
 const fadeAnimation = {
-  initial: { opacity: 0 },
   animate: { opacity: 1 },
   exit: { opacity: 0 },
+  initial: { opacity: 0 },
   transition: { duration: 0.15 },
 };
 
@@ -48,24 +49,18 @@ export const AuthModal = () => {
 
   const renderView = () => {
     switch (view) {
-      case "login":
-        return (
-          <LoginView
-            onSuccess={handleSuccess}
-            onViewChange={handleViewChange}
-          />
-        );
-      case "register":
-        return (
-          <RegisterView
-            onSuccess={handleSuccess}
-            onViewChange={handleViewChange}
-          />
-        );
-      case "reset":
+      case "login": {
+        return <LoginView onSuccess={handleSuccess} onViewChange={handleViewChange} />;
+      }
+      case "register": {
+        return <RegisterView onSuccess={handleSuccess} onViewChange={handleViewChange} />;
+      }
+      case "reset": {
         return <ResetView onViewChange={handleViewChange} />;
-      default:
-        return null;
+      }
+      default: {
+        return;
+      }
     }
   };
 

@@ -1,19 +1,14 @@
 import { useState, useCallback } from "react";
 import { useParams } from "@tanstack/react-router";
 
-import { usePosts, type Post } from "@/entities/post";
+import { usePosts } from "@/entities/post";
+import type { Post } from "@/entities/post";
 import { PostCard } from "@/widgets/post-card";
 import { SortBar } from "@/features/sort-bar";
 import type { SortOption, RegionOption } from "@/shared/types";
 import { useInfiniteScroll } from "@/shared/hooks";
 import { mapSortOptionToSortType } from "../lib/mappers";
-import {
-  FeedError,
-  FeedEmpty,
-  FeedLoading,
-  LoadingMoreIndicator,
-  EndOfFeed,
-} from "./components";
+import { FeedError, FeedEmpty, FeedLoading, LoadingMoreIndicator, EndOfFeed } from "./components";
 
 export const Feed = () => {
   const params = useParams({ strict: false });
@@ -22,18 +17,13 @@ export const Feed = () => {
   const [sort, setSort] = useState<SortOption>("best");
   const [region, setRegion] = useState<RegionOption>("global");
 
-  const {
-    posts,
-    isLoading,
-    isFetchingNextPage,
-    hasMore,
-    fetchNextPage,
-    error,
-  } = usePosts({
-    communityId,
-    sort: mapSortOptionToSortType(sort),
-    region,
-  });
+  const { posts, isLoading, isFetchingNextPage, hasMore, fetchNextPage, error, refetch } = usePosts(
+    {
+      communityId,
+      region,
+      sort: mapSortOptionToSortType(sort),
+    }
+  );
 
   const sentinelRef = useInfiniteScroll(fetchNextPage, {
     hasMore,
@@ -51,7 +41,7 @@ export const Feed = () => {
   }, []);
 
   if (error) {
-    return <FeedError />;
+    return <FeedError onRetry={() => refetch()} />;
   }
 
   if (isLoading && posts.length === 0) {

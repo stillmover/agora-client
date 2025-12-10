@@ -16,13 +16,13 @@ export const ResetForm = () => {
 
   const form = useForm({
     defaultValues: { usernameOrEmail: "" },
-    validators: {
-      onSubmit: resetSchema,
-    },
     onSubmit: async ({ value }) => {
       logger.debug("Password reset request", {
         usernameOrEmail: value.usernameOrEmail,
       });
+    },
+    validators: {
+      onSubmit: resetSchema,
     },
   });
 

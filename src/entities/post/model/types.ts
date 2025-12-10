@@ -1,10 +1,10 @@
-export type Flair = {
+export interface Flair {
   id: string;
   label: string;
   color?: string;
-};
+}
 
-export type Post = {
+export interface Post {
   id: string;
   community: Community;
   author: {
@@ -24,7 +24,7 @@ export type Post = {
   createdAt: string;
   userVote?: -1 | 0 | 1;
   isSaved?: boolean;
-};
+}
 
 import type { Community } from "@/entities/community";
 

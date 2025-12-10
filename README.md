@@ -23,17 +23,20 @@ A modern Reddit client built with React, TypeScript, TanStack Router, and TanSta
 ## 📦 Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd reddit-client
    ```
 
 2. **Install dependencies**
+
    ```bash
    bun install
    ```
 
 3. **Set up environment variables**
+
    ```bash
    cp .env.example .env.local
    ```
@@ -54,9 +57,12 @@ The application uses environment variables for configuration. All environment va
 Copy `.env.example` to `.env.local` and fill in your values:
 
 ```bash
-# Reddit API Configuration (Required)
-VITE_REDDIT_CLIENT_ID="your_reddit_client_id"
-VITE_REDDIT_CLIENT_SECRET="your_reddit_client_secret"
+# Backend API (Required)
+VITE_BACKEND_URL="http://localhost:8000"
+
+# Google OAuth (Optional - only if using Google auth)
+VITE_GOOGLE_CLIENT_ID="your_google_client_id"
+VITE_GOOGLE_REDIRECT_URI="http://localhost:8000/api/auth/google/callback"
 
 # Other configurations have defaults
 ```
@@ -65,31 +71,34 @@ VITE_REDDIT_CLIENT_SECRET="your_reddit_client_secret"
 
 - **`.env.example`** - Template with placeholder values
 - **`.env.local`** - Local development (gitignored)
-- **`.env.production`** - Production environment variables
 
-### Getting Reddit API Credentials
+### Getting Google OAuth Credentials (Optional)
 
-1. Go to [Reddit Apps](https://www.reddit.com/prefs/apps)
-2. Click "Create App" or "Create Another App"
-3. Choose "web app" type
-4. Set redirect URI to: `http://localhost:5173/auth/callback`
-5. Copy the client ID and secret
+Only needed if you want to use Google authentication:
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select existing one
+3. Enable Google+ API
+4. Create OAuth 2.0 credentials
+5. Add authorized redirect URI: `http://localhost:8000/api/auth/google/callback`
+6. Copy the client ID
 
 ### Type-Safe Environment Access with Zod
 
 The environment variables are validated using Zod schemas for type safety and runtime validation:
 
 ```typescript
-import { env, isDevelopment } from '@/utils/env'
+import { env, isDevelopment } from '@/shared/utils/env'
 
 // Fully typed environment variables with Zod validation
-console.log(env.REDDIT_CLIENT_ID) // string (required)
-console.log(env.PORT)             // number (coerced and validated)
-console.log(env.ENABLE_ANALYTICS) // boolean (coerced from string)
-console.log(env.API_TIMEOUT)      // number (with positive validation)
+console.log(env.BACKEND_URL)       // string (URL, required)
+console.log(env.GOOGLE_CLIENT_ID)  // string | undefined (optional)
+console.log(env.PORT)              // number (coerced and validated)
+console.log(env.APP_ENV)           // "development" | "production" | "test"
 
 // Environment helpers
-console.log(isDevelopment) // boolean
+console.log(isDevelopment)  // boolean
+console.log(isProduction)   // boolean
 ```
 
 #### Zod Validation Features
@@ -103,19 +112,17 @@ console.log(isDevelopment) // boolean
 #### Schema Examples
 
 ```typescript
-// String with minimum length (required)
-REDDIT_CLIENT_ID: z.string().min(1, 'REDDIT_CLIENT_ID is required')
+// URL validation with default
+BACKEND_URL: z.string().url().default('http://localhost:8000')
 
 // Number with coercion and validation
 PORT: z.coerce.number().int().positive().default(5173)
 
-// Boolean with coercion
-ENABLE_ANALYTICS: z.coerce.boolean().default(false)
-
-// URL validation
-BACKEND_URL: z.string().url().default('http://localhost:8000')
+// Enum with default
+APP_ENV: z.enum(['development', 'production', 'test']).default('development')
 
 // Optional string
+GOOGLE_CLIENT_ID: z.string().optional()
 SENTRY_DSN: z.string().optional()
 ```
 
@@ -188,6 +195,7 @@ bun run type-check
 ## 🚢 Deployment
 
 1. **Build the application**
+
    ```bash
    bun run build
    ```
@@ -199,9 +207,12 @@ bun run type-check
 ### Environment Variables for Production
 
 Make sure to set these in your production environment:
-- `VITE_REDDIT_CLIENT_ID`
-- `VITE_REDDIT_CLIENT_SECRET`
-- `VITE_REDDIT_REDIRECT_URI` (your production callback URL)
+
+- `VITE_BACKEND_URL` - Your production backend API URL
+- `VITE_GOOGLE_CLIENT_ID` - (Optional) If using Google OAuth
+- `VITE_GOOGLE_REDIRECT_URI` - (Optional) Your production OAuth callback URL
+- `VITE_SENTRY_DSN` - (Optional) For error tracking
+- `VITE_APP_ENV=production` - Set environment to production
 
 ## 🤝 Contributing
 

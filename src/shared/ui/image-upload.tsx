@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Camera, ImagePlus, X, Loader2 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
-type ImageUploadProps = {
+interface ImageUploadProps {
   value?: string;
   onChange?: (url: string | undefined) => void;
   variant?: "circle" | "rectangle" | "banner";
@@ -13,29 +13,29 @@ type ImageUploadProps = {
   disabled?: boolean;
   removable?: boolean;
   accept?: string;
-};
+}
 
 const sizeConfig = {
-  sm: {
-    circle: "h-16 w-16",
-    rectangle: "h-16 w-16",
-    banner: "h-20 w-full",
-    icon: "h-4 w-4",
-    text: "text-xs",
+  lg: {
+    banner: "h-40 w-full",
+    circle: "h-32 w-32",
+    icon: "h-6 w-6",
+    rectangle: "h-32 w-32",
+    text: "text-sm",
   },
   md: {
-    circle: "h-24 w-24",
-    rectangle: "h-24 w-24",
     banner: "h-32 w-full",
+    circle: "h-24 w-24",
     icon: "h-5 w-5",
+    rectangle: "h-24 w-24",
     text: "text-sm",
   },
-  lg: {
-    circle: "h-32 w-32",
-    rectangle: "h-32 w-32",
-    banner: "h-40 w-full",
-    icon: "h-6 w-6",
-    text: "text-sm",
+  sm: {
+    banner: "h-20 w-full",
+    circle: "h-16 w-16",
+    icon: "h-4 w-4",
+    rectangle: "h-16 w-16",
+    text: "text-xs",
   },
 };
 
@@ -71,14 +71,23 @@ export const ImageUpload = ({
     (file: File) => {
       setIsLoading(true);
       const reader = new FileReader();
-      reader.onload = (e) => {
-        onChange?.(e.target?.result as string);
+      const handleLoad = (event: ProgressEvent<FileReader>) => {
+        onChange?.(event.target?.result as string);
         setIsLoading(false);
+        reader.removeEventListener("load", handleLoad);
+        reader.removeEventListener("error", handleError);
       };
-      reader.onerror = () => setIsLoading(false);
+      const handleError = () => {
+        setIsLoading(false);
+        reader.removeEventListener("load", handleLoad);
+        reader.removeEventListener("error", handleError);
+      };
+
+      reader.addEventListener("load", handleLoad);
+      reader.addEventListener("error", handleError);
       reader.readAsDataURL(file);
     },
-    [onChange],
+    [onChange]
   );
 
   const handleDrop = React.useCallback(
@@ -91,7 +100,7 @@ export const ImageUpload = ({
         handleFile(file);
       }
     },
-    [handleFile],
+    [handleFile]
   );
 
   const handleInputChange = React.useCallback(
@@ -101,7 +110,7 @@ export const ImageUpload = ({
         handleFile(file);
       }
     },
-    [handleFile],
+    [handleFile]
   );
 
   const handleClick = React.useCallback(() => {
@@ -113,9 +122,9 @@ export const ImageUpload = ({
   const handleRemove = React.useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      onChange?.(undefined);
+      onChange?.();
     },
-    [onChange],
+    [onChange]
   );
 
   return (
@@ -151,7 +160,7 @@ export const ImageUpload = ({
             : value
               ? "border-transparent"
               : "border-border bg-muted/50 hover:border-muted-foreground/50 hover:bg-muted",
-          disabled && "cursor-not-allowed opacity-50",
+          disabled && "cursor-not-allowed opacity-50"
         )}
       >
         <AnimatePresence mode="wait">
@@ -163,12 +172,7 @@ export const ImageUpload = ({
               exit={{ opacity: 0 }}
               className="flex h-full w-full items-center justify-center"
             >
-              <Loader2
-                className={cn(
-                  "animate-spin text-muted-foreground",
-                  config.icon,
-                )}
-              />
+              <Loader2 className={cn("animate-spin text-muted-foreground", config.icon)} />
             </motion.div>
           ) : value ? (
             <motion.img
@@ -194,9 +198,7 @@ export const ImageUpload = ({
                 <Camera className={config.icon} />
               )}
               {variant !== "circle" && (
-                <span className={cn("font-medium", config.text)}>
-                  {placeholder}
-                </span>
+                <span className={cn("font-medium", config.text)}>{placeholder}</span>
               )}
             </motion.div>
           )}
@@ -208,7 +210,7 @@ export const ImageUpload = ({
               "absolute inset-0 flex items-center justify-center",
               "bg-black/50 opacity-0 transition-opacity hover:opacity-100",
               variant === "circle" && "rounded-full",
-              variant !== "circle" && "rounded-xl",
+              variant !== "circle" && "rounded-xl"
             )}
           >
             <Camera className="h-6 w-6 text-white" />
@@ -229,7 +231,7 @@ export const ImageUpload = ({
             "bg-foreground text-background shadow-lg transition-transform",
             "hover:scale-110 hover:bg-destructive",
             "focus:outline-none focus:ring-2 focus:ring-destructive",
-            "cursor-pointer",
+            "cursor-pointer"
           )}
         >
           <X className="h-3 w-3" />

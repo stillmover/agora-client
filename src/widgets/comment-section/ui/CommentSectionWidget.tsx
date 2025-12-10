@@ -12,12 +12,9 @@ interface CommentSectionWidgetProps {
   comments: Comment[];
 }
 
-export const CommentSectionWidget = ({
-  postId,
-  comments,
-}: CommentSectionWidgetProps) => {
+export const CommentSectionWidget = ({ postId, comments }: CommentSectionWidgetProps) => {
   const user = useSessionUser();
-  const { createComment, isPending, error } = useCreateComment(postId);
+  const { createComment } = useCreateComment(postId);
 
   const handleCommentSubmit = async (content: string, parentId?: string) => {
     try {
@@ -42,15 +39,11 @@ export const CommentSectionWidget = ({
       )}
 
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold">
-          {formatCommentCount(comments.length)}
-        </h2>
+        <h2 className="text-lg font-semibold">{formatCommentCount(comments.length)}</h2>
         {comments.length === 0 ? (
           <Card>
             <CardContent className="p-6 text-center">
-              <p className="text-muted-foreground">
-                {UI_TEXT.COMMENT.NO_COMMENTS}
-              </p>
+              <p className="text-muted-foreground">{UI_TEXT.COMMENT.NO_COMMENTS}</p>
             </CardContent>
           </Card>
         ) : (
@@ -58,9 +51,7 @@ export const CommentSectionWidget = ({
             <CommentItem
               key={comment.id}
               comment={comment}
-              onReply={(parentId, content) =>
-                handleCommentSubmit(content, parentId)
-              }
+              onReply={(parentId, content) => handleCommentSubmit(content, parentId)}
             />
           ))
         )}

@@ -1,5 +1,7 @@
-import { forwardRef, type ComponentProps } from "react";
-import { cva, type VariantProps } from "class-variance-authority";
+import { forwardRef } from "react";
+import type { ComponentProps } from "react";
+import { cva } from "class-variance-authority";
+import type { VariantProps } from "class-variance-authority";
 
 import { cn } from "@/shared/lib/utils";
 
@@ -15,11 +17,15 @@ const inputVariants = cva(
     "selection:bg-brand/20 selection:text-foreground",
   ],
   {
+    defaultVariants: {
+      size: "default",
+      variant: "default",
+    },
     variants: {
       size: {
-        sm: "h-8 text-xs px-2.5",
         default: "h-10 py-2",
         lg: "h-12 text-base px-4",
+        sm: "h-8 text-xs px-2.5",
       },
       variant: {
         default: "border-input shadow-xs dark:bg-input/30",
@@ -27,15 +33,10 @@ const inputVariants = cva(
         ghost: "border-transparent bg-transparent hover:bg-accent",
       },
     },
-    defaultVariants: {
-      size: "default",
-      variant: "default",
-    },
-  },
+  }
 );
 
-type InputProps = Omit<ComponentProps<"input">, "size"> &
-  VariantProps<typeof inputVariants>;
+type InputProps = Omit<ComponentProps<"input">, "size"> & VariantProps<typeof inputVariants>;
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, size, variant, ...props }, ref) => (
@@ -43,10 +44,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       ref={ref}
       type={type}
       data-slot="input"
-      className={cn(inputVariants({ size, variant, className }))}
+      className={cn(inputVariants({ className, size, variant }))}
       {...props}
     />
-  ),
+  )
 );
 Input.displayName = "Input";
 

@@ -3,9 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { ResetForm } from "@/features/auth/ui/ResetForm";
 import type { AuthViewProps } from "./types";
 
-export const ResetView = ({
-  onViewChange,
-}: Omit<AuthViewProps, "onSuccess">) => (
+export const ResetView = ({ onViewChange }: Omit<AuthViewProps, "onSuccess">) => (
   <>
     <button
       onClick={() => onViewChange("login")}
@@ -20,8 +18,7 @@ export const ResetView = ({
     </DialogPrimitive.Title>
 
     <DialogPrimitive.Description className="text-sm text-center my-xs mb-2">
-      Enter your email address or username and we'll send you a link to reset
-      your password
+      Enter your email address or username and we'll send you a link to reset your password
     </DialogPrimitive.Description>
 
     <div className="text-center space-y-4 mt-4 mb-4">

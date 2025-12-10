@@ -1,15 +1,19 @@
+import { useState } from "react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Link } from "@tanstack/react-router";
-import { Menu, Plus, Bell } from "lucide-react";
+import { Menu, Plus, Bell, X } from "lucide-react";
 import { useIsAuthenticated } from "@/entities/session";
 import { HeaderSearchWidget } from "@/widgets/header-search";
 import { UserMenuWidget } from "@/widgets/user-menu";
 import { ThemeToggle } from "@/features/theme-toggle";
 import { AuthModal } from "@/widgets/auth-modal";
-import { Button } from "@/shared/ui";
+import { Sidebar } from "@/widgets/sidebar";
+import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 
 export const Header = () => {
   const isAuthenticated = useIsAuthenticated();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <header
@@ -17,7 +21,7 @@ export const Header = () => {
         "sticky top-0 z-40",
         "border-b border-border/50",
         "bg-background/80 backdrop-blur-xl backdrop-saturate-150",
-        "supports-[backdrop-filter]:bg-background/70",
+        "supports-[backdrop-filter]:bg-background/70"
       )}
     >
       <div className="flex items-center h-14 px-4 gap-4">
@@ -27,6 +31,9 @@ export const Header = () => {
           size="icon-sm"
           className="lg:hidden"
           aria-label="Open menu"
+          aria-expanded={isMobileMenuOpen}
+          aria-controls="mobile-nav"
+          onClick={() => setIsMobileMenuOpen(true)}
         >
           <Menu className="h-5 w-5" />
         </Button>
@@ -62,12 +69,7 @@ export const Header = () => {
           {isAuthenticated && (
             <>
               {/* Create Post Button - Desktop */}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="hidden sm:flex gap-2"
-                asChild
-              >
+              <Button variant="ghost" size="sm" className="hidden sm:flex gap-2" asChild>
                 <Link to="/submit">
                   <Plus className="h-4 w-4" />
                   <span className="hidden lg:inline">Create</span>
@@ -100,6 +102,41 @@ export const Header = () => {
       <div className="block md:hidden px-4 pb-3">
         <HeaderSearchWidget />
       </div>
+
+      {/* Mobile menu drawer */}
+      <DialogPrimitive.Root open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+        <DialogPrimitive.Portal>
+          <DialogPrimitive.Overlay className="fixed inset-0 bg-black/60 z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0" />
+          <DialogPrimitive.Content
+            id="mobile-nav"
+            className={cn(
+              "fixed inset-y-0 left-0 z-50 w-[82vw] max-w-xs bg-background",
+              "border-r border-border shadow-xl",
+              "data-[state=open]:animate-in data-[state=closed]:animate-out",
+              "data-[state=open]:slide-in-from-left data-[state=closed]:slide-out-to-left"
+            )}
+          >
+            <DialogPrimitive.Title className="sr-only">
+              Mobile navigation menu
+            </DialogPrimitive.Title>
+            <DialogPrimitive.Description className="sr-only">
+              Navigate to different sections of the app
+            </DialogPrimitive.Description>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-border/60">
+              <span className="text-sm font-semibold">Menu</span>
+              <DialogPrimitive.Close asChild>
+                <Button variant="ghost" size="icon-sm" aria-label="Close menu">
+                  <X className="h-5 w-5" />
+                </Button>
+              </DialogPrimitive.Close>
+            </div>
+
+            <div className="h-[calc(100vh-56px)] overflow-y-auto p-4">
+              <Sidebar />
+            </div>
+          </DialogPrimitive.Content>
+        </DialogPrimitive.Portal>
+      </DialogPrimitive.Root>
     </header>
   );
 };

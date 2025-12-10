@@ -13,12 +13,12 @@ import { clientStateActions, useUserRegion } from "@/shared/stores";
 import { mapPost } from "../api/mappers";
 import { mapRegionOptionToRegion } from "../lib/mappers";
 
-export type PostsQueryParams = {
+export interface PostsQueryParams {
   communityId?: string;
   sort?: SortType;
   region?: RegionOption;
   limit?: number;
-};
+}
 
 export const usePosts = (params: PostsQueryParams = {}) => {
   const limit = params.limit ?? 20;
@@ -26,11 +26,7 @@ export const usePosts = (params: PostsQueryParams = {}) => {
   const hasDetectedRegion = useRef(false);
 
   useEffect(() => {
-    if (
-      params.region === "my-country" &&
-      userRegion === null &&
-      !hasDetectedRegion.current
-    ) {
+    if (params.region === "my-country" && userRegion === null && !hasDetectedRegion.current) {
       hasDetectedRegion.current = true;
       detectUserRegion()
         .then((region) => {
@@ -41,7 +37,7 @@ export const usePosts = (params: PostsQueryParams = {}) => {
           }
         })
         .catch(() => {
-          clientStateActions.setUserRegion(null);
+          clientStateActions.setUserRegion(undefined);
           hasDetectedRegion.current = false;
         });
     }
@@ -49,37 +45,32 @@ export const usePosts = (params: PostsQueryParams = {}) => {
 
   const region = mapRegionOptionToRegion(params.region, userRegion);
 
-  const {
-    data,
-    isLoading,
-    isFetchingNextPage,
-    hasNextPage,
-    fetchNextPage,
-    error,
-    refetch,
-  } = useInfinitePostsQuery({
-    communityId: params.communityId,
-    sort: params.sort,
-    region,
-    limit,
-  });
+  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage, error, refetch } =
+    useInfinitePostsQuery({
+      communityId: params.communityId,
+      limit,
+      region,
+      sort: params.sort,
+    });
 
   const posts = useMemo(() => {
-    if (!data?.pages) return [];
+    if (!data?.pages) {
+      return [];
+    }
     return data.pages.flatMap((page) => page.posts.map(mapPost));
   }, [data]);
 
   return {
-    posts,
-    isLoading: isLoading && posts.length === 0,
-    isFetchingNextPage,
-    hasMore: hasNextPage ?? false,
     error,
     fetchNextPage: () => {
       if (hasNextPage && !isFetchingNextPage) {
         fetchNextPage();
       }
     },
+    hasMore: hasNextPage ?? false,
+    isFetchingNextPage,
+    isLoading: isLoading && posts.length === 0,
+    posts,
     refetch,
   };
 };
@@ -91,20 +82,18 @@ export const usePostsList = (params: PostsQueryParams = {}) => {
 
   const { data, isLoading, error, refetch } = usePostsGql({
     communityId: params.communityId,
-    sort: params.sort,
-    region,
     limit,
     offset: 0,
+    region,
+    sort: params.sort,
   });
 
-  const posts = useMemo(() => {
-    return (data ?? []).map(mapPost);
-  }, [data]);
+  const posts = useMemo(() => (data ?? []).map(mapPost), [data]);
 
   return {
-    posts,
-    isLoading,
     error,
+    isLoading,
+    posts,
     refetch,
   };
 };
@@ -114,32 +103,25 @@ export const usePost = (postId: string) => {
     enabled: Boolean(postId),
   });
 
-  const post = useMemo(() => {
-    return data ? mapPost(data) : null;
-  }, [data]);
+  const post = useMemo(() => (data ? mapPost(data) : undefined), [data]);
 
   return {
-    post,
-    isLoading,
     error,
+    isLoading,
+    post,
     refetch,
   };
 };
 
 export const useSavedPosts = (limit = 20, offset = 0, enabled = true) => {
-  const { data, isLoading, error, refetch } = useSavedPostsGql(
-    { limit, offset },
-    { enabled },
-  );
+  const { data, isLoading, error, refetch } = useSavedPostsGql({ limit, offset }, { enabled });
 
-  const posts = useMemo(() => {
-    return (data ?? []).map(mapPost);
-  }, [data]);
+  const posts = useMemo(() => (data ?? []).map(mapPost), [data]);
 
   return {
-    posts,
-    isLoading,
     error,
+    isLoading,
+    posts,
     refetch,
   };
 };
@@ -148,17 +130,15 @@ export const useUserPosts = (userId: string, limit = 20, offset = 0) => {
   const { data, isLoading, error, refetch } = useUserPostsGql(
     userId,
     { limit, offset },
-    { enabled: Boolean(userId) },
+    { enabled: Boolean(userId) }
   );
 
-  const posts = useMemo(() => {
-    return (data ?? []).map(mapPost);
-  }, [data]);
+  const posts = useMemo(() => (data ?? []).map(mapPost), [data]);
 
   return {
-    posts,
-    isLoading,
     error,
+    isLoading,
+    posts,
     refetch,
   };
 };
