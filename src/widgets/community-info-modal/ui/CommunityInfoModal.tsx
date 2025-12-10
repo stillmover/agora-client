@@ -28,18 +28,14 @@ export const CommunityInfoModal = ({ communityName, trigger }: CommunityInfoModa
   const { community, isLoading } = useCommunityByName(communityName);
   const isAuthenticated = useIsAuthenticated();
 
-  const {
-    toggleJoin,
-    isJoined,
-    isPending: isJoinPending,
-  } = useCommunityActions(community?.id ?? "");
+  const { join, isJoined, isPending: isJoinPending } = useCommunityActions(community?.id ?? "");
 
-  const handleJoinToggle = useCallback(async () => {
-    if (!community) {
+  const handleJoin = useCallback(async () => {
+    if (!community || isJoined) {
       return;
     }
-    await toggleJoin();
-  }, [community, toggleJoin]);
+    await join();
+  }, [community, isJoined, join]);
 
   const handleOpenChange = useCallback((isOpen: boolean) => {
     setOpen(isOpen);
@@ -50,11 +46,8 @@ export const CommunityInfoModal = ({ communityName, trigger }: CommunityInfoModa
   }, [handleOpenChange]);
 
   const joined = community?.id ? isJoined || community.isJoined : false;
-  const memberCount =
-    typeof community?.memberCount === "number" && Number.isFinite(community.memberCount)
-      ? community.memberCount
-      : 0;
-  const createdAt = community?.createdAt ? new Date(community.createdAt) : null;
+  const memberCount = community?.members ?? 0;
+  const createdAt = null; // Community model does not include createdAt in current API mapping
 
   return (
     <DialogPrimitive.Root open={open} onOpenChange={handleOpenChange}>
@@ -157,8 +150,8 @@ export const CommunityInfoModal = ({ communityName, trigger }: CommunityInfoModa
                               <Button
                                 variant={joined ? "outline" : "default"}
                                 className="flex-1"
-                                onClick={handleJoinToggle}
-                                disabled={isJoinPending}
+                                onClick={handleJoin}
+                                disabled={joined || isJoinPending}
                               >
                                 {joined ? "Joined" : "Join"}
                               </Button>

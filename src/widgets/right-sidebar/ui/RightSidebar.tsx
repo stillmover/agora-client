@@ -20,13 +20,16 @@ import { logger } from "@/shared/services/logger";
 import { cn } from "@/shared/lib/utils";
 
 const CommunityItem = ({ community, rank }: { community: Community; rank: number }) => {
-  const { toggleJoin, isJoined, joinLabel } = useCommunityActions(community.id);
+  const { join, isJoined, isPending, joinLabel } = useCommunityActions(community.id);
 
   const handleJoin = async () => {
+    if (isJoined) {
+      return;
+    }
     try {
-      await toggleJoin();
+      await join();
     } catch (error) {
-      logger.error("Failed to join/leave community:", error);
+      logger.error("Failed to join community:", error);
     }
   };
 
@@ -51,7 +54,7 @@ const CommunityItem = ({ community, rank }: { community: Community; rank: number
       <div className="flex-1 min-w-0">
         <Link
           to="/r/$communityId"
-          params={{ communityId: community.id }}
+          params={{ communityId: community.name }}
           className="text-sm font-medium hover:text-brand transition-colors truncate block"
         >
           r/{community.name}
@@ -69,6 +72,7 @@ const CommunityItem = ({ community, rank }: { community: Community; rank: number
           isJoined && "opacity-100"
         )}
         onClick={handleJoin}
+        disabled={isJoined || isPending}
       >
         {joinLabel}
       </Button>

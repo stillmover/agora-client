@@ -14,6 +14,10 @@ export const useVote = (postId: string) => {
 
   const vote = useCallback(
     async (direction: "up" | "down") => {
+      if (votePostMutation.isPending || currentVote === (direction === "up" ? 1 : -1)) {
+        return;
+      }
+
       const oldVote = currentVote;
       const newVote = calculateVoteValue(currentVote, direction);
 
@@ -54,6 +58,10 @@ export const useCommentVote = (commentId: string, postId: string) => {
 
   const vote = useCallback(
     async (direction: "up" | "down") => {
+      if (voteCommentMutation.isPending) {
+        return;
+      }
+
       try {
         const voteType = direction === "up" ? VoteType.Upvote : VoteType.Downvote;
 
