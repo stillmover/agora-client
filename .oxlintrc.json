@@ -9,15 +9,7 @@
     "style": "warn"
   },
 
-  "plugins": [
-    "react",
-    "import",
-    "jsx-a11y",
-    "promise",
-    "typescript",
-    "unicorn",
-    "oxc"
-  ],
+  "plugins": ["react", "import", "jsx-a11y", "promise", "typescript", "unicorn", "oxc"],
 
   "env": {
     "browser": true,
@@ -46,10 +38,7 @@
       { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
     ],
     "typescript/no-explicit-any": "warn",
-    "typescript/consistent-type-imports": [
-      "warn",
-      { "prefer": "type-imports" }
-    ],
+    "typescript/consistent-type-imports": ["warn", { "prefer": "type-imports" }],
     "typescript/no-unsafe-assignment": "warn",
     "typescript/no-floating-promises": "error",
 
@@ -79,11 +68,7 @@
     "import/order": [
       "error",
       {
-        "groups": [
-          ["builtin", "external"],
-          "internal",
-          ["parent", "sibling", "index"]
-        ],
+        "groups": [["builtin", "external"], "internal", ["parent", "sibling", "index"]],
         "newlines-between": "always",
         "alphabetize": { "order": "asc", "caseInsensitive": true }
       }
@@ -99,10 +84,7 @@
     "promise/no-nesting": "warn",
     "promise/no-new-statics": "error",
 
-    "unicorn/filename-case": [
-      "warn",
-      { "cases": { "kebabCase": true, "pascalCase": true } }
-    ],
+    "unicorn/filename-case": ["warn", { "cases": { "kebabCase": true, "pascalCase": true } }],
     "unicorn/prefer-optional-catch-binding": "warn",
     "unicorn/no-for-loop": "warn",
 
@@ -175,6 +157,11 @@
     "coverage",
     ".next",
     "storybook-static",
-    "src/shared/api/**/*"
+    "src/shared/api/**/*",
+    "scripts/**/*",
+    "tsconfig*.json",
+    "tsconfig.app.json",
+    "public/**/*",
+    "**/*.config.{js,ts,mjs,cjs,json,yml,yaml}"
   ]
 }

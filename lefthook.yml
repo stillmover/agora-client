@@ -19,7 +19,7 @@ pre-commit:
       stage_fixed: true
       run: |
         echo "✨ Formatting code..."
-        bun run format
+        bun run fmt
 
     typecheck:
       glob: "*.{ts,tsx}"
@@ -51,7 +51,6 @@ commit-msg:
       run: |
         echo "📝 Validating commit message..."
         npx --no-install commitlint --edit "$1"
-
 
 post-merge:
   commands:

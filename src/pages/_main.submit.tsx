@@ -11,7 +11,8 @@ import {
 } from "lucide-react";
 
 import { useCreatePostForm, POST_LIMITS } from "@/features/create-post";
-import { useCommunities, type Community } from "@/entities/community";
+import { useCommunities } from "@/entities/community";
+import type { Community } from "@/entities/community";
 import {
   Button,
   Input,
@@ -33,8 +34,12 @@ import { UI_TEXT } from "@/shared/constants";
 import { cn } from "@/shared/lib/utils";
 
 const getErrorMessage = (error: unknown): string | undefined => {
-  if (!error) return undefined;
-  if (typeof error === "string") return error;
+  if (!error) {
+    return undefined;
+  }
+  if (typeof error === "string") {
+    return error;
+  }
   if (typeof error === "object" && "message" in error) {
     return String((error as { message: unknown }).message);
   }
@@ -47,14 +52,13 @@ export const Route = createFileRoute("/_main/submit")({
 
 type PostType = "text" | "image" | "link" | "video" | "poll";
 
-const postTypes: { type: PostType; icon: React.ElementType; label: string }[] =
-  [
-    { type: "text", icon: FileText, label: "Text" },
-    { type: "image", icon: ImageIcon, label: "Image" },
-    { type: "link", icon: LinkIcon, label: "Link" },
-    { type: "video", icon: Video, label: "Video" },
-    { type: "poll", icon: BarChart3, label: "Poll" },
-  ];
+const postTypes: { type: PostType; icon: React.ElementType; label: string }[] = [
+  { icon: FileText, label: "Text", type: "text" },
+  { icon: ImageIcon, label: "Image", type: "image" },
+  { icon: LinkIcon, label: "Link", type: "link" },
+  { icon: Video, label: "Video", type: "video" },
+  { icon: BarChart3, label: "Poll", type: "poll" },
+];
 
 function CreatePostPage() {
   const navigate = useNavigate();
@@ -65,16 +69,18 @@ function CreatePostPage() {
   });
 
   const selectedCommunity = communities.find(
-    (c: Community) => c.id === form.state.values.communityId,
+    (c: Community) => c.id === form.state.values.communityId
   );
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      if (isSubmitting) return;
+      if (isSubmitting) {
+        return;
+      }
       form.handleSubmit();
     },
-    [form, isSubmitting],
+    [form, isSubmitting]
   );
 
   return (
@@ -91,9 +97,7 @@ function CreatePostPage() {
         </Button>
         <div>
           <h1 className="text-xl font-bold">Create a Post</h1>
-          <p className="text-sm text-muted-foreground">
-            Share your thoughts with the community
-          </p>
+          <p className="text-sm text-muted-foreground">Share your thoughts with the community</p>
         </div>
       </div>
 
@@ -108,9 +112,8 @@ function CreatePostPage() {
 
               return (
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    Choose a community{" "}
-                    <span className="text-destructive">*</span>
+                  <label htmlFor={field.name} className="text-sm font-medium">
+                    Choose a community <span className="text-destructive">*</span>
                   </label>
                   <Select
                     value={field.state.value}
@@ -121,10 +124,10 @@ function CreatePostPage() {
                     disabled={isSubmitting}
                   >
                     <SelectTrigger
+                      id={field.name}
                       className={cn(
                         "w-full h-12",
-                        errorMessage &&
-                          "border-destructive focus:ring-destructive/50",
+                        errorMessage && "border-destructive focus:ring-destructive/50"
                       )}
                       aria-invalid={!!errorMessage}
                     >
@@ -134,14 +137,10 @@ function CreatePostPage() {
                             <Avatar className="h-6 w-6">
                               <AvatarImage src={selectedCommunity.iconUrl} />
                               <AvatarFallback className="text-[10px] bg-brand text-white">
-                                {selectedCommunity.name
-                                  .slice(0, 2)
-                                  .toUpperCase()}
+                                {selectedCommunity.name.slice(0, 2).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
-                            <span className="font-medium">
-                              r/{selectedCommunity.name}
-                            </span>
+                            <span className="font-medium">r/{selectedCommunity.name}</span>
                           </div>
                         )}
                       </SelectValue>
@@ -168,9 +167,7 @@ function CreatePostPage() {
                       )}
                     </SelectContent>
                   </Select>
-                  {errorMessage && (
-                    <p className="text-xs text-destructive">{errorMessage}</p>
-                  )}
+                  {errorMessage && <p className="text-xs text-destructive">{errorMessage}</p>}
                 </div>
               );
             }}
@@ -193,7 +190,7 @@ function CreatePostPage() {
                   postType === type
                     ? "border-brand text-brand"
                     : "border-transparent text-muted-foreground hover:text-foreground hover:bg-accent/50",
-                  isSubmitting && "opacity-50 cursor-not-allowed",
+                  isSubmitting && "opacity-50 cursor-not-allowed"
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -217,20 +214,14 @@ function CreatePostPage() {
                 return (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <label
-                        htmlFor={field.name}
-                        className="text-sm font-medium"
-                      >
+                      <label htmlFor={field.name} className="text-sm font-medium">
                         Title <span className="text-destructive">*</span>
                       </label>
                       <span
                         className={cn(
                           "text-xs",
-                          isNearLimit
-                            ? "text-warning"
-                            : "text-muted-foreground",
-                          charCount >= POST_LIMITS.TITLE_MAX &&
-                            "text-destructive",
+                          isNearLimit ? "text-warning" : "text-muted-foreground",
+                          charCount >= POST_LIMITS.TITLE_MAX && "text-destructive"
                         )}
                       >
                         {charCount}/{POST_LIMITS.TITLE_MAX}
@@ -245,15 +236,10 @@ function CreatePostPage() {
                       maxLength={POST_LIMITS.TITLE_MAX}
                       size="lg"
                       disabled={isSubmitting}
-                      className={cn(
-                        "font-medium",
-                        errorMessage && "border-destructive",
-                      )}
+                      className={cn("font-medium", errorMessage && "border-destructive")}
                       aria-invalid={!!errorMessage}
                     />
-                    {errorMessage && (
-                      <p className="text-xs text-destructive">{errorMessage}</p>
-                    )}
+                    {errorMessage && <p className="text-xs text-destructive">{errorMessage}</p>}
                   </div>
                 );
               }}
@@ -269,14 +255,8 @@ function CreatePostPage() {
 
                   return (
                     <div className="space-y-2">
-                      <label
-                        htmlFor={field.name}
-                        className="text-sm font-medium"
-                      >
-                        Body{" "}
-                        <span className="text-muted-foreground">
-                          (optional)
-                        </span>
+                      <label htmlFor={field.name} className="text-sm font-medium">
+                        Body <span className="text-muted-foreground">(optional)</span>
                       </label>
                       <Textarea
                         id={field.name}
@@ -288,15 +268,11 @@ function CreatePostPage() {
                         disabled={isSubmitting}
                         className={cn(
                           "resize-none min-h-[200px]",
-                          errorMessage && "border-destructive",
+                          errorMessage && "border-destructive"
                         )}
                         aria-invalid={!!errorMessage}
                       />
-                      {errorMessage && (
-                        <p className="text-xs text-destructive">
-                          {errorMessage}
-                        </p>
-                      )}
+                      {errorMessage && <p className="text-xs text-destructive">{errorMessage}</p>}
                     </div>
                   );
                 }}
@@ -307,20 +283,13 @@ function CreatePostPage() {
               <div
                 className={cn(
                   "border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-brand/50 transition-colors cursor-pointer",
-                  isSubmitting && "opacity-50 pointer-events-none",
+                  isSubmitting && "opacity-50 pointer-events-none"
                 )}
               >
                 <ImageIcon className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
                 <p className="font-medium mb-1">Drag and drop images here</p>
-                <p className="text-sm text-muted-foreground">
-                  or click to upload
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="mt-4"
-                  disabled={isSubmitting}
-                >
+                <p className="text-sm text-muted-foreground">or click to upload</p>
+                <Button variant="outline" size="sm" className="mt-4" disabled={isSubmitting}>
                   Choose Files
                 </Button>
               </div>
@@ -342,20 +311,13 @@ function CreatePostPage() {
               <div
                 className={cn(
                   "border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-brand/50 transition-colors cursor-pointer",
-                  isSubmitting && "opacity-50 pointer-events-none",
+                  isSubmitting && "opacity-50 pointer-events-none"
                 )}
               >
                 <Video className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
                 <p className="font-medium mb-1">Upload a video</p>
-                <p className="text-sm text-muted-foreground">
-                  MP4, WebM up to 1GB
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="mt-4"
-                  disabled={isSubmitting}
-                >
+                <p className="text-sm text-muted-foreground">MP4, WebM up to 1GB</p>
+                <Button variant="outline" size="sm" className="mt-4" disabled={isSubmitting}>
                   Choose Video
                 </Button>
               </div>
@@ -364,25 +326,12 @@ function CreatePostPage() {
             {postType === "poll" && (
               <div className="space-y-4">
                 <FormField label="Option 1" htmlFor="option1">
-                  <Input
-                    id="option1"
-                    placeholder="Enter option"
-                    disabled={isSubmitting}
-                  />
+                  <Input id="option1" placeholder="Enter option" disabled={isSubmitting} />
                 </FormField>
                 <FormField label="Option 2" htmlFor="option2">
-                  <Input
-                    id="option2"
-                    placeholder="Enter option"
-                    disabled={isSubmitting}
-                  />
+                  <Input id="option2" placeholder="Enter option" disabled={isSubmitting} />
                 </FormField>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                  disabled={isSubmitting}
-                >
+                <Button variant="outline" size="sm" className="gap-2" disabled={isSubmitting}>
                   <Sparkles className="h-4 w-4" />
                   Add option
                 </Button>
@@ -395,7 +344,7 @@ function CreatePostPage() {
                 variant="outline"
                 className={cn(
                   "cursor-pointer hover:bg-accent",
-                  isSubmitting && "opacity-50 pointer-events-none",
+                  isSubmitting && "opacity-50 pointer-events-none"
                 )}
               >
                 + Add
