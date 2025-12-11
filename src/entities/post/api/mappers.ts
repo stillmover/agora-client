@@ -1,6 +1,6 @@
 import type { Post as GraphQLPost } from "@/shared/api/gql";
 import { VoteType } from "@/shared/api/gql";
-import { hydrateJoinedCommunity } from "@/entities/community/api/mappers";
+import { mapCommunity } from "@/entities/community/api/mappers";
 import type { Post } from "../model/types";
 
 const mapVoteType = (voteType: VoteType | null | undefined): -1 | 0 | 1 => {
@@ -11,22 +11,15 @@ const mapVoteType = (voteType: VoteType | null | undefined): -1 | 0 | 1 => {
 };
 
 export const mapPost = (post: GraphQLPost): Post => {
-  hydrateJoinedCommunity(post.community);
+  const primaryMedia = post.media?.[0];
 
   return {
     author: {
       id: post.author.id,
       name: post.author.name || post.author.username,
     },
-    comments: post.commentCount,
-    community: {
-      description: post.community.description ?? undefined,
-      iconUrl: post.community.iconUrl ?? undefined,
-      id: post.community.id,
-      isJoined: post.community.isJoined ?? false,
-      members: post.community.memberCount,
-      name: post.community.name,
-    },
+    comments: post.commentCount ?? 0,
+    community: mapCommunity(post.community),
     content: post.content ?? undefined,
     createdAt: post.createdAt,
     flairs: post.flairs.map((flair) => ({
@@ -35,16 +28,16 @@ export const mapPost = (post: GraphQLPost): Post => {
       label: flair.label,
     })),
     id: post.id,
-    isSaved: post.isSaved ?? undefined,
+    isSaved: Boolean(post.isSaved),
     media:
-      post.media.length > 0
+      primaryMedia && post.media.length > 0
         ? {
-            thumb: post.media[0].thumb ?? post.media[0].thumbnailUrl ?? undefined,
-            type: post.media[0].type as "image" | "video" | "link",
-            url: post.media[0].url,
+            thumb: primaryMedia.thumb ?? primaryMedia.thumbnailUrl ?? undefined,
+            type: primaryMedia.type as "image" | "video" | "link",
+            url: primaryMedia.url,
           }
         : undefined,
-    score: post.score,
+    score: post.score ?? 0,
     title: post.title,
     userVote: mapVoteType(post.userVote),
   };

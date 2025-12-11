@@ -8,6 +8,7 @@ import { formatDistanceToNow } from "date-fns";
 import { useCommunityByName } from "@/entities/community";
 import { useCommunityActions } from "@/features/community/model/useCommunityActions";
 import { useIsAuthenticated } from "@/entities/session";
+import { logger } from "@/shared/services/logger";
 import { Button } from "@/shared/ui/button";
 import { CreatePostModal } from "@/widgets/create-post-modal";
 
@@ -25,16 +26,26 @@ interface CommunityInfoModalProps {
 
 export const CommunityInfoModal = ({ communityName, trigger }: CommunityInfoModalProps) => {
   const [open, setOpen] = useState(false);
-  const { community, isLoading } = useCommunityByName(communityName);
+  const queryName = open ? communityName : "";
+  const { community, isLoading } = useCommunityByName(queryName);
   const isAuthenticated = useIsAuthenticated();
 
-  const { join, isJoined, isPending: isJoinPending } = useCommunityActions(community?.id ?? "");
+  const {
+    join,
+    isJoined,
+    isPending: isJoinPending,
+  } = useCommunityActions(community?.id ?? "", community?.isJoined ?? false);
 
   const handleJoin = useCallback(async () => {
     if (!community || isJoined) {
       return;
     }
-    await join();
+    try {
+      await join();
+      setOpen(false);
+    } catch (error) {
+      logger.error("Failed to join community from info modal:", error);
+    }
   }, [community, isJoined, join]);
 
   const handleOpenChange = useCallback((isOpen: boolean) => {
@@ -47,7 +58,10 @@ export const CommunityInfoModal = ({ communityName, trigger }: CommunityInfoModa
 
   const joined = community?.id ? isJoined || community.isJoined : false;
   const memberCount = community?.members ?? 0;
-  const createdAt = null; // Community model does not include createdAt in current API mapping
+  const createdAt =
+    community?.createdAt && !Number.isNaN(new Date(community.createdAt).getTime())
+      ? new Date(community.createdAt)
+      : null;
 
   return (
     <DialogPrimitive.Root open={open} onOpenChange={handleOpenChange}>
@@ -97,7 +111,6 @@ export const CommunityInfoModal = ({ communityName, trigger }: CommunityInfoModa
                   </DialogPrimitive.Close>
 
                   <div className="p-6 pt-0">
-                    {/* Community Icon */}
                     <div className="-mt-10 mb-4">
                       <div className="h-20 w-20 rounded-full border-4 border-white dark:border-[#1a1a1b] bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white text-2xl font-bold">
                         {community?.iconUrl ? (
@@ -132,7 +145,7 @@ export const CommunityInfoModal = ({ communityName, trigger }: CommunityInfoModa
                         <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
                           <div className="flex items-center gap-1">
                             <Users className="h-4 w-4" />
-                            <span>{memberCount.toLocaleString()} members</span>
+                            <span>{Number(memberCount ?? 0).toLocaleString()} members</span>
                           </div>
                           <div className="flex items-center gap-1">
                             <Calendar className="h-4 w-4" />
@@ -158,7 +171,11 @@ export const CommunityInfoModal = ({ communityName, trigger }: CommunityInfoModa
                               <CreatePostModal
                                 defaultCommunityId={community.id}
                                 trigger={
-                                  <Button variant="outline" className="flex-1">
+                                  <Button
+                                    variant="outline"
+                                    className="flex-1"
+                                    disabled={isJoinPending || !joined}
+                                  >
                                     Create Post
                                   </Button>
                                 }
