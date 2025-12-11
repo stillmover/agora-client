@@ -26,7 +26,7 @@ const initialState: ClientState = {
   ui: {
     sidebarCollapsed: false,
     theme: "system",
-    userRegion: undefined,
+    userRegion: null,
   },
 };
 
@@ -34,19 +34,28 @@ export const clientStateStore = new Store<ClientState>(initialState);
 
 export const clientStateActions = {
   joinCommunity: (communityId: string) => {
-    clientStateStore.setState((prev) => ({
-      ...prev,
-      optimistic: {
-        ...prev.optimistic,
-        joinedCommunities: new Set([...prev.optimistic.joinedCommunities, communityId]),
-      },
-    }));
+    clientStateStore.setState((prev) => {
+      if (prev.optimistic.joinedCommunities.has(communityId)) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        optimistic: {
+          ...prev.optimistic,
+          joinedCommunities: new Set([...prev.optimistic.joinedCommunities, communityId]),
+        },
+      };
+    });
   },
 
   leaveCommunity: (communityId: string) => {
     clientStateStore.setState((prev) => {
       const newJoined = new Set(prev.optimistic.joinedCommunities);
       newJoined.delete(communityId);
+      if (newJoined.size === prev.optimistic.joinedCommunities.size) {
+        return prev;
+      }
       return {
         ...prev,
         optimistic: {
@@ -58,49 +67,76 @@ export const clientStateActions = {
   },
 
   savePost: (postId: string) => {
-    clientStateStore.setState((prev) => ({
-      ...prev,
-      optimistic: {
-        ...prev.optimistic,
-        savedPosts: new Set([...prev.optimistic.savedPosts, postId]),
-      },
-    }));
+    clientStateStore.setState((prev) => {
+      if (prev.optimistic.savedPosts.has(postId)) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        optimistic: {
+          ...prev.optimistic,
+          savedPosts: new Set([...prev.optimistic.savedPosts, postId]),
+        },
+      };
+    });
   },
 
   setSidebarCollapsed: (collapsed: boolean) => {
-    clientStateStore.setState((prev) => ({
-      ...prev,
-      ui: {
-        ...prev.ui,
-        sidebarCollapsed: collapsed,
-      },
-    }));
+    clientStateStore.setState((prev) => {
+      if (prev.ui.sidebarCollapsed === collapsed) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        ui: {
+          ...prev.ui,
+          sidebarCollapsed: collapsed,
+        },
+      };
+    });
   },
 
   setTheme: (theme: "light" | "dark" | "system") => {
-    clientStateStore.setState((prev) => ({
-      ...prev,
-      ui: {
-        ...prev.ui,
-        theme,
-      },
-    }));
+    clientStateStore.setState((prev) => {
+      if (prev.ui.theme === theme) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        ui: {
+          ...prev.ui,
+          theme,
+        },
+      };
+    });
   },
 
   setUserRegion: (region: Region | null) => {
-    clientStateStore.setState((prev) => ({
-      ...prev,
-      ui: {
-        ...prev.ui,
-        userRegion: region,
-      },
-    }));
+    clientStateStore.setState((prev) => {
+      if (prev.ui.userRegion === region) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        ui: {
+          ...prev.ui,
+          userRegion: region,
+        },
+      };
+    });
   },
 
   unsavePost: (postId: string) => {
     clientStateStore.setState((prev) => {
       const newSaved = new Set(prev.optimistic.savedPosts);
       newSaved.delete(postId);
+      if (newSaved.size === prev.optimistic.savedPosts.size) {
+        return prev;
+      }
       return {
         ...prev,
         optimistic: {
@@ -112,44 +148,45 @@ export const clientStateActions = {
   },
 
   votePost: (postId: string, vote: -1 | 0 | 1) => {
-    clientStateStore.setState((prev) => ({
-      ...prev,
-      optimistic: {
-        ...prev.optimistic,
-        postVotes: new Map(prev.optimistic.postVotes).set(postId, vote),
-      },
-    }));
+    clientStateStore.setState((prev) => {
+      const current = prev.optimistic.postVotes.get(postId);
+      if (current === vote) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        optimistic: {
+          ...prev.optimistic,
+          postVotes: new Map(prev.optimistic.postVotes).set(postId, vote),
+        },
+      };
+    });
   },
 } as const;
 
 export const useClientState = () => useStore(clientStateStore);
 
 export const useIsCommunityJoined = (communityId: string) => {
-  const state = useStore(clientStateStore);
-  return state.optimistic.joinedCommunities.has(communityId);
+  return useStore(clientStateStore, (state) => state.optimistic.joinedCommunities.has(communityId));
 };
 
 export const useIsPostSaved = (postId: string) => {
-  const state = useStore(clientStateStore);
-  return state.optimistic.savedPosts.has(postId);
+  return useStore(clientStateStore, (state) => state.optimistic.savedPosts.has(postId));
 };
 
 export const usePostVote = (postId: string) => {
-  const state = useStore(clientStateStore);
-  return state.optimistic.postVotes.get(postId) ?? 0;
+  return useStore(clientStateStore, (state) => state.optimistic.postVotes.get(postId));
 };
 
 export const useSidebarCollapsed = () => {
-  const state = useStore(clientStateStore);
-  return state.ui.sidebarCollapsed;
+  return useStore(clientStateStore, (state) => state.ui.sidebarCollapsed);
 };
 
 export const useTheme = () => {
-  const state = useStore(clientStateStore);
-  return state.ui.theme;
+  return useStore(clientStateStore, (state) => state.ui.theme);
 };
 
 export const useUserRegion = () => {
-  const state = useStore(clientStateStore);
-  return state.ui.userRegion;
+  return useStore(clientStateStore, (state) => state.ui.userRegion);
 };

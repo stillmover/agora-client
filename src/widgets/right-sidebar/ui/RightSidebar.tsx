@@ -4,6 +4,7 @@ import { Plus, TrendingUp, Sparkles, ChevronRight, Trophy } from "lucide-react";
 import { usePopularCommunities } from "@/entities/community";
 import type { Community } from "@/entities/community";
 import { useCommunityActions } from "@/features/community";
+import { useIsAuthenticated } from "@/entities/session";
 import {
   Button,
   Card,
@@ -20,7 +21,11 @@ import { logger } from "@/shared/services/logger";
 import { cn } from "@/shared/lib/utils";
 
 const CommunityItem = ({ community, rank }: { community: Community; rank: number }) => {
-  const { join, isJoined, isPending, joinLabel } = useCommunityActions(community.id);
+  const isAuthenticated = useIsAuthenticated();
+  const { join, isJoined, isPending, joinLabel } = useCommunityActions(
+    community.id,
+    community.isJoined ?? false
+  );
 
   const handleJoin = async () => {
     if (isJoined) {
@@ -64,18 +69,20 @@ const CommunityItem = ({ community, rank }: { community: Community; rank: number
         </p>
       </div>
 
-      <Button
-        size="xs"
-        variant={isJoined ? "subtle" : "brand"}
-        className={cn(
-          "opacity-0 group-hover:opacity-100 transition-opacity",
-          isJoined && "opacity-100"
-        )}
-        onClick={handleJoin}
-        disabled={isJoined || isPending}
-      >
-        {joinLabel}
-      </Button>
+      {isAuthenticated && (
+        <Button
+          size="xs"
+          variant={isJoined ? "subtle" : "brand"}
+          className={cn(
+            "opacity-0 group-hover:opacity-100 transition-opacity",
+            isJoined && "opacity-100"
+          )}
+          onClick={handleJoin}
+          disabled={isJoined || isPending}
+        >
+          {joinLabel}
+        </Button>
+      )}
     </div>
   );
 };

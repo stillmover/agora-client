@@ -17,7 +17,7 @@ export const PostDetailWidget = ({ post }: PostDetailWidgetProps) => {
       <CardHeader>
         <div className="flex gap-4">
           <div className="flex-shrink-0">
-            <VoteColumn postId={post.id} score={post.score} />
+            <VoteColumn postId={post.id} score={post.score} userVote={post.userVote ?? 0} />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2">

@@ -6,7 +6,7 @@ import {
   useCommunityByNameQuery as useCommunityByNameGql,
   useFlairsByCommunityQuery as useFlairsByCommunityGql,
 } from "@/shared/api/gql/query-hooks";
-import { mapCommunity, hydrateJoinedCommunity } from "../api/mappers";
+import { mapCommunity } from "../api/mappers";
 
 export const useCommunities = (limit = 20, offset = 0) => {
   const { data, isLoading, error, refetch } = useCommunitiesGql({
@@ -15,7 +15,6 @@ export const useCommunities = (limit = 20, offset = 0) => {
   });
 
   const communities = useMemo(() => {
-    (data ?? []).forEach(hydrateJoinedCommunity);
     return (data ?? []).map(mapCommunity);
   }, [data]);
 
@@ -31,7 +30,6 @@ export const usePopularCommunities = (limit = 10) => {
   const { data, isLoading, error, refetch } = usePopularCommunitiesGql(limit);
 
   const communities = useMemo(() => {
-    (data ?? []).forEach(hydrateJoinedCommunity);
     return (data ?? []).map(mapCommunity);
   }, [data]);
 

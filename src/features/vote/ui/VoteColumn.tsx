@@ -9,6 +9,7 @@ import type { VoteDirection } from "@/shared/constants";
 interface VoteColumnProps {
   postId: string;
   score: number;
+  userVote?: -1 | 0 | 1;
 }
 
 const formatScore = (score: number): string => {
@@ -21,8 +22,8 @@ const formatScore = (score: number): string => {
   return score.toString();
 };
 
-export const VoteColumn = memo(({ postId, score }: VoteColumnProps) => {
-  const { vote, currentVote, hasUpvoted, hasDownvoted } = useVote(postId);
+export const VoteColumn = memo(({ postId, score, userVote = 0 }: VoteColumnProps) => {
+  const { vote, currentVote, hasUpvoted, hasDownvoted, isPending } = useVote(postId, userVote);
 
   const handleVote = useCallback(
     async (direction: VoteDirection) => {
@@ -49,14 +50,16 @@ export const VoteColumn = memo(({ postId, score }: VoteColumnProps) => {
     >
       <button
         onClick={handleUpvote}
+        disabled={isPending}
         className={cn(
           "p-1 rounded-md transition-all duration-150",
-          "hover:bg-vote-up/10 active:scale-90",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vote-up",
+          isPending ? "opacity-60 cursor-not-allowed" : "hover:bg-vote-up/10 active:scale-90",
           hasUpvoted ? "text-vote-up bg-vote-up/10" : "text-muted-foreground hover:text-vote-up"
         )}
         aria-label={`Upvote (${optimisticScore} points)`}
         aria-pressed={hasUpvoted}
+        aria-disabled={isPending}
       >
         <ArrowBigUp
           className={cn(
@@ -81,16 +84,18 @@ export const VoteColumn = memo(({ postId, score }: VoteColumnProps) => {
 
       <button
         onClick={handleDownvote}
+        disabled={isPending}
         className={cn(
           "p-1 rounded-md transition-all duration-150",
-          "hover:bg-vote-down/10 active:scale-90",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vote-down",
+          isPending ? "opacity-60 cursor-not-allowed" : "hover:bg-vote-down/10 active:scale-90",
           hasDownvoted
             ? "text-vote-down bg-vote-down/10"
             : "text-muted-foreground hover:text-vote-down"
         )}
         aria-label={`Downvote (${optimisticScore} points)`}
         aria-pressed={hasDownvoted}
+        aria-disabled={isPending}
       >
         <ArrowBigDown
           className={cn(

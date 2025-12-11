@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useVotePostMutation, useVoteCommentMutation } from "@/shared/api/gql/query-hooks";
 import { queryKeys } from "@/shared/api/query-keys";
@@ -7,10 +7,28 @@ import { usePostVote, clientStateActions } from "@/shared/stores";
 import { calculateVoteValue, getVoteState } from "../lib/vote-utils";
 import { logger } from "@/shared/services/logger";
 
-export const useVote = (postId: string) => {
-  const currentVote = usePostVote(postId);
+export const useVote = (postId: string, initialVote: -1 | 0 | 1 = 0) => {
+  const storedVote = usePostVote(postId);
   const queryClient = useQueryClient();
   const votePostMutation = useVotePostMutation();
+
+  useEffect(() => {
+    if (!postId || votePostMutation.isPending) {
+      return;
+    }
+
+    const shouldSync = storedVote !== initialVote;
+    if (shouldSync) {
+      clientStateActions.votePost(postId, initialVote);
+    }
+  }, [postId, initialVote, storedVote, votePostMutation.isPending]);
+
+  const currentVote = useMemo(() => {
+    if (storedVote !== undefined) {
+      return storedVote;
+    }
+    return initialVote;
+  }, [storedVote, initialVote]);
 
   const vote = useCallback(
     async (direction: "up" | "down") => {
@@ -33,6 +51,10 @@ export const useVote = (postId: string) => {
 
         queryClient.invalidateQueries({
           queryKey: queryKeys.posts.lists(),
+          refetchType: "none",
+        });
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.posts.detail(postId),
           refetchType: "none",
         });
       } catch (error) {
