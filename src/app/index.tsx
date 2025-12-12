@@ -11,12 +11,6 @@ import { AppProviders } from "@/app/providers/AppProviders";
 import { useSession } from "@/entities/session";
 
 if (import.meta.env.DEV) {
-  void import("react-scan").then(({ scan }) => {
-    scan();
-  });
-}
-
-if (import.meta.env.DEV) {
   import("virtual:pwa-register").then(({ registerSW }) => {
     registerSW();
   });
