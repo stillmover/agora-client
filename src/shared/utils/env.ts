@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const envSchema = z.object({
   APP_ENV: z.enum(["development", "production", "test"]).default("development"),
-  BACKEND_URL: z.string().url().default("http://localhost:8000"),
+  BACKEND_URL: z.string().url().default("http://localhost:5555"),
   GOOGLE_CLIENT_ID: z.string().optional(),
   GOOGLE_REDIRECT_URI: z.string().url().optional(),
   SENTRY_DSN: z.string().optional(),

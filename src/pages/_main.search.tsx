@@ -1,8 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { useSearchPosts, useSearchCommunities, useSearchUsers } from "@/features/search";
 import type { SearchType } from "@/features/search";
-import { PostCard } from "@/widgets/post-card";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Badge } from "@/shared/ui/badge";
@@ -10,6 +9,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { Search, FileText, Users, User, Loader2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/shared/lib/utils";
+import { Spinner } from "@/shared/ui";
+
+const PostCard = lazy(() =>
+  import("@/widgets/post-card").then((module) => ({ default: module.PostCard }))
+);
 
 export const Route = createFileRoute("/_main/search")({
   component: SearchPage,
@@ -20,6 +24,14 @@ export const Route = createFileRoute("/_main/search")({
 });
 
 function SearchPage() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <SearchPageContent />
+    </Suspense>
+  );
+}
+
+function SearchPageContent() {
   const { q: initialQuery, type: initialType } = Route.useSearch();
   const [query, setQuery] = useState(initialQuery);
   const [activeTab, setActiveTab] = useState<SearchType>(initialType);
@@ -126,7 +138,12 @@ function SearchPage() {
             ) : (
               <div className={cn("space-y-4", postsSearching && "opacity-75 transition-opacity")}>
                 {posts.map((post) => (
-                  <PostCard key={post.id} post={post} showCommunity />
+                  <Suspense
+                    key={post.id}
+                    fallback={<div className="h-32 bg-muted animate-pulse rounded" />}
+                  >
+                    <PostCard post={post} showCommunity />
+                  </Suspense>
                 ))}
               </div>
             )}

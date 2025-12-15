@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, Suspense } from "react";
+import { ROUTES } from "@/shared/config";
 import { formatDistanceToNow } from "date-fns";
 import {
   Bell,
@@ -26,6 +27,7 @@ import {
   AvatarFallback,
   AvatarImage,
   Badge,
+  Spinner,
 } from "@/shared/ui";
 import { cn } from "@/shared/lib/utils";
 
@@ -205,6 +207,14 @@ function NotificationItem({
 }
 
 function NotificationsPage() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <NotificationsPageContent />
+    </Suspense>
+  );
+}
+
+function NotificationsPageContent() {
   const navigate = useNavigate();
   const isAuthenticated = useIsAuthenticated();
   const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
@@ -257,7 +267,7 @@ function NotificationsPage() {
           </p>
         </div>
         <Button variant="ghost" size="icon-sm" asChild>
-          <Link to="/settings/notifications">
+          <Link to={ROUTES.SETTINGS}>
             <Settings className="h-5 w-5" />
           </Link>
         </Button>

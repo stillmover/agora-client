@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from "./pages/__root";
 import { Route as MainRouteImport } from "./pages/_main";
-import { Route as AuthRouteImport } from "./pages/_auth";
 import { Route as MainIndexRouteImport } from "./pages/_main.index";
 import { Route as MainSubmitRouteImport } from "./pages/_main.submit";
 import { Route as MainSettingsRouteImport } from "./pages/_main.settings";
@@ -18,20 +17,13 @@ import { Route as MainSearchRouteImport } from "./pages/_main.search";
 import { Route as MainSavedRouteImport } from "./pages/_main.saved";
 import { Route as MainNotificationsRouteImport } from "./pages/_main.notifications";
 import { Route as MainMessagesRouteImport } from "./pages/_main.messages";
-import { Route as MainAuthenticatedRouteImport } from "./pages/_main._authenticated";
-import { Route as AuthResetRouteImport } from "./pages/_auth.reset";
-import { Route as AuthRegisterRouteImport } from "./pages/_auth.register";
-import { Route as AuthLoginRouteImport } from "./pages/_auth.login";
 import { Route as MainUUsernameRouteImport } from "./pages/_main.u.$username";
 import { Route as MainRCommunityIdRouteImport } from "./pages/_main.r.$communityId";
 import { Route as MainPostPostIdRouteImport } from "./pages/_main.post.$postId";
+import { Route as MainAuthCallbackRouteImport } from "./pages/_main.auth.callback";
 
 const MainRoute = MainRouteImport.update({
   id: "/_main",
-  getParentRoute: () => rootRouteImport,
-} as any);
-const AuthRoute = AuthRouteImport.update({
-  id: "/_auth",
   getParentRoute: () => rootRouteImport,
 } as any);
 const MainIndexRoute = MainIndexRouteImport.update({
@@ -69,25 +61,6 @@ const MainMessagesRoute = MainMessagesRouteImport.update({
   path: "/messages",
   getParentRoute: () => MainRoute,
 } as any);
-const MainAuthenticatedRoute = MainAuthenticatedRouteImport.update({
-  id: "/_authenticated",
-  getParentRoute: () => MainRoute,
-} as any);
-const AuthResetRoute = AuthResetRouteImport.update({
-  id: "/reset",
-  path: "/reset",
-  getParentRoute: () => AuthRoute,
-} as any);
-const AuthRegisterRoute = AuthRegisterRouteImport.update({
-  id: "/register",
-  path: "/register",
-  getParentRoute: () => AuthRoute,
-} as any);
-const AuthLoginRoute = AuthLoginRouteImport.update({
-  id: "/login",
-  path: "/login",
-  getParentRoute: () => AuthRoute,
-} as any);
 const MainUUsernameRoute = MainUUsernameRouteImport.update({
   id: "/u/$username",
   path: "/u/$username",
@@ -103,11 +76,13 @@ const MainPostPostIdRoute = MainPostPostIdRouteImport.update({
   path: "/post/$postId",
   getParentRoute: () => MainRoute,
 } as any);
+const MainAuthCallbackRoute = MainAuthCallbackRouteImport.update({
+  id: "/auth/callback",
+  path: "/auth/callback",
+  getParentRoute: () => MainRoute,
+} as any);
 
 export interface FileRoutesByFullPath {
-  "/login": typeof AuthLoginRoute;
-  "/register": typeof AuthRegisterRoute;
-  "/reset": typeof AuthResetRoute;
   "/messages": typeof MainMessagesRoute;
   "/notifications": typeof MainNotificationsRoute;
   "/saved": typeof MainSavedRoute;
@@ -115,14 +90,12 @@ export interface FileRoutesByFullPath {
   "/settings": typeof MainSettingsRoute;
   "/submit": typeof MainSubmitRoute;
   "/": typeof MainIndexRoute;
+  "/auth/callback": typeof MainAuthCallbackRoute;
   "/post/$postId": typeof MainPostPostIdRoute;
   "/r/$communityId": typeof MainRCommunityIdRoute;
   "/u/$username": typeof MainUUsernameRoute;
 }
 export interface FileRoutesByTo {
-  "/login": typeof AuthLoginRoute;
-  "/register": typeof AuthRegisterRoute;
-  "/reset": typeof AuthResetRoute;
   "/messages": typeof MainMessagesRoute;
   "/notifications": typeof MainNotificationsRoute;
   "/saved": typeof MainSavedRoute;
@@ -130,18 +103,14 @@ export interface FileRoutesByTo {
   "/settings": typeof MainSettingsRoute;
   "/submit": typeof MainSubmitRoute;
   "/": typeof MainIndexRoute;
+  "/auth/callback": typeof MainAuthCallbackRoute;
   "/post/$postId": typeof MainPostPostIdRoute;
   "/r/$communityId": typeof MainRCommunityIdRoute;
   "/u/$username": typeof MainUUsernameRoute;
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
-  "/_auth": typeof AuthRouteWithChildren;
   "/_main": typeof MainRouteWithChildren;
-  "/_auth/login": typeof AuthLoginRoute;
-  "/_auth/register": typeof AuthRegisterRoute;
-  "/_auth/reset": typeof AuthResetRoute;
-  "/_main/_authenticated": typeof MainAuthenticatedRoute;
   "/_main/messages": typeof MainMessagesRoute;
   "/_main/notifications": typeof MainNotificationsRoute;
   "/_main/saved": typeof MainSavedRoute;
@@ -149,6 +118,7 @@ export interface FileRoutesById {
   "/_main/settings": typeof MainSettingsRoute;
   "/_main/submit": typeof MainSubmitRoute;
   "/_main/": typeof MainIndexRoute;
+  "/_main/auth/callback": typeof MainAuthCallbackRoute;
   "/_main/post/$postId": typeof MainPostPostIdRoute;
   "/_main/r/$communityId": typeof MainRCommunityIdRoute;
   "/_main/u/$username": typeof MainUUsernameRoute;
@@ -156,9 +126,6 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
   fullPaths:
-    | "/login"
-    | "/register"
-    | "/reset"
     | "/messages"
     | "/notifications"
     | "/saved"
@@ -166,14 +133,12 @@ export interface FileRouteTypes {
     | "/settings"
     | "/submit"
     | "/"
+    | "/auth/callback"
     | "/post/$postId"
     | "/r/$communityId"
     | "/u/$username";
   fileRoutesByTo: FileRoutesByTo;
   to:
-    | "/login"
-    | "/register"
-    | "/reset"
     | "/messages"
     | "/notifications"
     | "/saved"
@@ -181,17 +146,13 @@ export interface FileRouteTypes {
     | "/settings"
     | "/submit"
     | "/"
+    | "/auth/callback"
     | "/post/$postId"
     | "/r/$communityId"
     | "/u/$username";
   id:
     | "__root__"
-    | "/_auth"
     | "/_main"
-    | "/_auth/login"
-    | "/_auth/register"
-    | "/_auth/reset"
-    | "/_main/_authenticated"
     | "/_main/messages"
     | "/_main/notifications"
     | "/_main/saved"
@@ -199,13 +160,13 @@ export interface FileRouteTypes {
     | "/_main/settings"
     | "/_main/submit"
     | "/_main/"
+    | "/_main/auth/callback"
     | "/_main/post/$postId"
     | "/_main/r/$communityId"
     | "/_main/u/$username";
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  AuthRoute: typeof AuthRouteWithChildren;
   MainRoute: typeof MainRouteWithChildren;
 }
 
@@ -216,13 +177,6 @@ declare module "@tanstack/react-router" {
       path: "";
       fullPath: "";
       preLoaderRoute: typeof MainRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/_auth": {
-      id: "/_auth";
-      path: "";
-      fullPath: "";
-      preLoaderRoute: typeof AuthRouteImport;
       parentRoute: typeof rootRouteImport;
     };
     "/_main/": {
@@ -274,34 +228,6 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof MainMessagesRouteImport;
       parentRoute: typeof MainRoute;
     };
-    "/_main/_authenticated": {
-      id: "/_main/_authenticated";
-      path: "";
-      fullPath: "";
-      preLoaderRoute: typeof MainAuthenticatedRouteImport;
-      parentRoute: typeof MainRoute;
-    };
-    "/_auth/reset": {
-      id: "/_auth/reset";
-      path: "/reset";
-      fullPath: "/reset";
-      preLoaderRoute: typeof AuthResetRouteImport;
-      parentRoute: typeof AuthRoute;
-    };
-    "/_auth/register": {
-      id: "/_auth/register";
-      path: "/register";
-      fullPath: "/register";
-      preLoaderRoute: typeof AuthRegisterRouteImport;
-      parentRoute: typeof AuthRoute;
-    };
-    "/_auth/login": {
-      id: "/_auth/login";
-      path: "/login";
-      fullPath: "/login";
-      preLoaderRoute: typeof AuthLoginRouteImport;
-      parentRoute: typeof AuthRoute;
-    };
     "/_main/u/$username": {
       id: "/_main/u/$username";
       path: "/u/$username";
@@ -323,25 +249,17 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof MainPostPostIdRouteImport;
       parentRoute: typeof MainRoute;
     };
+    "/_main/auth/callback": {
+      id: "/_main/auth/callback";
+      path: "/auth/callback";
+      fullPath: "/auth/callback";
+      preLoaderRoute: typeof MainAuthCallbackRouteImport;
+      parentRoute: typeof MainRoute;
+    };
   }
 }
 
-interface AuthRouteChildren {
-  AuthLoginRoute: typeof AuthLoginRoute;
-  AuthRegisterRoute: typeof AuthRegisterRoute;
-  AuthResetRoute: typeof AuthResetRoute;
-}
-
-const AuthRouteChildren: AuthRouteChildren = {
-  AuthLoginRoute: AuthLoginRoute,
-  AuthRegisterRoute: AuthRegisterRoute,
-  AuthResetRoute: AuthResetRoute,
-};
-
-const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren);
-
 interface MainRouteChildren {
-  MainAuthenticatedRoute: typeof MainAuthenticatedRoute;
   MainMessagesRoute: typeof MainMessagesRoute;
   MainNotificationsRoute: typeof MainNotificationsRoute;
   MainSavedRoute: typeof MainSavedRoute;
@@ -349,13 +267,13 @@ interface MainRouteChildren {
   MainSettingsRoute: typeof MainSettingsRoute;
   MainSubmitRoute: typeof MainSubmitRoute;
   MainIndexRoute: typeof MainIndexRoute;
+  MainAuthCallbackRoute: typeof MainAuthCallbackRoute;
   MainPostPostIdRoute: typeof MainPostPostIdRoute;
   MainRCommunityIdRoute: typeof MainRCommunityIdRoute;
   MainUUsernameRoute: typeof MainUUsernameRoute;
 }
 
 const MainRouteChildren: MainRouteChildren = {
-  MainAuthenticatedRoute: MainAuthenticatedRoute,
   MainMessagesRoute: MainMessagesRoute,
   MainNotificationsRoute: MainNotificationsRoute,
   MainSavedRoute: MainSavedRoute,
@@ -363,6 +281,7 @@ const MainRouteChildren: MainRouteChildren = {
   MainSettingsRoute: MainSettingsRoute,
   MainSubmitRoute: MainSubmitRoute,
   MainIndexRoute: MainIndexRoute,
+  MainAuthCallbackRoute: MainAuthCallbackRoute,
   MainPostPostIdRoute: MainPostPostIdRoute,
   MainRCommunityIdRoute: MainRCommunityIdRoute,
   MainUUsernameRoute: MainUUsernameRoute,
@@ -371,7 +290,6 @@ const MainRouteChildren: MainRouteChildren = {
 const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren);
 
 const rootRouteChildren: RootRouteChildren = {
-  AuthRoute: AuthRouteWithChildren,
   MainRoute: MainRouteWithChildren,
 };
 export const routeTree = rootRouteImport

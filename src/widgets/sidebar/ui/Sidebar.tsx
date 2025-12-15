@@ -91,8 +91,8 @@ export const Sidebar = () => {
         <NavItem to="/r/$communityId" params={{ communityId: "all" }} icon={Flame} label="All" />
         {isAuthenticated && (
           <>
-            <NavItem to="/saved" icon={Bookmark} label="Saved" />
-            <NavItem to="/notifications" icon={Bell} label="Notifications" badge={3} />
+            <NavItem to={ROUTES.SAVED} icon={Bookmark} label="Saved" />
+            <NavItem to={ROUTES.NOTIFICATIONS} icon={Bell} label="Notifications" badge={3} />
           </>
         )}
       </nav>
@@ -189,7 +189,7 @@ export const Sidebar = () => {
 
             {communities.length > 8 && (
               <Link
-                to="/search"
+                to={ROUTES.SEARCH}
                 search={{ q: "", type: "communities" }}
                 className={cn(
                   "flex items-center gap-2 px-3 py-2 rounded-lg text-sm",
@@ -209,7 +209,7 @@ export const Sidebar = () => {
         <>
           <hr className="border-border" />
           <nav className="space-y-1">
-            <NavItem to="/settings" icon={Settings} label="Settings" />
+            <NavItem to={ROUTES.SETTINGS} icon={Settings} label="Settings" />
           </nav>
         </>
       )}

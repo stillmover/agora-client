@@ -1,4 +1,4 @@
-import { Outlet, createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { logger } from "@/shared/services/logger";
@@ -8,9 +8,10 @@ import { sessionActions } from "@/entities/session";
 import { sessionApi } from "@/entities/session/api/sessionApi";
 import { sessionKeys } from "@/entities/session/api/query-keys";
 import { extractUserFromResponse } from "@/entities/session/api/types";
+import { Spinner } from "@/shared/ui";
 
-export const Route = createFileRoute("/_auth")({
-  component: AuthLayout,
+export const Route = createFileRoute("/_main/auth/callback")({
+  component: OAuthCallbackPage,
   validateSearch: (search) => ({
     code: (search.code as string) || undefined,
     error: (search.error as string) || undefined,
@@ -18,12 +19,18 @@ export const Route = createFileRoute("/_auth")({
   }),
 });
 
-function AuthLayout() {
-  const search = useSearch({ from: "/_auth" });
+function OAuthCallbackPage() {
+  const search = useSearch({ from: "/_main/auth/callback" });
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    if (search.error) {
+      logger.error("OAuth error received", { error: search.error });
+      navigate({ replace: true, to: "/" });
+      return;
+    }
+
     if (search.code && search.state) {
       logger.debug("OAuth callback received", {
         code: search.code,
@@ -33,15 +40,7 @@ function AuthLayout() {
       const storedState = localStorage.getItem("oauth_state");
       if (storedState !== search.state) {
         logger.error("OAuth state mismatch");
-        navigate({
-          search: {
-            code: undefined,
-            error: "auth_failed",
-            redirect: undefined,
-            state: undefined,
-          },
-          to: "/login",
-        });
+        navigate({ replace: true, to: "/" });
         return;
       }
 
@@ -84,36 +83,24 @@ function AuthLayout() {
             }
           } catch (error) {
             logger.error("Failed to fetch user data after OAuth authentication", error);
-            navigate({
-              search: {
-                code: undefined,
-                error: "auth_failed",
-                redirect: undefined,
-                state: undefined,
-              },
-              to: "/login",
-            });
+            navigate({ replace: true, to: "/" });
           }
         })
         .catch((error) => {
           logger.error("OAuth authentication failed", error);
-          navigate({
-            search: {
-              code: undefined,
-              error: "auth_failed",
-              redirect: undefined,
-              state: undefined,
-            },
-            to: "/login",
-          });
+          navigate({ replace: true, to: "/" });
         });
+    } else {
+      // No OAuth params, redirect to home
+      navigate({ replace: true, to: "/" });
     }
-  }, [search.code, search.state, navigate, queryClient]);
+  }, [search.code, search.state, search.error, navigate, queryClient]);
 
   return (
-    <div className="grid min-h-screen place-items-center p-6">
-      <div className="w-full max-w-sm rounded-md border border-border bg-card p-6 shadow">
-        <Outlet />
+    <div className="flex min-h-[50vh] items-center justify-center">
+      <div className="text-center space-y-4">
+        <Spinner />
+        <p className="text-muted-foreground">Completing sign in...</p>
       </div>
     </div>
   );

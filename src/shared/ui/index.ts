@@ -81,3 +81,4 @@ export {
 
 export { ErrorBoundary, useErrorHandler } from "./error-boundary";
 export { ErrorButton } from "./error-button";
+export { Spinner } from "./spinner";

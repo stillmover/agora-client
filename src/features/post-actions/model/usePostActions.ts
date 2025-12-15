@@ -1,9 +1,8 @@
 import { useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
 import { useSavePostMutation, useUnsavePostMutation } from "@/shared/api/gql/query-hooks";
 import { queryKeys } from "@/shared/api/query-keys";
-import { useIsPostSaved, clientStateActions } from "@/shared/stores";
+import { useIsPostSaved, clientStateActions, authModalActions } from "@/shared/stores";
 import { logger } from "@/shared/services/logger";
 import { sharePost } from "../lib/share-utils";
 import { useIsAuthenticated } from "@/entities/session";
@@ -12,18 +11,12 @@ export const usePostActions = (postId: string) => {
   const isSaved = useIsPostSaved(postId);
   const isAuthenticated = useIsAuthenticated();
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   const savePostMutation = useSavePostMutation();
   const unsavePostMutation = useUnsavePostMutation();
 
   const save = useCallback(async () => {
     if (!isAuthenticated) {
-      navigate({
-        to: "/login",
-        search: {
-          redirect: window.location.pathname + window.location.search,
-        },
-      });
+      authModalActions.open();
       return;
     }
 
@@ -54,15 +47,7 @@ export const usePostActions = (postId: string) => {
       logger.error("Failed to save/unsave post:", error);
       throw error;
     }
-  }, [
-    postId,
-    isSaved,
-    isAuthenticated,
-    navigate,
-    savePostMutation,
-    unsavePostMutation,
-    queryClient,
-  ]);
+  }, [postId, isSaved, isAuthenticated, savePostMutation, unsavePostMutation, queryClient]);
 
   const share = useCallback(async () => {
     await sharePost(postId);

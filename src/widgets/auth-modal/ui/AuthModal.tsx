@@ -1,10 +1,11 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/shared/ui/button";
 import { LoginView, RegisterView, ResetView } from "./views";
-import type { AuthView } from "./views";
+import { authModalActions, useAuthModalOpen, useAuthModalView } from "@/shared/stores";
+import type { AuthView } from "@/shared/stores";
 
 const fadeAnimation = {
   animate: { opacity: 1 },
@@ -25,27 +26,28 @@ const CloseButton = () => (
 );
 
 export const AuthModal = () => {
-  const [open, setOpen] = useState(false);
-  const [view, setView] = useState<AuthView>("login");
+  const isOpen = useAuthModalOpen();
+  const view = useAuthModalView();
 
   const handleSuccess = useCallback(() => {
-    setOpen(false);
+    authModalActions.close();
   }, []);
 
   const handleViewChange = useCallback((newView: AuthView) => {
-    setView(newView);
+    authModalActions.setView(newView);
   }, []);
 
-  const handleOpenChange = useCallback((isOpen: boolean) => {
-    setOpen(isOpen);
-    if (!isOpen) {
-      setView("login");
+  const handleOpenChange = useCallback((open: boolean) => {
+    if (open) {
+      authModalActions.open();
+    } else {
+      authModalActions.reset();
     }
   }, []);
 
   const handleOverlayClick = useCallback(() => {
-    handleOpenChange(false);
-  }, [handleOpenChange]);
+    authModalActions.reset();
+  }, []);
 
   const renderView = () => {
     switch (view) {
@@ -65,15 +67,9 @@ export const AuthModal = () => {
   };
 
   return (
-    <DialogPrimitive.Root open={open} onOpenChange={handleOpenChange}>
-      <DialogPrimitive.Trigger asChild>
-        <Button variant="ghost" size="sm" className="text-lg">
-          Log In
-        </Button>
-      </DialogPrimitive.Trigger>
-
+    <DialogPrimitive.Root open={isOpen} onOpenChange={handleOpenChange}>
       <AnimatePresence>
-        {open && (
+        {isOpen && (
           <DialogPrimitive.Portal forceMount>
             <DialogPrimitive.Overlay asChild>
               <motion.div
@@ -101,3 +97,9 @@ export const AuthModal = () => {
     </DialogPrimitive.Root>
   );
 };
+
+export const AuthTrigger = () => (
+  <Button variant="ghost" size="sm" className="text-lg" onClick={() => authModalActions.open()}>
+    Log In
+  </Button>
+);

@@ -1,6 +1,7 @@
 # Reddit Client
 
-A modern Reddit client built with React, TypeScript, TanStack Router, and TanStack Query. Features file-based routing, automatic code splitting, and comprehensive environment configuration.
+A modern Reddit client built with React, TypeScript, TanStack Router, and TanStack Query. Features file-based routing,
+automatic code splitting, and comprehensive environment configuration.
 
 ## 🚀 Features
 
@@ -50,7 +51,8 @@ A modern Reddit client built with React, TypeScript, TanStack Router, and TanSta
 
 ## 🔧 Environment Setup
 
-The application uses environment variables for configuration. All environment variables must be prefixed with `VITE_` to be accessible in the frontend.
+The application uses environment variables for configuration. All environment variables must be prefixed with `VITE_` to
+be accessible in the frontend.
 
 ### Required Environment Variables
 
@@ -58,7 +60,7 @@ Copy `.env.example` to `.env.local` and fill in your values:
 
 ```bash
 # Backend API (Required)
-VITE_BACKEND_URL="http://localhost:8000"
+VITE_BACKEND_URL="http://localhost:5555"
 
 # Google OAuth (Optional - only if using Google auth)
 VITE_GOOGLE_CLIENT_ID="your_google_client_id"
@@ -88,7 +90,7 @@ Only needed if you want to use Google authentication:
 The environment variables are validated using Zod schemas for type safety and runtime validation:
 
 ```typescript
-import { env, isDevelopment } from '@/shared/utils/env'
+import {env, isDevelopment} from '@/shared/utils/env'
 
 // Fully typed environment variables with Zod validation
 console.log(env.BACKEND_URL)       // string (URL, required)
@@ -113,7 +115,7 @@ console.log(isProduction)   // boolean
 
 ```typescript
 // URL validation with default
-BACKEND_URL: z.string().url().default('http://localhost:8000')
+BACKEND_URL: z.string().url().default('http://localhost:5555')
 
 // Number with coercion and validation
 PORT: z.coerce.number().int().positive().default(5173)

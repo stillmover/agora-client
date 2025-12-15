@@ -1,4 +1,4 @@
-type AuthView = "login" | "register" | "reset";
+import type { AuthView } from "@/shared/stores";
 
 interface AuthViewProps {
   onSuccess: VoidFunction;

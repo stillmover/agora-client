@@ -1,29 +1,17 @@
-import { useNavigate } from "@tanstack/react-router";
 import { FloatingInput } from "@/shared/ui/floating-input";
 import { Button } from "@/shared/ui/button";
 import { useRegisterForm } from "../model/useRegisterForm";
+import type { AuthView } from "@/shared/stores";
 
 interface RegisterFormProps {
-  setView?: (view: "login" | "register" | "reset") => void;
+  setView?: (view: AuthView) => void;
   redirect?: string;
   onSuccess?: VoidFunction;
 }
 
 export const RegisterForm = ({ setView, redirect, onSuccess }: RegisterFormProps) => {
   const { form, isPending } = useRegisterForm({ onSuccess, redirect });
-  const navigate = useNavigate();
 
-  const navigateToLogin = () =>
-    navigate({
-      search: (prev) => ({
-        ...prev,
-        redirect: redirect ?? prev.redirect,
-        code: undefined,
-        state: undefined,
-        error: undefined,
-      }),
-      to: "/login",
-    });
   return (
     <div className="space-y-6">
       <form
@@ -93,15 +81,17 @@ export const RegisterForm = ({ setView, redirect, onSuccess }: RegisterFormProps
           )}
         </form.Field>
 
-        <p className="text-sm text-gray-600 text-left space-y-2 pl-4 pb-4 dark:text-[#b7cad4]">
-          Already have an account?{" "}
-          <button
-            onClick={() => (setView ? setView("login") : navigateToLogin())}
-            className="text-blue-600 hover:underline cursor-pointer dark:text-[#648efc]"
-          >
-            Log In
-          </button>
-        </p>
+        {setView && (
+          <p className="text-sm text-gray-600 text-left space-y-2 pl-4 pb-4 dark:text-[#b7cad4]">
+            Already have an account?{" "}
+            <button
+              onClick={() => setView("login")}
+              className="text-blue-600 hover:underline cursor-pointer dark:text-[#648efc]"
+            >
+              Log In
+            </button>
+          </p>
+        )}
 
         <form.Subscribe
           selector={(state) => ({

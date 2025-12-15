@@ -19,6 +19,7 @@ import {
 } from "@/shared/ui";
 import { logger } from "@/shared/services/logger";
 import { cn } from "@/shared/lib/utils";
+import { ROUTES } from "@/shared/config/routes";
 
 const CommunityItem = ({ community, rank }: { community: Community; rank: number }) => {
   const isAuthenticated = useIsAuthenticated();
@@ -120,7 +121,7 @@ export const RightSidebar = () => {
                 <CommunityItem key={community.id} community={community} rank={index + 1} />
               ))}
               <Link
-                to="/search"
+                to={ROUTES.SEARCH}
                 search={{ q: "", type: "communities" }}
                 className={cn(
                   "flex items-center justify-between py-2 px-1 mt-2",
@@ -154,7 +155,7 @@ export const RightSidebar = () => {
             </div>
           </div>
           <Button variant="brand" size="sm" className="w-full mt-4" asChild>
-            <Link to="/submit">
+            <Link to={ROUTES.CREATE_POST}>
               <Plus className="h-4 w-4 mr-2" />
               Get Started
             </Link>

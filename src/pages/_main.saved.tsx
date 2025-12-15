@@ -1,11 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, Suspense } from "react";
+import { ROUTES } from "@/shared/config";
 import { useSavedPosts } from "@/entities/post";
 import type { Post } from "@/entities/post";
 import { useIsAuthenticated } from "@/entities/session";
 import { PostCard } from "@/widgets/post-card";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
-import { Button } from "@/shared/ui/button";
+import { Button, Spinner } from "@/shared/ui";
 import { Bookmark, LogIn, AlertCircle, RefreshCw } from "lucide-react";
 
 export const Route = createFileRoute("/_main/saved")({
@@ -13,10 +14,18 @@ export const Route = createFileRoute("/_main/saved")({
 });
 
 const redirectToLogin = () => {
-  window.location.href = "/login?redirect=/saved";
+  window.location.href = `${ROUTES.LOGIN}?redirect=${ROUTES.SAVED}`;
 };
 
 function SavedPostsPage() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <SavedPostsPageContent />
+    </Suspense>
+  );
+}
+
+function SavedPostsPageContent() {
   const navigate = useNavigate();
   const isAuthenticated = useIsAuthenticated();
   const { posts, isLoading, error, refetch } = useSavedPosts(20, 0, isAuthenticated);
@@ -111,7 +120,7 @@ function SavedPostsPage() {
             <p className="text-muted-foreground mb-4">
               Save posts to read them later. They'll appear here.
             </p>
-            <Button onClick={() => navigate({ to: "/" })}>Browse Posts</Button>
+            <Button onClick={() => navigate({ to: ROUTES.HOME })}>Browse Posts</Button>
           </CardContent>
         </Card>
       ) : (

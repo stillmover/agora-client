@@ -1,12 +1,12 @@
-import { useNavigate } from "@tanstack/react-router";
 import { FloatingInput } from "@/shared/ui/floating-input";
 import { Button } from "@/shared/ui/button";
 import { useLoginForm } from "../model/use-login-form";
+import type { AuthView } from "@/shared/stores";
 
 const FIRST_ERROR_INDEX = 0;
 
 interface LoginFormProps {
-  setView?: (view: "login" | "register" | "reset") => void;
+  setView?: (view: AuthView) => void;
   redirect?: string;
   onSuccess?: VoidFunction;
 }
@@ -55,32 +55,16 @@ const LoginFormFields = ({ form }: { form: ReturnType<typeof useLoginForm>["form
   </>
 );
 
-const LoginFormFooter = ({
-  setView,
-  redirect,
-}: {
-  setView?: (view: "login" | "register" | "reset") => void;
-  redirect?: string;
-}) => {
-  const navigate = useNavigate();
-
-  const navigateTo = (to: "/reset" | "/register") =>
-    navigate({
-      search: (prev) => ({
-        ...prev,
-        redirect: redirect ?? prev.redirect,
-        code: undefined,
-        state: undefined,
-        error: undefined,
-      }),
-      to,
-    });
+const LoginFormFooter = ({ setView }: { setView?: (view: AuthView) => void }) => {
+  if (!setView) {
+    return null;
+  }
 
   return (
     <div className="text-left space-y-2 pb-4">
       <button
         type="button"
-        onClick={() => (setView ? setView("reset") : navigateTo("/reset"))}
+        onClick={() => setView("reset")}
         className="text-sm text-blue-600 hover:underline cursor-pointer dark:text-[#648efc]"
       >
         Forgot password?
@@ -90,7 +74,7 @@ const LoginFormFooter = ({
         New to Reddit?{" "}
         <button
           type="button"
-          onClick={() => (setView ? setView("register") : navigateTo("/register"))}
+          onClick={() => setView("register")}
           className="text-blue-600 hover:underline cursor-pointer dark:text-[#648efc]"
         >
           Sign Up
@@ -169,7 +153,7 @@ export const LoginForm = ({ setView, redirect, onSuccess }: LoginFormProps) => {
         className="space-y-4"
       >
         <LoginFormFields form={form} />
-        <LoginFormFooter setView={setView} redirect={redirect} />
+        <LoginFormFooter setView={setView} />
         <LoginSubmitButton form={form} isPending={isPending} />
       </form>
     </div>

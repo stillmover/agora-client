@@ -2,6 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { User, LogOut, Settings, Bookmark, FileText, MessageSquare } from "lucide-react";
 
 import { useSessionUser, useIsAuthenticated, useLogoutMutation } from "@/entities/session";
+import { ROUTES } from "@/shared/config";
 import { Button } from "@/shared/ui/button";
 import {
   DropdownMenu,
@@ -24,10 +25,10 @@ export const UserMenuWidget = () => {
   const handleLogout = async () => {
     try {
       await logoutMutation.mutateAsync();
-      window.location.assign("/login");
+      window.location.assign(ROUTES.LOGIN);
     } catch (error) {
       logger.error("Error during logout:", error);
-      window.location.assign("/login");
+      window.location.assign(ROUTES.LOGIN);
     }
   };
 
@@ -71,7 +72,7 @@ export const UserMenuWidget = () => {
           <User className="mr-2 h-4 w-4" />
           Profile
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigate({ to: "/settings" })}>
+        <DropdownMenuItem onClick={() => navigate({ to: ROUTES.SETTINGS })}>
           <Settings className="mr-2 h-4 w-4" />
           Settings
         </DropdownMenuItem>
@@ -87,11 +88,11 @@ export const UserMenuWidget = () => {
           <FileText className="mr-2 h-4 w-4" />
           My Posts
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigate({ to: "/messages" })}>
+        <DropdownMenuItem onClick={() => navigate({ to: ROUTES.MESSAGES })}>
           <MessageSquare className="mr-2 h-4 w-4" />
           Messages
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigate({ to: "/saved" })}>
+        <DropdownMenuItem onClick={() => navigate({ to: ROUTES.SAVED })}>
           <Bookmark className="mr-2 h-4 w-4" />
           Saved
         </DropdownMenuItem>

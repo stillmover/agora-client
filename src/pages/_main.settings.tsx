@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, Suspense } from "react";
+import { ROUTES } from "@/shared/config";
 import {
   User,
   Bell,
@@ -28,6 +29,7 @@ import {
   ImageUpload,
   FormField,
   Badge,
+  Spinner,
 } from "@/shared/ui";
 import { cn } from "@/shared/lib/utils";
 
@@ -71,6 +73,14 @@ const settingsSections = [
 ];
 
 function SettingsPage() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <SettingsPageContent />
+    </Suspense>
+  );
+}
+
+function SettingsPageContent() {
   const navigate = useNavigate();
   const isAuthenticated = useIsAuthenticated();
   const user = useSessionUser();
@@ -88,7 +98,7 @@ function SettingsPage() {
           <p className="text-muted-foreground mb-6">
             You need to be logged in to manage your settings.
           </p>
-          <Button variant="brand" onClick={() => navigate({ to: "/" })}>
+          <Button variant="brand" onClick={() => navigate({ to: ROUTES.HOME })}>
             Go to Home
           </Button>
         </CardContent>
@@ -98,8 +108,7 @@ function SettingsPage() {
 
   const handleLogout = async () => {
     await logout();
-    // Force a full page reload to ensure all application state and caches are cleared
-    window.location.assign("/login");
+    window.location.assign(ROUTES.LOGIN);
   };
 
   return (

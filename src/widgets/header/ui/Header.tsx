@@ -1,12 +1,13 @@
 import { useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Link } from "@tanstack/react-router";
+import { ROUTES } from "@/shared/config";
 import { Menu, Plus, Bell, X } from "lucide-react";
 import { useIsAuthenticated } from "@/entities/session";
 import { HeaderSearchWidget } from "@/widgets/header-search";
 import { UserMenuWidget } from "@/widgets/user-menu";
 import { ThemeToggle } from "@/features/theme-toggle";
-import { AuthModal } from "@/widgets/auth-modal";
+import { AuthTrigger } from "@/widgets/auth-modal";
 import { Sidebar } from "@/widgets/sidebar";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
@@ -40,7 +41,7 @@ export const Header = () => {
 
         {/* Logo */}
         <Link
-          to="/"
+          to={ROUTES.HOME}
           className="flex-shrink-0 flex items-center gap-2 hover:opacity-90 transition-opacity"
         >
           <img
@@ -70,7 +71,7 @@ export const Header = () => {
             <>
               {/* Create Post Button - Desktop */}
               <Button variant="ghost" size="sm" className="hidden sm:flex gap-2" asChild>
-                <Link to="/submit">
+                <Link to={ROUTES.CREATE_POST}>
                   <Plus className="h-4 w-4" />
                   <span className="hidden lg:inline">Create</span>
                 </Link>
@@ -94,7 +95,7 @@ export const Header = () => {
           <ThemeToggle />
 
           {/* User Menu or Auth */}
-          {isAuthenticated ? <UserMenuWidget /> : <AuthModal />}
+          {isAuthenticated ? <UserMenuWidget /> : <AuthTrigger />}
         </div>
       </div>
 

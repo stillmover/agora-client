@@ -6,7 +6,7 @@ import { calculateVoteChange } from "../lib/vote-calculator";
 import { VOTE_BUTTON_SIZES, VOTE_BUTTON_ORIENTATIONS } from "@/shared/constants";
 import type { VoteButtonSize, VoteButtonOrientation, VoteDirection } from "@/shared/constants";
 import { useIsAuthenticated } from "@/entities/session";
-import { useNavigate } from "@tanstack/react-router";
+import { authModalActions } from "@/shared/stores";
 
 interface VoteButtonProps {
   votes: number;
@@ -32,7 +32,6 @@ export const VoteButton = ({
   const [localVotes, setLocalVotes] = useState(votes);
   const [localUserVote, setLocalUserVote] = useState<VoteDirection | null>(userVote ?? null);
   const isAuthenticated = useIsAuthenticated();
-  const navigate = useNavigate();
 
   useEffect(() => {
     setLocalVotes(votes);
@@ -44,12 +43,7 @@ export const VoteButton = ({
 
   const handleVote = (direction: VoteDirection) => {
     if (!isAuthenticated) {
-      navigate({
-        to: "/login",
-        search: {
-          redirect: window.location.pathname + window.location.search,
-        },
-      });
+      authModalActions.open();
       return;
     }
 

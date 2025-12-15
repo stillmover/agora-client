@@ -6,13 +6,21 @@ import { createRouter, RouterProvider } from "@tanstack/react-router";
 import * as Sentry from "@sentry/react";
 import { Button } from "@/shared/ui/button";
 import { routeTree } from "@/routeTree.gen";
+import { ROUTES } from "@/shared/config";
 import { queryClient } from "@/shared/utils";
 import { AppProviders } from "@/app/providers/AppProviders";
 import { useSession } from "@/entities/session";
 
-if (import.meta.env.DEV) {
-  import("virtual:pwa-register").then(({ registerSW }) => {
-    registerSW();
+if ("serviceWorker" in navigator && import.meta.env.PROD) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").then(
+      (registration) => {
+        console.log("SW registered: ", registration);
+      },
+      (registrationError) => {
+        console.log("SW registration failed: ", registrationError);
+      }
+    );
   });
 }
 
@@ -79,7 +87,7 @@ function AppErrorFallback({ error, resetError }: RootFallbackProps) {
           aria-label="Return home"
           onClick={() =>
             Sentry.startSpan({ name: "ui.root.navigate-home", op: "navigation" }, () => {
-              window.location.assign("/");
+              window.location.assign(ROUTES.HOME);
             })
           }
         >

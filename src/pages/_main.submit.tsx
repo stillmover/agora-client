@@ -1,8 +1,9 @@
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
+import { ROUTES } from "@/shared/config";
 import { CreatePostModal } from "@/widgets/create-post-modal";
 import { useIsAuthenticated } from "@/entities/session";
-import { Card, CardContent, Button } from "@/shared/ui";
+import { Card, CardContent, Button, Spinner } from "@/shared/ui";
 import { LogIn } from "lucide-react";
 
 export const Route = createFileRoute("/_main/submit")({
@@ -10,29 +11,37 @@ export const Route = createFileRoute("/_main/submit")({
 });
 
 function CreatePostModalRoute() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <CreatePostModalRouteContent />
+    </Suspense>
+  );
+}
+
+function CreatePostModalRouteContent() {
   const navigate = useNavigate();
   const router = useRouter();
   const isAuthenticated = useIsAuthenticated();
 
-  // If someone opens /submit directly, keep a back target.
   useEffect(() => {
-    // Preload home to keep back navigation fast.
-    router.preloadRoute({ to: "/" }).catch(() => {});
+    router.preloadRoute({ to: "/" }).catch((error) => {
+      console.error(error);
+    });
   }, [router]);
 
   const handleClose = () => {
     if (window.history.length > 2) {
       navigate({ to: ".." });
     } else {
-      navigate({ to: "/" });
+      navigate({ to: ROUTES.HOME });
     }
   };
 
   const handleLogin = () => {
     navigate({
-      to: "/login",
+      to: ROUTES.LOGIN,
       search: {
-        redirect: "/submit",
+        redirect: ROUTES.CREATE_POST,
       },
     });
   };
@@ -68,7 +77,7 @@ function CreatePostModalRoute() {
       defaultOpen
       onClose={handleClose}
       onSuccess={() => {
-        navigate({ to: "/" });
+        navigate({ to: ROUTES.HOME });
       }}
     />
   );

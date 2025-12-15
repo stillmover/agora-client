@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { AlertCircle, RefreshCw, FileX2, Sparkles, CheckCircle2 } from "lucide-react";
 import { UI_TEXT } from "@/shared/constants";
+import { ROUTES } from "@/shared/config";
 import { Button, Card, CardContent, SkeletonPostCard } from "@/shared/ui";
 import { LOADING_MORE_SKELETON_COUNT } from "../lib/constants";
 
@@ -42,14 +43,14 @@ const FeedEmpty = ({ communityId }: { communityId?: string }) => (
       </p>
       <div className="flex items-center justify-center gap-3">
         <Button variant="brand" asChild>
-          <Link to="/submit">
+          <Link to={ROUTES.CREATE_POST}>
             <Sparkles className="h-4 w-4 mr-2" />
             Create a post
           </Link>
         </Button>
         {!communityId && (
           <Button variant="outline" asChild>
-            <Link to="/search" search={{ q: "", type: "communities" }}>
+            <Link to={ROUTES.SEARCH} search={{ q: "", type: "communities" }}>
               Discover communities
             </Link>
           </Button>

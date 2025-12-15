@@ -1,9 +1,27 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button } from "@/shared/ui";
+import { Suspense } from "react";
+import { ROUTES } from "@/shared/config";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  Button,
+  Spinner,
+} from "@/shared/ui";
 import { MessageSquare } from "lucide-react";
 import { useIsAuthenticated } from "@/entities/session";
 
 const MessagesPage = () => {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <MessagesPageContent />
+    </Suspense>
+  );
+};
+
+const MessagesPageContent = () => {
   const isAuthenticated = useIsAuthenticated();
   const navigate = useNavigate();
 
@@ -19,7 +37,7 @@ const MessagesPage = () => {
           <div className="pt-2">
             <Button
               variant="brand"
-              onClick={() => navigate({ to: "/login", search: { redirect: "/messages" } })}
+              onClick={() => navigate({ to: ROUTES.LOGIN, search: { redirect: ROUTES.MESSAGES } })}
             >
               Go to login
             </Button>

@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Feed } from "@/widgets/feed";
+import { lazy, Suspense } from "react";
 import { prefetchQueries } from "@/shared/api/gql/query-hooks";
+import { Spinner } from "@/shared/ui";
+
+const Feed = lazy(() => import("@/widgets/feed").then((module) => ({ default: module.Feed })));
 
 export const Route = createFileRoute("/_main/")({
   component: HomePage,
@@ -21,7 +24,9 @@ export const Route = createFileRoute("/_main/")({
 function HomePage() {
   return (
     <div className="space-y-4">
-      <Feed />
+      <Suspense fallback={<Spinner />}>
+        <Feed />
+      </Suspense>
     </div>
   );
 }

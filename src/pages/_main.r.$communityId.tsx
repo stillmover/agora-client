@@ -1,10 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Suspense } from "react";
 import { useCommunityByName } from "@/entities/community";
 import { Feed } from "@/widgets/feed";
 import { useIsAuthenticated } from "@/entities/session";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { Button } from "@/shared/ui/button";
+import { Button, Spinner } from "@/shared/ui";
 import { Users, Loader2 } from "lucide-react";
 import { prefetchQueries } from "@/shared/api/gql/query-hooks";
 
@@ -18,7 +19,6 @@ export const Route = createFileRoute("/_main/r/$communityId")({
 
     return { communityName };
   },
-  pendingComponent: CommunityLoadingSkeleton,
   staleTime: 5 * 60 * 1000,
 });
 
@@ -42,6 +42,14 @@ function CommunityLoadingSkeleton() {
 }
 
 function CommunityPage() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <CommunityPageContent />
+    </Suspense>
+  );
+}
+
+function CommunityPageContent() {
   const { communityId: communityName } = Route.useParams();
   const navigate = useNavigate();
   const isAuthenticated = useIsAuthenticated();
