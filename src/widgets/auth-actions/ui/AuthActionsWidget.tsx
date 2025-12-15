@@ -1,14 +1,11 @@
-import { Link } from "@tanstack/react-router";
 import { Button } from "@/shared/ui/button";
-import { ROUTES } from "@/shared/config";
+import { authModalActions } from "@/shared/stores";
 
 export const AuthActionsWidget = () => (
   <div className="flex items-center gap-2">
-    <Button variant="ghost" asChild>
-      <Link to={ROUTES.LOGIN}>Log In</Link>
+    <Button variant="ghost" onClick={() => authModalActions.open("login")}>
+      Log In
     </Button>
-    <Button asChild>
-      <Link to={ROUTES.REGISTER}>Sign Up</Link>
-    </Button>
+    <Button onClick={() => authModalActions.open("register")}>Sign Up</Button>
   </div>
 );

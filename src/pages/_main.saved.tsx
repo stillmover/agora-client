@@ -7,6 +7,7 @@ import { useIsAuthenticated } from "@/entities/session";
 import { PostCard } from "@/widgets/post-card";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button, Spinner } from "@/shared/ui";
+import { authModalActions } from "@/shared/stores";
 import { Bookmark, LogIn, AlertCircle, RefreshCw } from "lucide-react";
 
 export const Route = createFileRoute("/_main/saved")({
@@ -14,7 +15,7 @@ export const Route = createFileRoute("/_main/saved")({
 });
 
 const redirectToLogin = () => {
-  window.location.href = `${ROUTES.LOGIN}?redirect=${ROUTES.SAVED}`;
+  authModalActions.open("login");
 };
 
 function SavedPostsPage() {

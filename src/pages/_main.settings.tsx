@@ -108,7 +108,7 @@ function SettingsPageContent() {
 
   const handleLogout = async () => {
     await logout();
-    window.location.assign(ROUTES.LOGIN);
+    navigate({ to: ROUTES.HOME });
   };
 
   return (

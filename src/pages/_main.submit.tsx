@@ -4,6 +4,7 @@ import { ROUTES } from "@/shared/config";
 import { CreatePostModal } from "@/widgets/create-post-modal";
 import { useIsAuthenticated } from "@/entities/session";
 import { Card, CardContent, Button, Spinner } from "@/shared/ui";
+import { authModalActions } from "@/shared/stores";
 import { LogIn } from "lucide-react";
 
 export const Route = createFileRoute("/_main/submit")({
@@ -38,12 +39,8 @@ function CreatePostModalRouteContent() {
   };
 
   const handleLogin = () => {
-    navigate({
-      to: ROUTES.LOGIN,
-      search: {
-        redirect: ROUTES.CREATE_POST,
-      },
-    });
+    authModalActions.open("login");
+    navigate({ to: ROUTES.HOME });
   };
 
   if (!isAuthenticated) {

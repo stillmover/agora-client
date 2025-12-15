@@ -12,6 +12,7 @@ import {
 } from "@/shared/ui";
 import { MessageSquare } from "lucide-react";
 import { useIsAuthenticated } from "@/entities/session";
+import { authModalActions } from "@/shared/stores";
 
 const MessagesPage = () => {
   return (
@@ -35,10 +36,7 @@ const MessagesPageContent = () => {
           <CardTitle className="text-lg">Sign in to view messages</CardTitle>
           <CardDescription>Messages are available for signed-in users.</CardDescription>
           <div className="pt-2">
-            <Button
-              variant="brand"
-              onClick={() => navigate({ to: ROUTES.LOGIN, search: { redirect: ROUTES.MESSAGES } })}
-            >
+            <Button variant="brand" onClick={() => authModalActions.open("login")}>
               Go to login
             </Button>
           </div>

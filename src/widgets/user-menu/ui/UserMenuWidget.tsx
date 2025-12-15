@@ -25,10 +25,10 @@ export const UserMenuWidget = () => {
   const handleLogout = async () => {
     try {
       await logoutMutation.mutateAsync();
-      window.location.assign(ROUTES.LOGIN);
+      navigate({ to: ROUTES.HOME });
     } catch (error) {
       logger.error("Error during logout:", error);
-      window.location.assign(ROUTES.LOGIN);
+      navigate({ to: ROUTES.HOME });
     }
   };
 
