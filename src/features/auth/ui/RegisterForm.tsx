@@ -113,7 +113,7 @@ export const RegisterForm = ({ setView, redirect, onSuccess }: RegisterFormProps
                 type="submit"
                 variant={active ? "reddit" : "redditDisabled"}
                 disabled={!active}
-                className={`w-full p-6 font-semibold transition-colors duration-200
+                className={`w-full p-6 rounded-full font-semibold transition-colors duration-200
                   ${
                     active
                       ? "bg-[#d93a00] hover:bg-[#bb3200] text-white"

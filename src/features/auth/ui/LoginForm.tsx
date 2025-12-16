@@ -130,7 +130,7 @@ const LoginSubmitButton = ({
           type="submit"
           variant={buttonVariant}
           disabled={!active}
-          className={`w-full p-6 font-semibold transition-colors duration-200 ${buttonClassName}`}
+          className={`w-full p-6 font-semibold transition-colors duration-200 rounded-full ${buttonClassName}`}
         >
           {buttonText}
         </Button>
