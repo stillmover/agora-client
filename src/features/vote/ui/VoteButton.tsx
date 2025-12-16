@@ -3,8 +3,15 @@ import { ChevronUp, ChevronDown } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { calculateVoteChange } from "../lib/vote-calculator";
-import { VOTE_BUTTON_SIZES, VOTE_BUTTON_ORIENTATIONS } from "@/shared/constants";
-import type { VoteButtonSize, VoteButtonOrientation, VoteDirection } from "@/shared/constants";
+import {
+  VOTE_BUTTON_SIZES,
+  VOTE_BUTTON_ORIENTATIONS,
+} from "@/shared/constants";
+import type {
+  VoteButtonSize,
+  VoteButtonOrientation,
+  VoteDirection,
+} from "@/shared/constants";
 import { useIsAuthenticated } from "@/entities/session";
 import { authModalActions } from "@/shared/stores";
 
@@ -30,7 +37,9 @@ export const VoteButton = ({
   orientation = VOTE_BUTTON_ORIENTATIONS.VERTICAL,
 }: VoteButtonProps) => {
   const [localVotes, setLocalVotes] = useState(votes);
-  const [localUserVote, setLocalUserVote] = useState<VoteDirection | null>(userVote ?? null);
+  const [localUserVote, setLocalUserVote] = useState<VoteDirection | null>(
+    userVote ?? null
+  );
   const isAuthenticated = useIsAuthenticated();
 
   useEffect(() => {
@@ -65,7 +74,8 @@ export const VoteButton = ({
   const voteButtonBaseClasses = "h-8 w-8";
   const upVoteButtonClasses = cn(
     voteButtonBaseClasses,
-    isUpVoted && "text-orange-500 hover:text-orange-500"
+    isUpVoted &&
+      "text-orange-600 hover:text-orange-600 dark:text-orange-500 dark:hover:text-orange-500"
   );
   const downVoteButtonClasses = cn(
     voteButtonBaseClasses,
@@ -92,7 +102,9 @@ export const VoteButton = ({
         >
           <ChevronUp className={SIZE_CLASSES[size]} />
         </Button>
-        <span className={cn(voteCountClasses, "min-w-[2ch] text-center")}>{localVotes}</span>
+        <span className={cn(voteCountClasses, "min-w-[2ch] text-center")}>
+          {localVotes}
+        </span>
         <Button
           variant="ghost"
           size="icon-sm"

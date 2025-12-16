@@ -72,8 +72,12 @@ export const SortBar = ({
               <Icon
                 className={cn(
                   "h-4 w-4",
-                  isActive && option.value === "hot" && "text-orange-400",
-                  isActive && option.value === "new" && "text-green-400"
+                  isActive &&
+                    option.value === "hot" &&
+                    "text-orange-500 dark:text-orange-400",
+                  isActive &&
+                    option.value === "new" &&
+                    "text-green-500 dark:text-green-400"
                 )}
               />
               <span className="hidden sm:inline">{option.label}</span>
@@ -91,7 +95,9 @@ export const SortBar = ({
             aria-label={`Current region: ${currentRegionLabel}`}
           >
             <MapPin className="h-4 w-4" />
-            <span className="hidden md:inline max-w-[100px] truncate">{currentRegionLabel}</span>
+            <span className="hidden md:inline max-w-[100px] truncate">
+              {currentRegionLabel}
+            </span>
             <ChevronDown className="h-3 w-3" />
           </Button>
         </DropdownMenuTrigger>
@@ -109,7 +115,7 @@ export const SortBar = ({
                   : option.label}
               </span>
               {region === option.value && (
-                <span className="ml-auto h-1.5 w-1.5 rounded-full bg-brand" />
+                <span className="ml-auto h-1.5 w-1.5 rounded-full bg-brand/80" />
               )}
             </DropdownMenuItem>
           ))}

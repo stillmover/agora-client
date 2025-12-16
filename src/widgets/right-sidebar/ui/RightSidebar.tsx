@@ -21,7 +21,13 @@ import { logger } from "@/shared/services/logger";
 import { cn } from "@/shared/lib/utils";
 import { ROUTES } from "@/shared/config/routes";
 
-const CommunityItem = ({ community, rank }: { community: Community; rank: number }) => {
+const CommunityItem = ({
+  community,
+  rank,
+}: {
+  community: Community;
+  rank: number;
+}) => {
   const isAuthenticated = useIsAuthenticated();
   const { join, isJoined, isPending, joinLabel } = useCommunityActions(
     community.id,
@@ -103,7 +109,9 @@ export const RightSidebar = () => {
         <CardContent className="pt-0">
           {error ? (
             <div className="py-4 text-center">
-              <p className="text-sm text-muted-foreground">Failed to load communities</p>
+              <p className="text-sm text-muted-foreground">
+                Failed to load communities
+              </p>
               <Button
                 variant="ghost"
                 size="sm"
@@ -118,7 +126,11 @@ export const RightSidebar = () => {
           ) : (
             <div className="space-y-1">
               {communities.slice(0, 5).map((community, index) => (
-                <CommunityItem key={community.id} community={community} rank={index + 1} />
+                <CommunityItem
+                  key={community.id}
+                  community={community}
+                  rank={index + 1}
+                />
               ))}
               <Link
                 to={ROUTES.SEARCH}
@@ -138,7 +150,7 @@ export const RightSidebar = () => {
       </Card>
 
       <Card className="overflow-hidden">
-        <div className="bg-gradient-to-br from-brand/10 via-orange-500/5 to-transparent p-6">
+        <div className="bg-gradient-to-br from-brand/8 via-orange-500/4 to-transparent p-6">
           <div className="flex items-center gap-4">
             <div
               className={cn(
@@ -150,8 +162,12 @@ export const RightSidebar = () => {
               <Sparkles className="h-6 w-6" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-foreground">Create a Community</h3>
-              <p className="text-xs text-muted-foreground">Build your own space</p>
+              <h3 className="font-semibold text-foreground">
+                Create a Community
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                Build your own space
+              </p>
             </div>
           </div>
           <Button variant="brand" size="sm" className="w-full mt-4" asChild>
@@ -172,7 +188,9 @@ export const RightSidebar = () => {
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <h3 className="font-semibold text-foreground">Agora Premium</h3>
-                <Badge className="bg-amber-500 text-white text-[10px]">NEW</Badge>
+                <Badge className="bg-amber-500 text-white text-[10px]">
+                  NEW
+                </Badge>
               </div>
               <p className="text-xs text-muted-foreground mb-3">
                 Ad-free browsing, exclusive features, and more.
@@ -206,7 +224,9 @@ export const RightSidebar = () => {
             User Agreement
           </a>
         </div>
-        <p className="text-muted-foreground/60">© 2025 Agora Inc. All rights reserved.</p>
+        <p className="text-muted-foreground/60">
+          © 2025 Agora Inc. All rights reserved.
+        </p>
       </div>
     </div>
   );

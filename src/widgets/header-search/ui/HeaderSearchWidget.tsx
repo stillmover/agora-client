@@ -19,7 +19,7 @@ export const HeaderSearchWidget = () => {
   };
 
   return (
-    <form onSubmit={handleSearch} className="flex-1 max-w-md mx-4">
+    <form onSubmit={handleSearch} className="w-full">
       <div className="relative">
         <Search className="absolute rounded-lg left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
         <Input

@@ -35,7 +35,13 @@ export const Route = createFileRoute("/_main/notifications")({
   component: NotificationsPage,
 });
 
-type NotificationType = "comment" | "reply" | "upvote" | "mention" | "follow" | "award";
+type NotificationType =
+  | "comment"
+  | "reply"
+  | "upvote"
+  | "mention"
+  | "follow"
+  | "award";
 
 interface Notification {
   id: string;
@@ -135,16 +141,16 @@ const getNotificationColor = (type: NotificationType) => {
       return "text-blue-500 bg-blue-500/10";
     }
     case "upvote": {
-      return "text-brand bg-brand/10";
+      return "text-brand/90 bg-brand/8";
     }
     case "mention": {
-      return "text-purple-500 bg-purple-500/10";
+      return "text-purple-600 bg-purple-500/8 dark:text-purple-500 dark:bg-purple-500/10";
     }
     case "follow": {
-      return "text-green-500 bg-green-500/10";
+      return "text-green-600 bg-green-500/8 dark:text-green-500 dark:bg-green-500/10";
     }
     case "award": {
-      return "text-amber-500 bg-amber-500/10";
+      return "text-amber-600 bg-amber-500/8 dark:text-amber-500 dark:bg-amber-500/10";
     }
     default: {
       return "text-muted-foreground bg-muted";
@@ -179,12 +185,21 @@ function NotificationItem({
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div>
-            <p className={cn("text-sm", !notification.read ? "font-semibold" : "font-medium")}>
+            <p
+              className={cn(
+                "text-sm",
+                !notification.read ? "font-semibold" : "font-medium"
+              )}
+            >
               {notification.title}
             </p>
-            <p className="text-sm text-muted-foreground mt-0.5">{notification.message}</p>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              {notification.message}
+            </p>
           </div>
-          {!notification.read && <span className="flex-shrink-0 h-2 w-2 rounded-full bg-brand" />}
+          {!notification.read && (
+            <span className="flex-shrink-0 h-2 w-2 rounded-full bg-brand/80" />
+          )}
         </div>
         <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
           <Avatar className="h-4 w-4">
@@ -217,7 +232,8 @@ function NotificationsPage() {
 function NotificationsPageContent() {
   const navigate = useNavigate();
   const isAuthenticated = useIsAuthenticated();
-  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
+  const [notifications, setNotifications] =
+    useState<Notification[]>(mockNotifications);
   const [activeTab, setActiveTab] = useState<"all" | "unread">("all");
 
   if (!isAuthenticated) {
@@ -227,7 +243,9 @@ function NotificationsPageContent() {
           <div className="mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
             <Bell className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h2 className="text-xl font-semibold mb-2">Sign in to view notifications</h2>
+          <h2 className="text-xl font-semibold mb-2">
+            Sign in to view notifications
+          </h2>
           <p className="text-muted-foreground mb-6">
             You need to be logged in to see your notifications.
           </p>
@@ -241,10 +259,14 @@ function NotificationsPageContent() {
 
   const unreadCount = notifications.filter((n) => !n.read).length;
   const filteredNotifications =
-    activeTab === "unread" ? notifications.filter((n) => !n.read) : notifications;
+    activeTab === "unread"
+      ? notifications.filter((n) => !n.read)
+      : notifications;
 
   const handleMarkRead = (id: string) => {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+    );
   };
 
   const handleMarkAllRead = () => {
@@ -273,7 +295,10 @@ function NotificationsPageContent() {
         </Button>
       </div>
 
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "all" | "unread")}>
+      <Tabs
+        value={activeTab}
+        onValueChange={(v) => setActiveTab(v as "all" | "unread")}
+      >
         <div className="flex items-center justify-between gap-4">
           <TabsList>
             <TabsTrigger value="all" className="gap-2">
@@ -286,7 +311,11 @@ function NotificationsPageContent() {
             </TabsTrigger>
             <TabsTrigger value="unread" className="gap-2">
               Unread
-              {unreadCount > 0 && <Badge className="ml-1 bg-brand text-white">{unreadCount}</Badge>}
+              {unreadCount > 0 && (
+                <Badge className="ml-1 bg-brand text-white">
+                  {unreadCount}
+                </Badge>
+              )}
             </TabsTrigger>
           </TabsList>
 
@@ -312,7 +341,10 @@ function NotificationsPageContent() {
         </div>
 
         <TabsContent value="all" className="mt-4">
-          <NotificationsList notifications={filteredNotifications} onMarkRead={handleMarkRead} />
+          <NotificationsList
+            notifications={filteredNotifications}
+            onMarkRead={handleMarkRead}
+          />
         </TabsContent>
 
         <TabsContent value="unread" className="mt-4">

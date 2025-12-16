@@ -25,12 +25,11 @@ export const Header = () => {
         "supports-[backdrop-filter]:bg-background/70"
       )}
     >
-      <div className="flex items-center h-14 px-4 gap-4">
-        {/* Mobile Menu Button */}
+      <div className="relative flex items-center justify-center h-14 px-4 lg:grid lg:grid-cols-[280px_1fr_320px] xl:grid-cols-[280px_1fr_320px]">
         <Button
           variant="ghost"
           size="icon-sm"
-          className="lg:hidden"
+          className="absolute left-4 lg:hidden"
           aria-label="Open menu"
           aria-expanded={isMobileMenuOpen}
           aria-controls="mobile-nav"
@@ -40,37 +39,45 @@ export const Header = () => {
         </Button>
 
         {/* Logo */}
-        <Link
-          to={ROUTES.HOME}
-          className="flex-shrink-0 flex items-center gap-2 hover:opacity-90 transition-opacity"
-        >
-          <img
-            src="/logo-white.png"
-            alt="Agora"
-            width={100}
-            height={32}
-            className="block dark:hidden h-8 w-auto"
-          />
-          <img
-            src="/logo-black.png"
-            alt="Agora"
-            width={100}
-            height={32}
-            className="hidden dark:block h-8 w-auto"
-          />
-        </Link>
-
-        {/* Desktop Search - Centered */}
-        <div className="hidden md:flex flex-1 justify-center max-w-xl mx-auto">
-          <HeaderSearchWidget />
+        <div className="flex items-center lg:col-start-1 lg:justify-start lg:gap-4">
+          <Link
+            to={ROUTES.HOME}
+            className="flex-shrink-0 flex items-center gap-2 hover:opacity-90 transition-opacity"
+          >
+            <img
+              src="/logo-white.png"
+              alt="Agora"
+              width={100}
+              height={32}
+              className="block dark:hidden h-8 w-auto"
+            />
+            <img
+              src="/logo-black.png"
+              alt="Agora"
+              width={100}
+              height={32}
+              className="hidden dark:block h-8 w-auto"
+            />
+          </Link>
         </div>
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-1 ml-auto">
+        <div className="hidden md:flex justify-center">
+          <div className="max-w-xl w-full">
+            <HeaderSearchWidget />
+          </div>
+        </div>
+
+        {/* Right Section - Actions */}
+        <div className="absolute right-4 flex items-center gap-1 lg:relative lg:col-start-3 lg:justify-end">
           {isAuthenticated && (
             <>
               {/* Create Post Button - Desktop */}
-              <Button variant="ghost" size="sm" className="hidden sm:flex gap-2" asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hidden sm:flex gap-2"
+                asChild
+              >
                 <Link to={ROUTES.CREATE_POST}>
                   <Plus className="h-4 w-4" />
                   <span className="hidden lg:inline">Create</span>
@@ -105,7 +112,10 @@ export const Header = () => {
       </div>
 
       {/* Mobile menu drawer */}
-      <DialogPrimitive.Root open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+      <DialogPrimitive.Root
+        open={isMobileMenuOpen}
+        onOpenChange={setIsMobileMenuOpen}
+      >
         <DialogPrimitive.Portal>
           <DialogPrimitive.Overlay className="fixed inset-0 bg-black/60 z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0" />
           <DialogPrimitive.Content

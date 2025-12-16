@@ -39,7 +39,14 @@ interface NavItemProps {
   search?: Record<string, unknown>;
 }
 
-const NavItem = ({ to, icon: Icon, label, badge, params, search }: NavItemProps) => {
+const NavItem = ({
+  to,
+  icon: Icon,
+  label,
+  badge,
+  params,
+  search,
+}: NavItemProps) => {
   const location = useLocation();
   const isActive =
     location.pathname === to ||
@@ -55,7 +62,7 @@ const NavItem = ({ to, icon: Icon, label, badge, params, search }: NavItemProps)
         "transition-all duration-150",
         isActive
           ? "bg-accent text-foreground"
-          : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+          : "text-muted-foreground hover:bg-accent/30 hover:text-foreground"
       )}
     >
       <Icon className={cn("h-5 w-5", isActive && "text-brand")} />
@@ -88,18 +95,32 @@ export const Sidebar = () => {
           icon={TrendingUp}
           label="Popular"
         />
-        <NavItem to="/r/$communityId" params={{ communityId: "all" }} icon={Flame} label="All" />
+        <NavItem
+          to="/r/$communityId"
+          params={{ communityId: "all" }}
+          icon={Flame}
+          label="All"
+        />
         {isAuthenticated && (
           <>
             <NavItem to={ROUTES.SAVED} icon={Bookmark} label="Saved" />
-            <NavItem to={ROUTES.NOTIFICATIONS} icon={Bell} label="Notifications" badge={3} />
+            <NavItem
+              to={ROUTES.NOTIFICATIONS}
+              icon={Bell}
+              label="Notifications"
+              badge={3}
+            />
           </>
         )}
       </nav>
 
       <hr className="border-border" />
 
-      <Accordion type="multiple" defaultValue={["communities"]} className="w-full">
+      <Accordion
+        type="multiple"
+        defaultValue={["communities"]}
+        className="w-full"
+      >
         <AccordionItem value="communities" className="border-none">
           <AccordionTrigger className="text-xs font-semibold uppercase tracking-wider text-muted-foreground py-2 hover:no-underline">
             Communities
@@ -124,23 +145,27 @@ export const Sidebar = () => {
                   className={cn(
                     "group flex items-center gap-3 w-full rounded-lg p-3",
                     "text-sm transition-all cursor-pointer",
-                    "bg-gradient-to-r from-brand/5 to-orange-500/5",
-                    "hover:from-brand/10 hover:to-orange-500/10",
-                    "border border-brand/20 hover:border-brand/40"
+                    "bg-gradient-to-r from-brand/3 to-orange-500/3",
+                    "hover:from-brand/8 hover:to-orange-500/8",
+                    "border border-brand/15 hover:border-brand/30"
                   )}
                 >
                   <div
                     className={cn(
                       "flex h-9 w-9 items-center justify-center rounded-full",
-                      "bg-brand text-white shadow-sm",
-                      "group-hover:scale-105 transition-transform"
+                      "bg-brand/90 text-white shadow-sm",
+                      "group-hover:scale-105 group-hover:bg-brand transition-transform"
                     )}
                   >
                     <Plus className="h-5 w-5" />
                   </div>
                   <div className="flex-1 text-left">
-                    <p className="font-medium text-foreground">Create a community</p>
-                    <p className="text-xs text-muted-foreground">Start your own space</p>
+                    <p className="font-medium text-foreground">
+                      Create a community
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Start your own space
+                    </p>
                   </div>
                 </button>
               }
@@ -172,13 +197,18 @@ export const Sidebar = () => {
                         )}
                       >
                         <Avatar className="h-8 w-8">
-                          <AvatarImage src={community.iconUrl} alt={community.name} />
+                          <AvatarImage
+                            src={community.iconUrl}
+                            alt={community.name}
+                          />
                           <AvatarFallback className="text-xs font-semibold bg-gradient-to-br from-brand to-orange-400 text-white">
                             {community.name.slice(0, 2).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1 text-left min-w-0">
-                          <p className="font-medium text-foreground truncate">r/{community.name}</p>
+                          <p className="font-medium text-foreground truncate">
+                            r/{community.name}
+                          </p>
                         </div>
                       </button>
                     }
@@ -216,7 +246,10 @@ export const Sidebar = () => {
 
       <div className="pt-4 text-xs text-muted-foreground space-y-2">
         <div className="flex flex-wrap gap-x-2 gap-y-1">
-          <a href="https://www.redditinc.com/" className="hover:text-foreground transition-colors">
+          <a
+            href="https://www.redditinc.com/"
+            className="hover:text-foreground transition-colors"
+          >
             About
           </a>
           <a
