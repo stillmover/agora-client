@@ -16,7 +16,7 @@ export const ResetForm = () => {
 
   const form = useForm({
     defaultValues: { usernameOrEmail: "" },
-    onSubmit: async ({ value }) => {
+    onSubmit: ({ value }) => {
       logger.debug("Password reset request", {
         usernameOrEmail: value.usernameOrEmail,
       });

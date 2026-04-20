@@ -1,3 +1,5 @@
+import type { Community } from "@/entities/community";
+
 export interface Flair {
   id: string;
   label: string;
@@ -25,7 +27,5 @@ export interface Post {
   userVote?: -1 | 0 | 1;
   isSaved?: boolean;
 }
-
-import type { Community } from "@/entities/community";
 
 export type { Community };

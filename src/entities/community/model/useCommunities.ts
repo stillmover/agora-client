@@ -14,9 +14,7 @@ export const useCommunities = (limit = 20, offset = 0) => {
     offset,
   });
 
-  const communities = useMemo(() => {
-    return (data ?? []).map(mapCommunity);
-  }, [data]);
+  const communities = useMemo(() => (data ?? []).map(mapCommunity), [data]);
 
   return {
     communities,
@@ -29,9 +27,7 @@ export const useCommunities = (limit = 20, offset = 0) => {
 export const usePopularCommunities = (limit = 10) => {
   const { data, isLoading, error, refetch } = usePopularCommunitiesGql(limit);
 
-  const communities = useMemo(() => {
-    return (data ?? []).map(mapCommunity);
-  }, [data]);
+  const communities = useMemo(() => (data ?? []).map(mapCommunity), [data]);
 
   return {
     communities,

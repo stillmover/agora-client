@@ -33,14 +33,15 @@ export const useHeroCarousel = () => {
       return stories;
     }
 
-    return stories
-      .slice(currentIndex, currentIndex + VISIBLE_STORIES_COUNT)
-      .concat(stories.slice(0, Math.max(0, currentIndex + VISIBLE_STORIES_COUNT - stories.length)));
+    return [
+      ...stories.slice(currentIndex, currentIndex + VISIBLE_STORIES_COUNT),
+      ...stories.slice(0, Math.max(0, currentIndex + VISIBLE_STORIES_COUNT - stories.length)),
+    ];
   }, [stories, currentIndex, canNavigate]);
 
   return {
-    currentIndex,
     canNavigate,
+    currentIndex,
     error,
     isLoading,
     nextSlide,

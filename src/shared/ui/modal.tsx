@@ -26,7 +26,7 @@ interface ModalContextValue {
   onOpenChange: (open: boolean) => void;
 }
 
-const ModalContext = React.createContext<ModalContextValue | null>(null);
+const ModalContext = React.createContext<ModalContextValue | null>(undefined);
 
 const useModalContext = () => {
   const context = React.useContext(ModalContext);

@@ -138,7 +138,7 @@ const ErrorFallback = ({
 export function ErrorBoundary({
   children,
   title = "We hit a snag",
-    description = "Something broke while loading this page. You can try again or go back to a safe place.",
+  description = "Something broke while loading this page. You can try again or go back to a safe place.",
   fallbackRoute = ROUTES.HOME,
   resetLabel = "Try again",
   fallbackLabel = "Back home",

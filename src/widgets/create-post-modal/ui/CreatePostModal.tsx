@@ -95,7 +95,7 @@ export const CreatePostModal = ({
 
   return (
     <Modal open={open} onOpenChange={handleOpenChange}>
-      {trigger ? <Modal.Trigger asChild>{trigger}</Modal.Trigger> : null}
+      {trigger ? <Modal.Trigger asChild>{trigger}</Modal.Trigger> : undefined}
 
       <Modal.Content size="xl">
         <Modal.Header>
@@ -139,12 +139,12 @@ export const CreatePostModal = ({
                           "w-full",
                           errorMessage && "border-destructive focus:ring-destructive/50"
                         )}
-                        aria-invalid={!!errorMessage}
+                        aria-invalid={Boolean(errorMessage)}
                       >
                         <SelectValue placeholder="Select a community" />
                       </SelectTrigger>
                       <SelectContent>
-                        {communities.length ? (
+                        {communities.length > 0 ? (
                           communities.map((community: Community) => (
                             <SelectItem key={community.id} value={community.id}>
                               r/{community.name}
@@ -189,7 +189,7 @@ export const CreatePostModal = ({
                         "text-base",
                         errorMessage && "border-destructive focus-visible:ring-destructive/50"
                       )}
-                      aria-invalid={!!errorMessage}
+                      aria-invalid={Boolean(errorMessage)}
                     />
                   </FormField>
                 );
@@ -222,7 +222,7 @@ export const CreatePostModal = ({
                         "resize-none min-h-[200px]",
                         errorMessage && "border-destructive focus-visible:ring-destructive/50"
                       )}
-                      aria-invalid={!!errorMessage}
+                      aria-invalid={Boolean(errorMessage)}
                     />
                   </FormField>
                 );

@@ -37,8 +37,8 @@ export const useRegisterForm = ({ redirect, onSuccess }: UseRegisterFormOptions 
       }
     },
     validators: {
-      onChange: registerSchema,
       onBlur: registerSchema,
+      onChange: registerSchema,
       onSubmit: registerSchema,
     },
   });

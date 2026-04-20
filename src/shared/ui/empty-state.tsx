@@ -88,7 +88,7 @@ export const EmptyState = ({
       {(action || secondaryAction) && (
         <div className="flex items-center gap-3 flex-wrap justify-center">
           {action && (
-            <Button variant="brand" onClick={action.onClick} asChild={!!action.href}>
+            <Button variant="brand" onClick={action.onClick} asChild={Boolean(action.href)}>
               {action.href ? <a href={action.href}>{action.label}</a> : action.label}
             </Button>
           )}
@@ -96,7 +96,7 @@ export const EmptyState = ({
             <Button
               variant="outline"
               onClick={secondaryAction.onClick}
-              asChild={!!secondaryAction.href}
+              asChild={Boolean(secondaryAction.href)}
             >
               {secondaryAction.href ? (
                 <a href={secondaryAction.href}>{secondaryAction.label}</a>

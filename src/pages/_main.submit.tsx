@@ -31,7 +31,7 @@ function CreatePostModalRouteContent() {
   }, [router]);
 
   const handleClose = () => {
-    if (window.history.length > 2) {
+    if (globalThis.history.length > 2) {
       navigate({ to: ".." });
     } else {
       navigate({ to: ROUTES.HOME });

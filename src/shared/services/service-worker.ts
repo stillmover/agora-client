@@ -40,13 +40,12 @@ export class ServiceWorkerManager {
       }
 
       navigator.serviceWorker.addEventListener("controllerchange", () => {
-        window.location.reload();
+        globalThis.location.reload();
       });
 
       return this.registration;
     } catch (error) {
       console.error("Service Worker registration failed:", error);
-      return;
     }
   }
 
@@ -77,7 +76,7 @@ export class ServiceWorkerManager {
     }
   }
 
-  async skipWaiting(): Promise<void> {
+  skipWaiting(): Promise<void> {
     if (!this.registration?.waiting) {
       return;
     }
@@ -96,7 +95,7 @@ export class ServiceWorkerManager {
     });
   }
 
-  async clearCache(): Promise<boolean> {
+  clearCache(): Promise<boolean> {
     if (!this.registration?.active) {
       return false;
     }
@@ -113,7 +112,7 @@ export class ServiceWorkerManager {
     });
   }
 
-  async getCacheSizes(): Promise<{ name: string; size: number }[]> {
+  getCacheSizes(): Promise<{ name: string; size: number }[]> {
     if (!this.registration?.active) {
       return [];
     }

@@ -42,21 +42,23 @@ export const useCommunityActions = (communityId: string, initialIsJoined = false
     }
   }, [communityId, initialIsJoined, joinMutation.isPending, leaveMutation.isPending]);
 
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       joinInFlightRef.current = false;
       leaveInFlightRef.current = false;
-    };
-  }, []);
+    },
+    []
+  );
 
   const isJoined = joined || optimisticJoined;
 
   const isMounted = useRef(true);
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       isMounted.current = false;
-    };
-  }, []);
+    },
+    []
+  );
 
   const join = useCallback(async () => {
     if (

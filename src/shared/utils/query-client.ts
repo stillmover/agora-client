@@ -14,7 +14,7 @@ const defaultQueryOptions = {
   refetchOnWindowFocus: false,
   retry: (failureCount: number, error: unknown) => {
     if (error instanceof Error && "status" in error) {
-      const status = (error as ErrorWithStatus).status;
+      const { status } = error as ErrorWithStatus;
       if (status !== undefined && status >= 400 && status < 500) {
         return false;
       }
@@ -61,7 +61,7 @@ queryClient.getMutationCache().subscribe((event) => {
 });
 
 if (isDevelopment) {
-  (window as Window & { queryClient?: QueryClient }).queryClient = queryClient;
+  (globalThis as typeof globalThis & { queryClient?: QueryClient }).queryClient = queryClient;
 
   queryClient.getQueryCache().subscribe((event) => {
     if (event.type === "added") {

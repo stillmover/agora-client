@@ -35,8 +35,8 @@ export const useLoginForm = ({ redirect, onSuccess }: UseLoginFormOptions = {}) 
       }
     },
     validators: {
-      onChange: loginSchema,
       onBlur: loginSchema,
+      onChange: loginSchema,
       onSubmit: loginSchema,
     },
   });

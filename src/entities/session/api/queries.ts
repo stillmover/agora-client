@@ -7,15 +7,15 @@ import type { AuthUserData } from "./types";
 export const sessionQueries = {
   currentUser: () =>
     queryOptions({
+      gcTime: Infinity,
       queryFn: sessionApi.getCurrentUser,
       queryKey: sessionKeys.me(),
       refetchOnMount: false,
-      refetchOnWindowFocus: false,
       refetchOnReconnect: false,
+      refetchOnWindowFocus: false,
       retry: false,
-      staleTime: Infinity,
-      gcTime: Infinity,
       select: (response): AuthUserData | null => extractUserFromResponse(response),
+      staleTime: Infinity,
     }),
 } as const;
 

@@ -19,34 +19,17 @@ export const AppShell = ({
   fullWidth = false,
 }: AppShellProps) => (
   <div className="min-h-screen bg-background">
-    <div
-      className={cn(
-        "w-full",
-        fullWidth ? "max-w-full" : "max-w-[1600px]",
-        "mx-auto"
-      )}
-    >
+    <div className={cn("w-full", fullWidth ? "max-w-full" : "max-w-[1600px]", "mx-auto")}>
       <Header />
     </div>
 
     {showHeroCarousel && (
-      <div
-        className={cn(
-          "w-full",
-          fullWidth ? "max-w-full" : "max-w-[1600px]",
-          "mx-auto"
-        )}
-      >
+      <div className={cn("w-full", fullWidth ? "max-w-full" : "max-w-[1600px]", "mx-auto")}>
         <HeroCarousel />
       </div>
     )}
 
-    <div
-      className={cn(
-        "mx-auto w-full",
-        fullWidth ? "max-w-full" : "max-w-[1600px]"
-      )}
-    >
+    <div className={cn("mx-auto w-full", fullWidth ? "max-w-full" : "max-w-[1600px]")}>
       <div
         className={cn(
           "grid gap-6 px-4 py-6",
@@ -63,12 +46,7 @@ export const AppShell = ({
           </aside>
         )}
 
-        <main
-          className={cn(
-            "min-w-0",
-            !fullWidth && "lg:max-w-2xl xl:max-w-3xl mx-auto w-full"
-          )}
-        >
+        <main className={cn("min-w-0", !fullWidth && "lg:max-w-2xl xl:max-w-3xl mx-auto w-full")}>
           {children}
         </main>
 

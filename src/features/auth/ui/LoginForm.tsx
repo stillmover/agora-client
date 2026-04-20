@@ -57,7 +57,7 @@ const LoginFormFields = ({ form }: { form: ReturnType<typeof useLoginForm>["form
 
 const LoginFormFooter = ({ setView }: { setView?: (view: AuthView) => void }) => {
   if (!setView) {
-    return null;
+    return;
   }
 
   return (

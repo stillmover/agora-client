@@ -12,15 +12,10 @@ import { AppProviders } from "@/app/providers/AppProviders";
 import { useSession } from "@/entities/session";
 
 if ("serviceWorker" in navigator && import.meta.env.PROD) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").then(
-      (registration) => {
-        console.log("SW registered: ", registration);
-      },
-      (registrationError) => {
-        console.log("SW registration failed: ", registrationError);
-      }
-    );
+  globalThis.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch((error) => {
+      console.error("SW registration failed:", error);
+    });
   });
 }
 
@@ -40,11 +35,11 @@ declare module "@tanstack/react-router" {
 
 const rootElement = document.querySelector("#root")!;
 
-type RootFallbackProps = {
+interface RootFallbackProps {
   error: unknown;
   resetError: VoidFunction;
   componentStack: string;
-};
+}
 
 function AppErrorFallback({ error, resetError }: RootFallbackProps) {
   const { logger } = Sentry;
@@ -55,8 +50,8 @@ function AppErrorFallback({ error, resetError }: RootFallbackProps) {
       : "Root error boundary captured an error";
 
   logger.error?.(message, {
-    name: normalizedError.name,
     message: normalizedError.message,
+    name: normalizedError.name,
     stack: normalizedError.stack,
   });
 
@@ -87,7 +82,7 @@ function AppErrorFallback({ error, resetError }: RootFallbackProps) {
           aria-label="Return home"
           onClick={() =>
             Sentry.startSpan({ name: "ui.root.navigate-home", op: "navigation" }, () => {
-              window.location.assign(ROUTES.HOME);
+              globalThis.location.assign(ROUTES.HOME);
             })
           }
         >

@@ -2,9 +2,9 @@ import * as Sentry from "@sentry/react";
 import type { Integration } from "@sentry/types";
 import { env } from "@/shared/utils/env";
 
-type ConsoleIntegrationFactory = (options: { levels: Array<"log" | "warn" | "error"> }) => unknown;
+type ConsoleIntegrationFactory = (options: { levels: ("log" | "warn" | "error")[] }) => unknown;
 type BrowserTracingFactory = (options?: {
-  tracePropagationTargets?: Array<string | RegExp>;
+  tracePropagationTargets?: (string | RegExp)[];
 }) => unknown;
 
 type SentryWithOptionalIntegrations = typeof Sentry & {
@@ -35,18 +35,18 @@ if (!dsn) {
 }
 
 Sentry.init({
-  dsn,
-  enabled: Boolean(dsn),
-  environment: env.APP_ENV,
-  tracesSampleRate: import.meta.env.DEV ? 1.0 : 0.2,
-  profilesSampleRate: import.meta.env.DEV ? 1.0 : 0.1,
-  enableLogs: true,
-  integrations: (defaults) => [...defaults, ...customIntegrations],
   beforeSend(event) {
     // Filter out 401 Unauthorized errors from Sentry
     if (event.exception?.values?.some((value) => value.value?.includes("status: 401"))) {
-      return null;
+      return;
     }
     return event;
   },
+  dsn,
+  enableLogs: true,
+  enabled: Boolean(dsn),
+  environment: env.APP_ENV,
+  integrations: (defaults) => [...defaults, ...customIntegrations],
+  profilesSampleRate: import.meta.env.DEV ? 1 : 0.1,
+  tracesSampleRate: import.meta.env.DEV ? 1 : 0.2,
 });

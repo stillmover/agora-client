@@ -1,7 +1,7 @@
 import { logger } from "@/shared/services/logger";
 
 export const sharePost = async (postId: string): Promise<void> => {
-  const url = `${window.location.origin}/post/${postId}`;
+  const url = `${globalThis.location.origin}/post/${postId}`;
 
   if (navigator.share) {
     try {

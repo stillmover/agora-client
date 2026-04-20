@@ -2,9 +2,9 @@ import * as Sentry from "@sentry/react";
 
 import { Button } from "./button";
 
-type ErrorButtonProps = {
+interface ErrorButtonProps {
   label?: string;
-};
+}
 
 export const ErrorButton = ({ label = "Trigger Sentry error" }: ErrorButtonProps) => {
   const handleClick = () =>

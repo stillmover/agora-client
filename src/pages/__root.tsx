@@ -37,7 +37,9 @@ function NotFound() {
       <Card className="max-w-md w-full">
         <CardContent className="p-6 text-center space-y-4">
           <h1 className="text-4xl font-bold">404</h1>
-          <p className="text-muted-foreground">The page you're looking for doesn't exist.</p>
+          <p className="text-muted-foreground">
+            The page you&apos;re looking for doesn&apos;t exist.
+          </p>
           <Link to={ROUTES.HOME}>
             <Button>Go Home</Button>
           </Link>

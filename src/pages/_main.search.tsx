@@ -132,7 +132,7 @@ function SearchPageContent() {
             ) : posts.length === 0 ? (
               <Card>
                 <CardContent className="p-6 text-center">
-                  <p className="text-muted-foreground">No posts found for "{query}"</p>
+                  <p className="text-muted-foreground">{`No posts found for "${query}"`}</p>
                 </CardContent>
               </Card>
             ) : (
@@ -159,7 +159,7 @@ function SearchPageContent() {
             ) : communities.length === 0 ? (
               <Card>
                 <CardContent className="p-6 text-center">
-                  <p className="text-muted-foreground">No communities found for "{query}"</p>
+                  <p className="text-muted-foreground">{`No communities found for "${query}"`}</p>
                 </CardContent>
               </Card>
             ) : (
@@ -218,7 +218,7 @@ function SearchPageContent() {
             ) : users.length === 0 ? (
               <Card>
                 <CardContent className="p-6 text-center">
-                  <p className="text-muted-foreground">No users found for "{query}"</p>
+                  <p className="text-muted-foreground">{`No users found for "${query}"`}</p>
                 </CardContent>
               </Card>
             ) : (

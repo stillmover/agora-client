@@ -72,12 +72,7 @@ export const Header = () => {
           {isAuthenticated && (
             <>
               {/* Create Post Button - Desktop */}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="hidden sm:flex gap-2"
-                asChild
-              >
+              <Button variant="ghost" size="sm" className="hidden sm:flex gap-2" asChild>
                 <Link to={ROUTES.CREATE_POST}>
                   <Plus className="h-4 w-4" />
                   <span className="hidden lg:inline">Create</span>
@@ -112,10 +107,7 @@ export const Header = () => {
       </div>
 
       {/* Mobile menu drawer */}
-      <DialogPrimitive.Root
-        open={isMobileMenuOpen}
-        onOpenChange={setIsMobileMenuOpen}
-      >
+      <DialogPrimitive.Root open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
         <DialogPrimitive.Portal>
           <DialogPrimitive.Overlay className="fixed inset-0 bg-black/60 z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0" />
           <DialogPrimitive.Content

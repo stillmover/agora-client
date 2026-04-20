@@ -16,7 +16,7 @@ export function calculateVoteChange(currentState: VoteState, direction: VoteDire
 
   if (userVote === direction) {
     return {
-      newUserVote: null,
+      newUserVote: undefined,
       newVoteCount:
         currentVotes +
         (direction === "up" ? -VOTE_VALUES.UP_INCREMENT : -VOTE_VALUES.DOWN_INCREMENT),

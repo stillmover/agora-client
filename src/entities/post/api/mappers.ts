@@ -1,5 +1,5 @@
-import type { Post as GraphQLPost } from "@/shared/api/gql";
 import { VoteType } from "@/shared/api/gql";
+import type { Post as GraphQLPost } from "@/shared/api/gql";
 import { mapCommunity } from "@/entities/community/api/mappers";
 import type { Post } from "../model/types";
 

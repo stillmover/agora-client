@@ -18,7 +18,7 @@ export const ResetView = ({ onViewChange }: Omit<AuthViewProps, "onSuccess">) =>
     </DialogPrimitive.Title>
 
     <DialogPrimitive.Description className="text-sm text-center my-xs mb-2">
-      Enter your email address or username and we'll send you a link to reset your password
+      Enter your email address or username and we&apos;ll send you a link to reset your password
     </DialogPrimitive.Description>
 
     <div className="text-center space-y-4 mt-4 mb-4">

@@ -16,6 +16,13 @@ const initialState: AuthModalState = {
 export const authModalStore = new Store<AuthModalState>(initialState);
 
 export const authModalActions = {
+  close: () => {
+    authModalStore.setState((prev) => ({
+      ...prev,
+      isOpen: false,
+    }));
+  },
+
   open: (view: AuthView = "login") => {
     authModalStore.setState((prev) => ({
       ...prev,
@@ -24,11 +31,8 @@ export const authModalActions = {
     }));
   },
 
-  close: () => {
-    authModalStore.setState((prev) => ({
-      ...prev,
-      isOpen: false,
-    }));
+  reset: () => {
+    authModalStore.setState(() => initialState);
   },
 
   setView: (view: AuthView) => {
@@ -43,18 +47,10 @@ export const authModalActions = {
       };
     });
   },
-
-  reset: () => {
-    authModalStore.setState(() => initialState);
-  },
 } as const;
 
 export const useAuthModalState = () => useStore(authModalStore);
 
-export const useAuthModalOpen = () => {
-  return useStore(authModalStore, (state) => state.isOpen);
-};
+export const useAuthModalOpen = () => useStore(authModalStore, (state) => state.isOpen);
 
-export const useAuthModalView = () => {
-  return useStore(authModalStore, (state) => state.view);
-};
+export const useAuthModalView = () => useStore(authModalStore, (state) => state.view);

@@ -25,26 +25,26 @@ const mapToSessionUser = (userData: {
 
 const getErrorStatus = (error: Error): number | null => {
   if ("status" in error && typeof (error as { status?: number }).status === "number") {
-    return (error as { status?: number }).status ?? null;
+    return (error as { status?: number }).status ?? undefined;
   }
-  return null;
+  return;
 };
 
 const useAuthCallback = (): boolean => {
   const hasHandledCallback = useRef(false);
 
   const authSuccess = useMemo(() => {
-    if (typeof window === "undefined") {
+    if (typeof globalThis.window === "undefined") {
       return false;
     }
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(globalThis.location.search);
     return params.get("auth") === "success";
   }, []);
 
   useEffect(() => {
     if (authSuccess && !hasHandledCallback.current) {
       hasHandledCallback.current = true;
-      window.history.replaceState({}, "", window.location.pathname);
+      globalThis.history.replaceState({}, "", globalThis.location.pathname);
     }
   }, [authSuccess]);
 
@@ -91,7 +91,7 @@ export const useSession = () => {
       return;
     }
 
-    const error = sessionQuery.error instanceof Error ? sessionQuery.error : null;
+    const error = sessionQuery.error instanceof Error ? sessionQuery.error : undefined;
     if (!error) {
       return;
     }

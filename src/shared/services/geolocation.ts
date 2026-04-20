@@ -219,26 +219,26 @@ async function reverseGeocode(
     );
 
     if (!response.ok) {
-      return { city: null, countryCode: null, countryName: null };
+      return { city: undefined, countryCode: undefined, countryName: undefined };
     }
     const data = await response.json();
 
     const city: string | null =
-      data.city || data.locality || data.principalSubdivisionLocality || null;
+      data.city || data.locality || data.principalSubdivisionLocality || undefined;
 
     const countryCode: string | null = data.countryCode
       ? String(data.countryCode).toUpperCase()
-      : null;
-    const countryName: string | null = data.countryName || null;
+      : undefined;
+    const countryName: string | null = data.countryName || undefined;
 
     return { city, countryCode, countryName };
   } catch (error) {
     logger.debug("reverseGeocode failed:", error);
-    return { city: null, countryCode: null, countryName: null };
+    return { city: undefined, countryCode: undefined, countryName: undefined };
   }
 }
 
-async function getCurrentPosition(): Promise<GeolocationPosition> {
+function getCurrentPosition(): Promise<GeolocationPosition> {
   return new Promise((resolve, reject) => {
     if (typeof navigator === "undefined" || !navigator.geolocation) {
       reject(new Error("Geolocation is not supported"));
@@ -260,7 +260,7 @@ export async function detectUserPlace(): Promise<UserPlace | null> {
 
     const { countryCode, countryName, city } = await reverseGeocode(latitude, longitude);
     if (!countryCode) {
-      return null;
+      return;
     }
 
     const region = countryCodeToRegion[countryCode];
@@ -276,7 +276,7 @@ export async function detectUserPlace(): Promise<UserPlace | null> {
     };
   } catch (error) {
     logger.debug("detectUserPlace failed (permission denied or unavailable):", error);
-    return null;
+    return;
   }
 }
 

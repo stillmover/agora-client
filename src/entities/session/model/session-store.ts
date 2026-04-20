@@ -25,10 +25,8 @@ const getStoredUser = (): SessionUser | null => {
     }
 
     localStorage.removeItem(STORAGE_KEY);
-    return;
   } catch {
     localStorage.removeItem(STORAGE_KEY);
-    return;
   }
 };
 
@@ -65,7 +63,7 @@ const getInitialState = (): SessionState => {
 export const sessionStore = new Store<SessionState>(getInitialState());
 
 sessionStore.subscribe(() => {
-  const state = sessionStore.state;
+  const { state } = sessionStore;
   persistUser(state.isAuthenticated ? state.user : undefined);
 });
 

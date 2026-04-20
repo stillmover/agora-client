@@ -26,7 +26,7 @@ const initialState: ClientState = {
   ui: {
     sidebarCollapsed: false,
     theme: "system",
-    userRegion: null,
+    userRegion: undefined,
   },
 };
 
@@ -167,26 +167,18 @@ export const clientStateActions = {
 
 export const useClientState = () => useStore(clientStateStore);
 
-export const useIsCommunityJoined = (communityId: string) => {
-  return useStore(clientStateStore, (state) => state.optimistic.joinedCommunities.has(communityId));
-};
+export const useIsCommunityJoined = (communityId: string) =>
+  useStore(clientStateStore, (state) => state.optimistic.joinedCommunities.has(communityId));
 
-export const useIsPostSaved = (postId: string) => {
-  return useStore(clientStateStore, (state) => state.optimistic.savedPosts.has(postId));
-};
+export const useIsPostSaved = (postId: string) =>
+  useStore(clientStateStore, (state) => state.optimistic.savedPosts.has(postId));
 
-export const usePostVote = (postId: string) => {
-  return useStore(clientStateStore, (state) => state.optimistic.postVotes.get(postId));
-};
+export const usePostVote = (postId: string) =>
+  useStore(clientStateStore, (state) => state.optimistic.postVotes.get(postId));
 
-export const useSidebarCollapsed = () => {
-  return useStore(clientStateStore, (state) => state.ui.sidebarCollapsed);
-};
+export const useSidebarCollapsed = () =>
+  useStore(clientStateStore, (state) => state.ui.sidebarCollapsed);
 
-export const useTheme = () => {
-  return useStore(clientStateStore, (state) => state.ui.theme);
-};
+export const useTheme = () => useStore(clientStateStore, (state) => state.ui.theme);
 
-export const useUserRegion = () => {
-  return useStore(clientStateStore, (state) => state.ui.userRegion);
-};
+export const useUserRegion = () => useStore(clientStateStore, (state) => state.ui.userRegion);

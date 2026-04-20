@@ -36,7 +36,7 @@ export const useGoogleOAuth = () => {
 
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
 
-    window.location.href = authUrl;
+    globalThis.location.href = authUrl;
   };
 
   return {

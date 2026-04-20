@@ -120,7 +120,7 @@ export const CommentForm = ({
     defaultValues: {
       content: "",
     },
-    onSubmit: async ({ value }) => {
+    onSubmit: ({ value }) => {
       if (!value.content.trim()) {
         return;
       }
@@ -139,15 +139,13 @@ export const CommentForm = ({
     >
       <form.Field name="content">
         {(field) => (
-          <>
-            <Textarea
-              placeholder={placeholder}
-              value={field.state.value}
-              onChange={(e) => field.handleChange(e.target.value)}
-              rows={COMMENT_FORM_ROWS}
-              className="resize-none"
-            />
-          </>
+          <Textarea
+            placeholder={placeholder}
+            value={field.state.value}
+            onChange={(e) => field.handleChange(e.target.value)}
+            rows={COMMENT_FORM_ROWS}
+            className="resize-none"
+          />
         )}
       </form.Field>
       <div className="flex gap-2">

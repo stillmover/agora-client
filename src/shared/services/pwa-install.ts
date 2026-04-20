@@ -6,12 +6,12 @@ type BeforeInstallPromptEvent = Event & {
 };
 
 export class PWAInstallManager {
-  private deferredPrompt: BeforeInstallPromptEvent | null = null;
+  private deferredPrompt: BeforeInstallPromptEvent | null = undefined;
   private installHandlers: VoidFunction[] = [];
 
   constructor() {
-    if (typeof window !== "undefined") {
-      window.addEventListener("beforeinstallprompt", this.handleBeforeInstallPrompt.bind(this));
+    if (typeof globalThis.window !== "undefined") {
+      globalThis.addEventListener("beforeinstallprompt", this.handleBeforeInstallPrompt.bind(this));
     }
   }
 
@@ -42,12 +42,12 @@ export class PWAInstallManager {
   }
 
   isInstalled(): boolean {
-    if (typeof window === "undefined") {
+    if (typeof globalThis.window === "undefined") {
       return false;
     }
     return (
-      window.matchMedia("(display-mode: standalone)").matches ||
-      (window.navigator as any).standalone === true ||
+      globalThis.matchMedia("(display-mode: standalone)").matches ||
+      (globalThis.navigator as any).standalone === true ||
       document.referrer.includes("android-app://")
     );
   }
@@ -63,16 +63,16 @@ export class PWAInstallManager {
     this.installHandlers.forEach((handler) => handler());
   }
 
-  async checkInstallability(): Promise<{
+  checkInstallability(): Promise<{
     installable: boolean;
     installed: boolean;
     canInstall: boolean;
   }> {
-    return {
+    return Promise.resolve({
       canInstall: this.isInstallable() && !this.isInstalled(),
       installable: this.isInstallable(),
       installed: this.isInstalled(),
-    };
+    });
   }
 }
 

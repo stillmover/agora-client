@@ -12,7 +12,7 @@ const sanitizeUrl = (url?: string | null): string | undefined => {
     const parsed = new URL(url, "http://localhost");
     return parsed.protocol === "http:" || parsed.protocol === "https:" ? url : undefined;
   } catch {
-    return;
+    return undefined;
   }
 };
 
@@ -30,16 +30,16 @@ const mapPostToTopStory = (post: {
     DEFAULT_THUMBNAIL;
 
   return {
+    commentCount: post.commentCount,
     community: {
+      iconUrl: sanitizeUrl(post.community?.iconUrl),
       id: post.community?.id ?? "",
       name: post.community?.name ?? "unknown",
-      iconUrl: sanitizeUrl(post.community?.iconUrl),
     },
     id: post.id,
     score: post.score,
     thumbnail: mediaThumbnail,
     title: post.title,
-    commentCount: post.commentCount,
   };
 };
 

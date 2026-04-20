@@ -109,7 +109,7 @@ function SavedPostsPageContent() {
             <Bookmark className="h-5 w-5" />
             Saved Posts
           </CardTitle>
-          <CardDescription>Posts you've saved for later</CardDescription>
+          <CardDescription>Posts you&apos;ve saved for later</CardDescription>
         </CardHeader>
       </Card>
 
@@ -119,7 +119,7 @@ function SavedPostsPageContent() {
             <Bookmark className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
             <h2 className="text-xl font-semibold mb-2">No saved posts yet</h2>
             <p className="text-muted-foreground mb-4">
-              Save posts to read them later. They'll appear here.
+              Save posts to read them later. They&apos;ll appear here.
             </p>
             <Button onClick={() => navigate({ to: ROUTES.HOME })}>Browse Posts</Button>
           </CardContent>

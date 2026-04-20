@@ -194,7 +194,7 @@ export const CreateCommunityModal = ({ trigger, onSuccess }: CreateCommunityModa
                           errorMessage && "border-destructive focus-visible:ring-destructive/50",
                           isValid && "border-emerald-500 focus-visible:ring-emerald-500/50"
                         )}
-                        aria-invalid={!!errorMessage}
+                        aria-invalid={Boolean(errorMessage)}
                       />
                     </div>
                   </FormField>
@@ -228,7 +228,7 @@ export const CreateCommunityModal = ({ trigger, onSuccess }: CreateCommunityModa
                       className={cn(
                         errorMessage && "border-destructive focus-visible:ring-destructive/50"
                       )}
-                      aria-invalid={!!errorMessage}
+                      aria-invalid={Boolean(errorMessage)}
                     />
                   </FormField>
                 );
@@ -264,7 +264,7 @@ export const CreateCommunityModal = ({ trigger, onSuccess }: CreateCommunityModa
                         "resize-none",
                         errorMessage && "border-destructive focus-visible:ring-destructive/50"
                       )}
-                      aria-invalid={!!errorMessage}
+                      aria-invalid={Boolean(errorMessage)}
                     />
                   </FormField>
                 );

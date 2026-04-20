@@ -61,7 +61,7 @@ export const CommunityInfoModal = ({ communityName, trigger }: CommunityInfoModa
   const createdAt =
     community?.createdAt && !Number.isNaN(new Date(community.createdAt).getTime())
       ? new Date(community.createdAt)
-      : null;
+      : undefined;
 
   return (
     <DialogPrimitive.Root open={open} onOpenChange={handleOpenChange}>

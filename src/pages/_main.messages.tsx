@@ -1,6 +1,5 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
-import { ROUTES } from "@/shared/config";
 import {
   Card,
   CardContent,
@@ -14,17 +13,14 @@ import { MessageSquare } from "lucide-react";
 import { useIsAuthenticated } from "@/entities/session";
 import { authModalActions } from "@/shared/stores";
 
-const MessagesPage = () => {
-  return (
-    <Suspense fallback={<Spinner />}>
-      <MessagesPageContent />
-    </Suspense>
-  );
-};
+const MessagesPage = () => (
+  <Suspense fallback={<Spinner />}>
+    <MessagesPageContent />
+  </Suspense>
+);
 
 const MessagesPageContent = () => {
   const isAuthenticated = useIsAuthenticated();
-  const navigate = useNavigate();
 
   if (!isAuthenticated) {
     return (

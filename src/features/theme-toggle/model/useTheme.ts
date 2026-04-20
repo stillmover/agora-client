@@ -7,15 +7,15 @@ export const useTheme = () => {
   const [isDark, setIsDark] = useState(false);
 
   const systemPrefersDark = useMemo(() => {
-    if (typeof window === "undefined") {
+    if (typeof globalThis.window === "undefined") {
       return false;
     }
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+    return globalThis.matchMedia("(prefers-color-scheme: dark)").matches;
   }, []);
 
   useEffect(() => {
     const root = document.documentElement;
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const mediaQuery = globalThis.matchMedia("(prefers-color-scheme: dark)");
 
     const applyTheme = (currentTheme: Theme) => {
       const shouldBeDark = shouldApplyDarkTheme(currentTheme, systemPrefersDark);
@@ -48,8 +48,8 @@ export const useTheme = () => {
   }, [theme, systemPrefersDark]);
 
   const cycleTheme = useCallback(() => {
-    setTheme((current) => getNextTheme(current));
-  }, []);
+    setTheme(getNextTheme(theme, isDark));
+  }, [theme, isDark]);
 
   return {
     cycleTheme,

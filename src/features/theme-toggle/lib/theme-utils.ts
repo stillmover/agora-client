@@ -3,7 +3,7 @@ export type Theme = "light" | "dark" | "system";
 const THEME_STORAGE_KEY = "theme";
 
 export const getStoredTheme = (): Theme => {
-  if (typeof window === "undefined") {
+  if (typeof globalThis.window === "undefined") {
     return "system";
   }
 
@@ -16,24 +16,20 @@ export const getStoredTheme = (): Theme => {
 };
 
 export const saveTheme = (theme: Theme): void => {
-  if (typeof window !== "undefined") {
+  if (typeof globalThis.window !== "undefined") {
     localStorage.setItem(THEME_STORAGE_KEY, theme);
   }
 };
 
-export const getNextTheme = (current: Theme): Theme => {
-  switch (current) {
-    case "light": {
-      return "dark";
-    }
-    case "dark": {
-      return "system";
-    }
-    case "system":
-    default: {
-      return "light";
-    }
+export const getNextTheme = (current: Theme, isDark: boolean): Theme => {
+  if (current === "light") {
+    return "dark";
   }
+  if (current === "dark") {
+    return "light";
+  }
+
+  return isDark ? "light" : "dark";
 };
 
 export const shouldApplyDarkTheme = (theme: Theme, systemPrefersDark: boolean): boolean =>
