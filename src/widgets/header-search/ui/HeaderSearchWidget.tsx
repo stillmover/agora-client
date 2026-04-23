@@ -26,7 +26,7 @@ export const HeaderSearchWidget = () => {
           type="search"
           inputMode="search"
           aria-label="Search posts and communities"
-          placeholder="Search Reddit"
+          placeholder="Find anything..."
           value={searchQuery}
           onChange={(event) => setSearchQuery(event.target.value)}
           className="pl-10 pr-4 rounded-full"

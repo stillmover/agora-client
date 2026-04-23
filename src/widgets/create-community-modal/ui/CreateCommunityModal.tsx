@@ -120,7 +120,7 @@ export const CreateCommunityModal = ({ trigger, onSuccess }: CreateCommunityModa
         </Modal.Header>
 
         <form onSubmit={handleSubmit}>
-          <Modal.Body className="space-y-8">
+          <Modal.Body className="space-y-8 overflow-y-auto max-h-[70vh]">
             <section className="space-y-4">
               <h3 className="text-sm font-medium text-foreground flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-amber-500" />

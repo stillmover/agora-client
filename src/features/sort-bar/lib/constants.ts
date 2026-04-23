@@ -4,8 +4,8 @@ export const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { label: "Best", value: "best" },
   { label: "Hot", value: "hot" },
   { label: "New", value: "new" },
-  { label: "Rising", value: "rising" },
   { label: "Top", value: "top" },
+  { label: "Rising", value: "rising" },
 ];
 
 export const REGION_OPTIONS: { value: RegionOption; label: string }[] = [

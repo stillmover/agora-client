@@ -44,7 +44,7 @@ const FeedEmpty = ({ communityId }: { communityId?: string }) => (
       <div className="flex items-center justify-center gap-3">
         <Button variant="brand" asChild>
           <Link to={ROUTES.CREATE_POST}>
-            <Sparkles className="h-4 w-4 mr-2" />
+            <Sparkles className="h-4 w-4" />
             Create a post
           </Link>
         </Button>

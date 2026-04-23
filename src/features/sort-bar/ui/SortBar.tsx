@@ -60,7 +60,7 @@ export const SortBar = ({
               key={option.value}
               onClick={() => onSortChange(option.value)}
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium",
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium cursor-pointer",
                 "transition-all duration-150 whitespace-nowrap",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 isActive
@@ -115,17 +115,6 @@ export const SortBar = ({
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
-
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={onFilterClick}
-        className="gap-1.5 text-muted-foreground"
-        aria-label="Open filters menu"
-      >
-        <SlidersHorizontal className="h-4 w-4" />
-        <span className="hidden sm:inline">Filter</span>
-      </Button>
     </nav>
   );
 };
