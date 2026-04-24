@@ -122,7 +122,7 @@ export const ImageUpload = ({
   const handleRemove = React.useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      onChange?.();
+      onChange?.(undefined);
     },
     [onChange]
   );
@@ -136,6 +136,7 @@ export const ImageUpload = ({
         onChange={handleInputChange}
         className="hidden"
         disabled={disabled}
+        aria-label={placeholder}
       />
 
       <motion.button
@@ -148,7 +149,7 @@ export const ImageUpload = ({
         whileHover={disabled ? undefined : { scale: 1.02 }}
         whileTap={disabled ? undefined : { scale: 0.98 }}
         className={cn(
-          "relative overflow-hidden transition-all duration-200",
+          "relative overflow-hidden transition-all duration-200 cursor-pointer",
           "border-2 border-dashed",
           "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
           variant === "circle" && "rounded-full",

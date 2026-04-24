@@ -28,6 +28,34 @@ const getErrorMessage = (error: unknown): string | undefined => {
 
 type CommunityType = "public" | "restricted" | "private";
 
+const COMMUNITY_TOPICS = [
+  "Gaming",
+  "Sports",
+  "Movies",
+  "Television",
+  "Music",
+  "Books",
+  "Humor",
+  "Podcasts & Streamers",
+  "Food & Drink",
+  "Fashion & Beauty",
+  "Travel",
+  "Fitness & Health",
+  "Programming",
+  "Technology",
+  "Crypto & Blockchain",
+  "Science & Nature",
+  "Business & Finance",
+  "News & Politics",
+  "World News",
+  "Education",
+  "Religion & Spirituality",
+  "Culture & Identity",
+  "Ethics & Philosophy",
+  "Gender & Sexuality",
+  "Trauma Support",
+] as const;
+
 interface CreateCommunityModalProps {
   trigger?: React.ReactNode;
   onSuccess?: (communityName: string) => void;
@@ -63,6 +91,7 @@ export const CreateCommunityModal = ({ trigger, onSuccess }: CreateCommunityModa
   const [open, setOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string>();
   const [bannerUrl, setBannerUrl] = useState<string>();
+  const [topic, setTopic] = useState<string>("");
 
   const { form, isSubmitting, reset } = useCreateCommunityForm({
     navigateOnSuccess: false,
@@ -79,6 +108,7 @@ export const CreateCommunityModal = ({ trigger, onSuccess }: CreateCommunityModa
     setOpen(false);
     setAvatarUrl(undefined);
     setBannerUrl(undefined);
+    setTopic("");
     reset();
   }, [reset, isSubmitting]);
 
@@ -201,6 +231,31 @@ export const CreateCommunityModal = ({ trigger, onSuccess }: CreateCommunityModa
                 );
               }}
             </form.Field>
+
+            <FormField
+              label="Topic"
+              hint="Help people find your community by choosing a topic."
+              required
+            >
+              <div className="flex flex-wrap gap-2">
+                {COMMUNITY_TOPICS.map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    disabled={isSubmitting}
+                    onClick={() => setTopic(topic === t ? "" : t)}
+                    className={cn(
+                      "rounded-full border px-3 py-1 text-sm transition-colors cursor-pointer",
+                      topic === t
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-transparent text-foreground hover:border-primary hover:text-primary"
+                    )}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+            </FormField>
 
             <form.Field name="displayName">
               {(field) => {
