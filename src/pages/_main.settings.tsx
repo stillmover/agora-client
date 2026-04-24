@@ -11,10 +11,11 @@ import {
   Settings,
   Lock,
   Mail,
-  Globe,
   Moon,
   Sun,
   Monitor,
+  X,
+  Plus,
 } from "lucide-react";
 import { useIsAuthenticated, useSessionUser, useLogout } from "@/entities/session";
 import {
@@ -129,7 +130,7 @@ function SettingsPageContent() {
                   key={section.id}
                   onClick={() => setActiveSection(section.id)}
                   className={cn(
-                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left",
+                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left cursor-pointer",
                     "transition-colors duration-150",
                     activeSection === section.id
                       ? "bg-accent text-foreground"
@@ -150,13 +151,13 @@ function SettingsPageContent() {
               <button
                 onClick={handleLogout}
                 className={cn(
-                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left",
+                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left cursor-pointer",
                   "text-destructive hover:bg-destructive/10",
                   "transition-colors duration-150"
                 )}
               >
                 <LogOut className="h-5 w-5" />
-                <span className="text-sm font-medium">Sign out</span>
+                <span className="text-sm font-medium">Log out</span>
               </button>
             </nav>
           </CardContent>
@@ -174,11 +175,35 @@ function SettingsPageContent() {
   );
 }
 
+type SocialLink = { id: string; label: string; url: string };
+
 function ProfileSettings({ user }: { user: { username: string; email?: string } }) {
   const [avatarUrl, setAvatarUrl] = useState<string>();
   const [bannerUrl, setBannerUrl] = useState<string>();
   const [displayName, setDisplayName] = useState(user.username);
   const [bio, setBio] = useState("");
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>(() => [
+    { id: crypto.randomUUID(), label: "", url: "" },
+  ]);
+  const [socialError, setSocialError] = useState<string | null>(null);
+
+  const addLink = () =>
+    setSocialLinks((prev) => [...prev, { id: crypto.randomUUID(), label: "", url: "" }]);
+
+  const removeLink = (id: string) =>
+    setSocialLinks((prev) => prev.filter((l) => l.id !== id));
+
+  const updateLink = (id: string, field: "label" | "url", value: string) =>
+    setSocialLinks((prev) => prev.map((l) => (l.id === id ? { ...l, [field]: value } : l)));
+
+  const saveSocialLinks = () => {
+    const hasUrl = socialLinks.some((l) => l.url.trim() !== "");
+    if (socialLinks.length > 0 && !hasUrl) {
+      setSocialError("At least one link must have a URL.");
+      return;
+    }
+    setSocialError(null);
+  };
 
   return (
     <div className="space-y-6">
@@ -268,15 +293,54 @@ function ProfileSettings({ user }: { user: { username: string; email?: string } 
           <CardDescription>Add links to your other social profiles.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <FormField label="Website" htmlFor="website">
-            <div className="relative">
-              <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input id="website" placeholder="https://example.com" className="pl-10" />
+          {socialLinks.length > 0 && (
+            <div className="grid grid-cols-[1fr_1.6fr_auto] gap-2 text-xs font-medium text-muted-foreground">
+              <span>Label</span>
+              <span>URL</span>
+              <span />
             </div>
-          </FormField>
+          )}
 
-          <div className="flex justify-end">
-            <Button variant="outline">Add social link</Button>
+          <div className="space-y-2">
+            {socialLinks.map((link) => (
+              <div
+                key={link.id}
+                className="grid grid-cols-[1fr_1.6fr_auto] items-center gap-2"
+              >
+                <Input
+                  placeholder="Twitter"
+                  value={link.label}
+                  onChange={(e) => updateLink(link.id, "label", e.target.value)}
+                />
+                <Input
+                  placeholder="https://twitter.com/username"
+                  value={link.url}
+                  onChange={(e) => updateLink(link.id, "url", e.target.value)}
+                />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeLink(link.id)}
+                  aria-label="Remove link"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          {socialError && <p className="text-sm text-destructive">{socialError}</p>}
+
+          <div className="flex items-center justify-between">
+            <Button variant="outline" size="sm" className="px-4 py-2" onClick={addLink}>
+              <Plus className="h-4 w-4 mr-1" />
+              Add social link
+            </Button>
+            {socialLinks.length > 0 && (
+              <Button variant="brand" size="sm" onClick={saveSocialLinks}>
+                Save links
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -433,7 +497,7 @@ function NotificationToggle({
         aria-checked={checked}
         onClick={() => setChecked(!checked)}
         className={cn(
-          "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
+          "relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer",
           checked ? "bg-brand" : "bg-muted"
         )}
       >
@@ -508,7 +572,7 @@ function AppearanceSettings() {
                 key={option.value}
                 onClick={() => setTheme(option.value)}
                 className={cn(
-                  "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
+                  "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all cursor-pointer",
                   theme === option.value
                     ? "border-brand bg-brand/5"
                     : "border-border hover:border-muted-foreground/30"
