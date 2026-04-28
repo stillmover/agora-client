@@ -18,6 +18,11 @@ export type Scalars = {
   DateTime: { input: string; output: string; }
 };
 
+export type AddSocialLinkInput = {
+  label: Scalars['String']['input'];
+  url: Scalars['String']['input'];
+};
+
 /** Represents a comment on a post */
 export type Comment = {
   __typename?: 'Comment';
@@ -48,6 +53,8 @@ export type Community = {
   __typename?: 'Community';
   /** Community banner URL */
   bannerUrl?: Maybe<Scalars['String']['output']>;
+  /** Community visibility type */
+  communityType: CommunityType;
   /** Community creation timestamp */
   createdAt: Scalars['DateTime']['output'];
   /** Community creator */
@@ -66,12 +73,14 @@ export type Community = {
   isModerator?: Maybe<Scalars['Boolean']['output']>;
   /** Number of members */
   memberCount: Scalars['Int']['output'];
-  /** List of community members (first 50) */
+  /** List of community members */
   members: Array<User>;
   /** List of community moderators */
   moderators: Array<Moderator>;
   /** URL-friendly name (e.g., 'programming') */
   name: Scalars['String']['output'];
+  /** Community topic / category */
+  topic: Scalars['String']['output'];
   /** Last update timestamp */
   updatedAt: Scalars['DateTime']['output'];
 };
@@ -82,6 +91,13 @@ export type CommunityMembersArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
+
+/** Community visibility type */
+export enum CommunityType {
+  Private = 'private',
+  Public = 'public',
+  Restricted = 'restricted'
+}
 
 /** Input for creating a comment */
 export type CreateCommentInput = {
@@ -97,6 +113,8 @@ export type CreateCommentInput = {
 export type CreateCommunityInput = {
   /** Community banner URL */
   bannerUrl?: InputMaybe<Scalars['String']['input']>;
+  /** Community visibility (default: public) */
+  communityType?: InputMaybe<CommunityType>;
   /** Community description */
   description?: InputMaybe<Scalars['String']['input']>;
   /** Display name (e.g., 'Programming') */
@@ -105,6 +123,8 @@ export type CreateCommunityInput = {
   iconUrl?: InputMaybe<Scalars['String']['input']>;
   /** URL-friendly name (e.g., 'programming') */
   name: Scalars['String']['input'];
+  /** Community topic / category */
+  topic: Scalars['String']['input'];
 };
 
 /** Input for creating a new flair */
@@ -164,490 +184,67 @@ export type Flair = {
 export type Moderator = {
   __typename?: 'Moderator';
   /** Role: owner or moderator */
-  role: Scalars['String']['output'];
+  role: ModeratorRole;
   /** User information */
   user: User;
 };
 
+/** Moderator role within a community */
+export enum ModeratorRole {
+  Moderator = 'moderator',
+  Owner = 'owner'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
-  /**
-   * Add a moderator to a community (owner only)
-   *
-   * **Authentication:** Required (must be community owner)
-   *
-   * **Parameters:**
-   * - communityId: Community ID (required)
-   * - userId: User ID to add as moderator (required)
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   addModerator(communityId: "1", userId: "2") {
-   *     id
-   *     name
-   *     moderators {
-   *       user {
-   *         username
-   *       }
-   *       role
-   *     }
-   *   }
-   * }
-   * ```
-   */
+  /** Add a moderator to a community (auth required, must be owner) */
   addModerator: Community;
-  /**
-   * Create a comment on a post
-   *
-   * **Authentication:** Required
-   *
-   * **Parameters:**
-   * - input: Comment creation data
-   *   - postId: Post ID (required)
-   *   - content: Comment content (required)
-   *   - parentId: Parent comment ID for replies (optional)
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   createComment(input: {
-   *     postId: "1"
-   *     content: "Great post!"
-   *     parentId: null
-   *   }) {
-   *     id
-   *     content
-   *     score
-   *     author {
-   *       username
-   *     }
-   *   }
-   * }
-   * ```
-   */
+  addSocialLink: SocialLink;
+  /** Create a comment on a post (auth required) */
   createComment: Comment;
-  /**
-   * Create a new community
-   *
-   * **Authentication:** Required
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   createCommunity(input: {
-   *     name: "programming"
-   *     displayName: "Programming"
-   *     description: "All about programming"
-   *   }) {
-   *     id
-   *     name
-   *     displayName
-   *     description
-   *   }
-   * }
-   * ```
-   */
+  /** Create a new community (auth required) */
   createCommunity: Community;
-  /**
-   * Create a new flair for a community
-   *
-   * **Authentication:** Required (must be community moderator or admin)
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   createFlair(input: {
-   *     communityId: "1"
-   *     label: "Discussion"
-   *     color: "#ffffff"
-   *     backgroundColor: "#ff0000"
-   *   }) {
-   *     id
-   *     label
-   *     color
-   *     backgroundColor
-   *   }
-   * }
-   * ```
-   */
+  /** Create a new flair for a community (auth required, must be moderator) */
   createFlair: Flair;
-  /**
-   * Create a new post
-   *
-   * **Authentication:** Required
-   *
-   * **Parameters:**
-   * - input: Post creation data
-   *   - communityId: Community ID (required)
-   *   - title: Post title (required, max 300 chars)
-   *   - content: Post content (optional)
-   *   - type: Post type (default: text)
-   *   - media: Media attachments (optional)
-   *   - flairIds: Flair IDs (optional)
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   createPost(input: {
-   *     communityId: "1"
-   *     title: "My awesome post"
-   *     content: "This is the content"
-   *     type: text
-   *     flairIds: ["1", "2"]
-   *   }) {
-   *     id
-   *     title
-   *     score
-   *     community {
-   *       name
-   *     }
-   *   }
-   * }
-   * ```
-   */
+  /** Create a new post (auth required) */
   createPost: Post;
-  /**
-   * Report a post or comment
-   *
-   * **Authentication:** Required
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   createReport(input: {
-   *     postId: "1"
-   *     reason: spam
-   *     description: "This post contains spam content"
-   *   }) {
-   *     id
-   *     reason
-   *     status
-   *   }
-   * }
-   * ```
-   */
+  /** Report a post or comment (auth required) */
   createReport: Report;
-  /**
-   * Delete a comment
-   *
-   * **Authentication:** Required (must be the author)
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   deleteComment(commentId: "1")
-   * }
-   * ```
-   */
+  /** Delete a comment (auth required, must be the author) */
   deleteComment: Scalars['Boolean']['output'];
-  /**
-   * Delete a community
-   *
-   * **Authentication:** Required (must be community owner or admin)
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   deleteCommunity(communityId: "1")
-   * }
-   * ```
-   */
+  /** Delete a community (auth required, must be owner) */
   deleteCommunity: Scalars['Boolean']['output'];
-  /**
-   * Delete a flair
-   *
-   * **Authentication:** Required (must be community moderator or admin)
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   deleteFlair(flairId: "1")
-   * }
-   * ```
-   */
+  /** Delete a flair (auth required, must be moderator) */
   deleteFlair: Scalars['Boolean']['output'];
-  /**
-   * Delete a post
-   *
-   * **Authentication:** Required (must be the author or admin)
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   deletePost(postId: "1")
-   * }
-   * ```
-   */
+  /** Delete a post (auth required, must be the author or moderator) */
   deletePost: Scalars['Boolean']['output'];
-  /**
-   * Delete a user account
-   *
-   * **Authentication:** Required (must be the user themselves)
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   deleteUser(userId: "1")
-   * }
-   * ```
-   */
   deleteUser: Scalars['Boolean']['output'];
-  /**
-   * Join a community
-   *
-   * **Authentication:** Required
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   joinCommunity(communityId: "1") {
-   *     id
-   *     name
-   *     displayName
-   *     isJoined
-   *   }
-   * }
-   * ```
-   */
+  /** Join a community (auth required) */
   joinCommunity: Community;
-  /**
-   * Leave a community
-   *
-   * **Authentication:** Required
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   leaveCommunity(communityId: "1")
-   * }
-   * ```
-   */
+  /** Leave a community (auth required) */
   leaveCommunity: Scalars['Boolean']['output'];
-  /**
-   * Remove a moderator from a community (owner only)
-   *
-   * **Authentication:** Required (must be community owner)
-   *
-   * **Parameters:**
-   * - communityId: Community ID (required)
-   * - userId: User ID to remove as moderator (required)
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   removeModerator(communityId: "1", userId: "2")
-   * }
-   * ```
-   */
+  /** Remove a moderator from a community (auth required, must be owner) */
   removeModerator: Scalars['Boolean']['output'];
-  /**
-   * Resolve a report (moderator/admin only)
-   *
-   * **Authentication:** Required (must be moderator)
-   *
-   * **Parameters:**
-   * - reportId: Report ID (required)
-   * - status: New status ('resolved' or 'dismissed')
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   resolveReport(reportId: "1", status: "resolved") {
-   *     id
-   *     status
-   *     resolvedAt
-   *     resolvedBy {
-   *       username
-   *     }
-   *   }
-   * }
-   * ```
-   */
+  removeSocialLink: Scalars['Boolean']['output'];
+  /** Resolve or dismiss a report (auth required, must be a moderator) */
   resolveReport: Report;
-  /**
-   * Save a post for later
-   *
-   * **Authentication:** Required
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   savePost(postId: "1")
-   * }
-   * ```
-   */
+  /** Save a post for later (auth required) */
   savePost: Scalars['Boolean']['output'];
-  /**
-   * Unsave a post
-   *
-   * **Authentication:** Required
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   unsavePost(postId: "1")
-   * }
-   * ```
-   */
+  /** Unsave a previously saved post (auth required) */
   unsavePost: Scalars['Boolean']['output'];
-  /**
-   * Update a comment
-   *
-   * **Authentication:** Required (must be the author)
-   *
-   * **Parameters:**
-   * - commentId: Comment ID (required)
-   * - content: New comment content (required)
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   updateComment(commentId: "1", content: "Updated content") {
-   *     id
-   *     content
-   *     updatedAt
-   *   }
-   * }
-   * ```
-   */
+  /** Update a comment (auth required, must be the author) */
   updateComment: Comment;
-  /**
-   * Update community information
-   *
-   * **Authentication:** Required (must be community owner or admin)
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   updateCommunity(communityId: "1", input: {
-   *     displayName: "New Programming Community"
-   *     description: "Updated description"
-   *   }) {
-   *     id
-   *     displayName
-   *     description
-   *   }
-   * }
-   * ```
-   */
+  /** Update community information (auth required, must be owner or moderator) */
   updateCommunity: Community;
-  /**
-   * Update a flair
-   *
-   * **Authentication:** Required (must be community moderator or admin)
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   updateFlair(flairId: "1", input: {
-   *     label: "Updated Label"
-   *     color: "#000000"
-   *   }) {
-   *     id
-   *     label
-   *     color
-   *     backgroundColor
-   *   }
-   * }
-   * ```
-   */
+  /** Update a flair (auth required, must be moderator) */
   updateFlair: Flair;
-  /**
-   * Update a post
-   *
-   * **Authentication:** Required (must be the author)
-   *
-   * **Parameters:**
-   * - postId: Post ID (required)
-   * - input: Post update data
-   *   - title: New title (optional)
-   *   - content: New content (optional)
-   *   - flairIds: New flair IDs (optional)
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   updatePost(postId: "1", input: {
-   *     title: "Updated title"
-   *     content: "Updated content"
-   *     flairIds: ["2", "3"]
-   *   }) {
-   *     id
-   *     title
-   *     content
-   *     flairs {
-   *       label
-   *     }
-   *   }
-   * }
-   * ```
-   */
+  /** Update a post (auth required, must be the author) */
   updatePost: Post;
-  /**
-   * Update user information
-   *
-   * **Authentication:** Required (must be the user themselves)
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   updateUser(userId: "1", input: {
-   *     username: "new_username"
-   *     email: "newemail@example.com"
-   *   }) {
-   *     id
-   *     username
-   *     email
-   *   }
-   * }
-   * ```
-   */
+  updateSocialLink: SocialLink;
   updateUser: User;
-  /**
-   * Vote on a comment (upvote or downvote)
-   *
-   * **Authentication:** Required
-   *
-   * **Parameters:**
-   * - commentId: Comment ID (required)
-   * - voteType: Vote type (upvote or downvote)
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   voteComment(commentId: "1", voteType: upvote) {
-   *     id
-   *     score
-   *     userVote
-   *   }
-   * }
-   * ```
-   */
+  /** Vote on a comment — same vote again removes it (auth required) */
   voteComment: Comment;
-  /**
-   * Vote on a post (upvote or downvote)
-   *
-   * **Authentication:** Required
-   *
-   * **Parameters:**
-   * - postId: Post ID (required)
-   * - voteType: Vote type (upvote or downvote)
-   *
-   * Clicking the same vote button again removes the vote.
-   * Changing vote type updates the vote.
-   *
-   * **Example:**
-   * ```graphql
-   * mutation {
-   *   votePost(postId: "1", voteType: upvote) {
-   *     id
-   *     score
-   *     userVote
-   *   }
-   * }
-   * ```
-   */
+  /** Vote on a post — same vote again removes it (auth required) */
   votePost: Post;
 };
 
@@ -655,6 +252,11 @@ export type Mutation = {
 export type MutationAddModeratorArgs = {
   communityId: Scalars['ID']['input'];
   userId: Scalars['ID']['input'];
+};
+
+
+export type MutationAddSocialLinkArgs = {
+  input: AddSocialLinkInput;
 };
 
 
@@ -724,6 +326,11 @@ export type MutationRemoveModeratorArgs = {
 };
 
 
+export type MutationRemoveSocialLinkArgs = {
+  linkId: Scalars['ID']['input'];
+};
+
+
 export type MutationResolveReportArgs = {
   reportId: Scalars['ID']['input'];
   status: Scalars['String']['input'];
@@ -761,6 +368,12 @@ export type MutationUpdateFlairArgs = {
 export type MutationUpdatePostArgs = {
   input: UpdatePostInput;
   postId: Scalars['ID']['input'];
+};
+
+
+export type MutationUpdateSocialLinkArgs = {
+  input: UpdateSocialLinkInput;
+  linkId: Scalars['ID']['input'];
 };
 
 
@@ -858,552 +471,57 @@ export type PostMediaInput = {
 
 /** Post content type */
 export enum PostType {
-  /** Image post */
   Image = 'image',
-  /** Link post */
   Link = 'link',
-  /** Poll post */
   Poll = 'poll',
-  /** Text-only post */
   Text = 'text',
-  /** Video post */
   Video = 'video'
 }
 
 export type Query = {
   __typename?: 'Query';
-  /**
-   * Get a specific comment by ID
-   *
-   * **Example:**
-   * ```graphql
-   * query {
-   *   comment(id: "1") {
-   *     id
-   *     content
-   *     score
-   *     author {
-   *       username
-   *     }
-   *     post {
-   *       id
-   *       title
-   *     }
-   *   }
-   * }
-   * ```
-   */
+  /** Get a specific comment by ID */
   comment?: Maybe<Comment>;
-  /**
-   * Get comments for a post in tree structure
-   *
-   * **Parameters:**
-   * - postId: Post ID (required)
-   * - limit: Number of results per page (default: 50, max: 100)
-   * - offset: Number of results to skip (default: 0)
-   *
-   * Returns comments in a nested tree structure with replies.
-   *
-   * **Example:**
-   * ```graphql
-   * query {
-   *   comments(postId: "1", limit: 50, offset: 0) {
-   *     id
-   *     content
-   *     score
-   *     author {
-   *       username
-   *     }
-   *     replies {
-   *       id
-   *       content
-   *       author {
-   *         username
-   *       }
-   *     }
-   *   }
-   * }
-   * ```
-   */
+  /** Get comments for a post in tree structure */
   comments: Array<Comment>;
-  /**
-   * Get paginated list of all communities
-   *
-   * **Pagination:**
-   * - limit: Number of results per page (default: 20, max: 100)
-   * - offset: Number of results to skip (default: 0)
-   *
-   * **Example:**
-   * ```graphql
-   * query {
-   *   communities(limit: 20, offset: 0) {
-   *     id
-   *     name
-   *     displayName
-   *     memberCount
-   *     isJoined
-   *   }
-   * }
-   * ```
-   */
+  /** Get paginated list of all communities */
   communities: Array<Community>;
-  /**
-   * Get a specific community by ID
-   *
-   * **Example:**
-   * ```graphql
-   * query {
-   *   community(id: "1") {
-   *     id
-   *     name
-   *     displayName
-   *     description
-   *     memberCount
-   *   }
-   * }
-   * ```
-   */
+  /** Get a specific community by ID */
   community?: Maybe<Community>;
-  /**
-   * Get a community by its URL-friendly name
-   *
-   * **Example:**
-   * ```graphql
-   * query {
-   *   communityByName(name: "programming") {
-   *     id
-   *     name
-   *     displayName
-   *     memberCount
-   *   }
-   * }
-   * ```
-   */
+  /** Get a community by its URL-friendly name */
   communityByName?: Maybe<Community>;
-  /**
-   * Get personalized feed of posts with sorting options
-   *
-   * **Parameters:**
-   * - sort: Sort order (default: best)
-   *   - best: Score + comment count weighted
-   *   - hot: Score weighted by time (last 24h)
-   *   - new: Newest posts first
-   *   - rising: Recent high-scoring posts
-   *   - top: Highest score
-   * - limit: Number of results per page (default: 20, max: 100)
-   * - offset: Number of results to skip (default: 0)
-   *
-   * **Authentication:** Optional - if authenticated, feed may be personalized
-   *
-   * **Example:**
-   * ```graphql
-   * query {
-   *   feed(sort: hot, limit: 20, offset: 0) {
-   *     id
-   *     title
-   *     score
-   *     commentCount
-   *     community {
-   *       name
-   *       displayName
-   *       iconUrl
-   *     }
-   *     author {
-   *       username
-   *     }
-   *     flairs {
-   *       label
-   *       color
-   *     }
-   *     userVote
-   *     isSaved
-   *   }
-   * }
-   * ```
-   */
+  /** Get personalized feed of posts */
   feed: Array<Post>;
-  /**
-   * Get flairs for a community
-   *
-   * **Parameters:**
-   * - communityId: Community ID (required)
-   *
-   * **Example:**
-   * ```graphql
-   * query {
-   *   flairsByCommunity(communityId: "1") {
-   *     id
-   *     label
-   *     color
-   *     backgroundColor
-   *   }
-   * }
-   * ```
-   */
+  /** Get flairs for a community */
   flairsByCommunity: Array<Flair>;
-  /**
-   * Get popular communities sorted by member count
-   *
-   * **Parameters:**
-   * - limit: Number of results (default: 10, max: 50)
-   *
-   * **Example:**
-   * ```graphql
-   * query {
-   *   popularCommunities(limit: 10) {
-   *     id
-   *     name
-   *     displayName
-   *     memberCount
-   *     iconUrl
-   *   }
-   * }
-   * ```
-   */
+  me?: Maybe<User>;
+  /** Get popular communities sorted by member count */
   popularCommunities: Array<Community>;
-  /**
-   * Get a specific post by ID with all relations
-   *
-   * **Example:**
-   * ```graphql
-   * query {
-   *   post(id: "1") {
-   *     id
-   *     title
-   *     content
-   *     score
-   *     community {
-   *       name
-   *       displayName
-   *     }
-   *     author {
-   *       username
-   *     }
-   *     media {
-   *       type
-   *       url
-   *     }
-   *     flairs {
-   *       label
-   *       color
-   *     }
-   *   }
-   * }
-   * ```
-   */
+  /** Get a specific post by ID */
   post?: Maybe<Post>;
-  /**
-   * Get paginated list of all posts
-   *
-   * **Pagination:**
-   * - limit: Number of results per page (default: 20, max: 100)
-   * - offset: Number of results to skip (default: 0)
-   *
-   * **Filtering:**
-   * - region: Filter posts by geographic region (default: all)
-   * - communityId: Filter posts by specific community
-   * - sort: Sort order for posts (default: best)
-   *
-   * **Example:**
-   * ```graphql
-   * query {
-   *   posts(region: north_america, sort: hot, limit: 20, offset: 0) {
-   *     id
-   *     title
-   *     score
-   *     commentCount
-   *     community {
-   *       name
-   *       displayName
-   *     }
-   *     author {
-   *       username
-   *     }
-   *   }
-   * }
-   * ```
-   */
+  /** Get paginated list of posts with optional filtering and sorting */
   posts: Array<Post>;
-  /**
-   * Get posts from a specific community
-   *
-   * **Parameters:**
-   * - communityId: Community ID (required)
-   * - limit: Number of results per page (default: 20, max: 100)
-   * - offset: Number of results to skip (default: 0)
-   *
-   * **Example:**
-   * ```graphql
-   * query {
-   *   postsByCommunity(communityId: "1", limit: 20, offset: 0) {
-   *     id
-   *     title
-   *     score
-   *     commentCount
-   *     author {
-   *       username
-   *     }
-   *   }
-   * }
-   * ```
-   */
+  /** Get posts from a specific community */
   postsByCommunity: Array<Post>;
-  /**
-   * Get a specific report by ID (moderator/admin only)
-   *
-   * **Authentication:** Required (must be moderator)
-   *
-   * **Example:**
-   * ```graphql
-   * query {
-   *   report(id: "1") {
-   *     id
-   *     reason
-   *     description
-   *     status
-   *     reporter {
-   *       username
-   *     }
-   *   }
-   * }
-   * ```
-   */
+  /** Get a specific report by ID — auth required, must be a moderator */
   report?: Maybe<Report>;
-  /**
-   * Get reports (moderator/admin only)
-   *
-   * **Authentication:** Required (must be moderator)
-   *
-   * **Parameters:**
-   * - status: Filter by status (optional: 'pending', 'resolved', 'dismissed')
-   * - limit: Number of results per page (default: 20)
-   * - offset: Number of results to skip (default: 0)
-   *
-   * **Example:**
-   * ```graphql
-   * query {
-   *   reports(status: "pending", limit: 20) {
-   *     id
-   *     reason
-   *     status
-   *     reporter {
-   *       username
-   *     }
-   *     post {
-   *       id
-   *       title
-   *     }
-   *   }
-   * }
-   * ```
-   */
+  /** Get reports — auth required, must be a moderator */
   reports: Array<Report>;
-  /**
-   * Get saved posts for the current user
-   *
-   * **Authentication:** Required
-   *
-   * **Parameters:**
-   * - limit: Number of results per page (default: 20, max: 100)
-   * - offset: Number of results to skip (default: 0)
-   *
-   * **Example:**
-   * ```graphql
-   * query {
-   *   savedPosts(limit: 20, offset: 0) {
-   *     id
-   *     title
-   *     score
-   *     community {
-   *       name
-   *       displayName
-   *     }
-   *     author {
-   *       username
-   *     }
-   *     savedAt
-   *   }
-   * }
-   * ```
-   */
+  /** Get saved posts for the current user (auth required) */
   savedPosts: Array<Post>;
-  /**
-   * Search communities by name or display name
-   *
-   * **Parameters:**
-   * - query: Search query (required)
-   * - limit: Number of results per page (default: 20)
-   * - offset: Number of results to skip (default: 0)
-   *
-   * **Example:**
-   * ```graphql
-   * query {
-   *   searchCommunities(query: "programming", limit: 10) {
-   *     id
-   *     name
-   *     displayName
-   *     memberCount
-   *   }
-   * }
-   * ```
-   */
+  /** Search communities by name or display name */
   searchCommunities: Array<Community>;
-  /**
-   * Search posts by title or content
-   *
-   * **Parameters:**
-   * - query: Search query (required)
-   * - communityId: Filter by community (optional)
-   * - limit: Number of results per page (default: 20)
-   * - offset: Number of results to skip (default: 0)
-   *
-   * **Example:**
-   * ```graphql
-   * query {
-   *   searchPosts(query: "javascript", limit: 10) {
-   *     id
-   *     title
-   *     score
-   *     community {
-   *       name
-   *     }
-   *   }
-   * }
-   * ```
-   */
+  /** Search posts by title or content */
   searchPosts: Array<Post>;
-  /**
-   * Search users by username
-   *
-   * **Parameters:**
-   * - query: Search query (minimum 2 characters)
-   * - limit: Number of results per page (default: 20, max: 100)
-   * - offset: Number of results to skip (default: 0)
-   *
-   * **Example:**
-   * ```graphql
-   * query {
-   *   searchUsers(query: "john", limit: 10, offset: 0) {
-   *     id
-   *     username
-   *     email
-   *     createdAt
-   *   }
-   * }
-   * ```
-   */
   searchUsers: Array<User>;
-  /**
-   * Get top stories for hero carousel
-   *
-   * **Parameters:**
-   * - limit: Number of results (default: 6, max: 20)
-   *
-   * Returns top-scoring posts from the last 24 hours.
-   *
-   * **Example:**
-   * ```graphql
-   * query {
-   *   topStories(limit: 6) {
-   *     id
-   *     title
-   *     score
-   *     community {
-   *       name
-   *       displayName
-   *       iconUrl
-   *     }
-   *     media {
-   *       type
-   *       url
-   *       thumbnailUrl
-   *     }
-   *   }
-   * }
-   * ```
-   */
+  /** Get top stories from the last 24 hours */
   topStories: Array<Post>;
-  /**
-   * Get a specific user by ID
-   *
-   * **Example:**
-   * ```graphql
-   * query {
-   *   user(id: "1") {
-   *     id
-   *     username
-   *     email
-   *     createdAt
-   *   }
-   * }
-   * ```
-   */
   user?: Maybe<User>;
-  /**
-   * Get comments by a specific user
-   *
-   * **Parameters:**
-   * - userId: User ID (required)
-   * - limit: Number of results per page (default: 20)
-   * - offset: Number of results to skip (default: 0)
-   *
-   * **Example:**
-   * ```graphql
-   * query {
-   *   userComments(userId: "1", limit: 20, offset: 0) {
-   *     id
-   *     content
-   *     score
-   *     post {
-   *       id
-   *       title
-   *     }
-   *   }
-   * }
-   * ```
-   */
+  userByUsername?: Maybe<User>;
+  /** Get comments by a specific user */
   userComments: Array<Comment>;
-  /**
-   * Get posts by a specific user
-   *
-   * **Parameters:**
-   * - userId: User ID (required)
-   * - limit: Number of results per page (default: 20)
-   * - offset: Number of results to skip (default: 0)
-   *
-   * **Example:**
-   * ```graphql
-   * query {
-   *   userPosts(userId: "1", limit: 20, offset: 0) {
-   *     id
-   *     title
-   *     score
-   *     community {
-   *       name
-   *     }
-   *   }
-   * }
-   * ```
-   */
+  /** Get posts by a specific user */
   userPosts: Array<Post>;
-  /**
-   * Get paginated list of all users
-   *
-   * **Pagination:**
-   * - limit: Number of results per page (default: 20, max: 100)
-   * - offset: Number of results to skip (default: 0)
-   *
-   * **Example:**
-   * ```graphql
-   * query {
-   *   users(limit: 10, offset: 0) {
-   *     id
-   *     username
-   *     email
-   *   }
-   * }
-   * ```
-   */
   users: Array<User>;
 };
 
@@ -1524,6 +642,11 @@ export type QueryUserArgs = {
 };
 
 
+export type QueryUserByUsernameArgs = {
+  username: Scalars['String']['input'];
+};
+
+
 export type QueryUserCommentsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -1543,21 +666,13 @@ export type QueryUsersArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
-/** Geographic region for content filtering */
 export enum Region {
-  /** Africa */
   Africa = 'africa',
-  /** All regions */
   All = 'all',
-  /** Asia */
   Asia = 'asia',
-  /** Australia */
   Australia = 'australia',
-  /** Europe */
   Europe = 'europe',
-  /** North America */
   NorthAmerica = 'north_america',
-  /** South America */
   SouthAmerica = 'south_america'
 }
 
@@ -1582,7 +697,7 @@ export type Report = {
   resolvedAt?: Maybe<Scalars['DateTime']['output']>;
   /** User who resolved the report */
   resolvedBy?: Maybe<User>;
-  /** Report status */
+  /** Report status: 'pending', 'resolved', or 'dismissed' */
   status: Scalars['String']['output'];
 };
 
@@ -1597,121 +712,33 @@ export enum ReportReason {
   Violence = 'violence'
 }
 
-/** Sort order for post feeds */
+export type SocialLink = {
+  __typename?: 'SocialLink';
+  id: Scalars['ID']['output'];
+  label: Scalars['String']['output'];
+  position: Scalars['Int']['output'];
+  url: Scalars['String']['output'];
+};
+
 export enum SortType {
-  /** Best posts (score + comments weighted) */
   Best = 'best',
-  /** Hot posts (score weighted by time) */
   Hot = 'hot',
-  /** Newest posts */
   New = 'new',
-  /** Rising posts (recent high-scoring) */
   Rising = 'rising',
-  /** Top posts (highest score) */
   Top = 'top'
 }
 
 export type Subscription = {
   __typename?: 'Subscription';
-  /**
-   * Subscribe to new comments on a post in real-time
-   *
-   * **Parameters:**
-   * - postId: Post ID (required)
-   *
-   * **Example:**
-   * ```graphql
-   * subscription {
-   *   commentAdded(postId: "1") {
-   *     id
-   *     content
-   *     score
-   *     author {
-   *       username
-   *     }
-   *   }
-   * }
-   * ```
-   */
+  /** Subscribe to new comments on a post in real-time */
   commentAdded: Comment;
-  /**
-   * Subscribe to comment vote changes in real-time
-   *
-   * **Parameters:**
-   * - commentId: Comment ID (required)
-   *
-   * **Example:**
-   * ```graphql
-   * subscription {
-   *   commentVoted(commentId: "1") {
-   *     id
-   *     score
-   *     userVote
-   *   }
-   * }
-   * ```
-   */
+  /** Subscribe to comment vote changes in real-time */
   commentVoted: Comment;
-  /**
-   * Subscribe to new posts in real-time
-   *
-   * **Parameters:**
-   * - communityId: Optional - filter by community ID
-   *
-   * **Example:**
-   * ```graphql
-   * subscription {
-   *   postAdded(communityId: "1") {
-   *     id
-   *     title
-   *     score
-   *     community {
-   *       name
-   *     }
-   *     author {
-   *       username
-   *     }
-   *   }
-   * }
-   * ```
-   */
+  /** Subscribe to new posts in real-time */
   postAdded: Post;
-  /**
-   * Subscribe to post updates in real-time
-   *
-   * **Parameters:**
-   * - postId: Post ID (required)
-   *
-   * **Example:**
-   * ```graphql
-   * subscription {
-   *   postUpdated(postId: "1") {
-   *     id
-   *     title
-   *     score
-   *     commentCount
-   *   }
-   * }
-   * ```
-   */
+  /** Subscribe to post updates in real-time */
   postUpdated: Post;
-  /**
-   * Subscribe to post vote changes in real-time
-   *
-   * **Parameters:**
-   * - postId: Post ID (required)
-   *
-   * **Example:**
-   * ```graphql
-   * subscription {
-   *   postVoted(postId: "1") {
-   *     id
-   *     score
-   *     userVote
-   *   }
-   * }
-   * ```
-   */
+  /** Subscribe to post vote changes in real-time */
   postVoted: Post;
 };
 
@@ -1772,68 +799,59 @@ export type UpdatePostInput = {
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
-/** Input for updating a user */
-export type UpdateUserInput = {
-  /** New email address */
-  email?: InputMaybe<Scalars['String']['input']>;
-  /** New username (3-50 characters, alphanumeric + underscore) */
-  username?: InputMaybe<Scalars['String']['input']>;
+export type UpdateSocialLinkInput = {
+  label?: InputMaybe<Scalars['String']['input']>;
+  url?: InputMaybe<Scalars['String']['input']>;
 };
 
-/** Represents a user in the system */
+export type UpdateUserInput = {
+  avatarUrl?: InputMaybe<Scalars['String']['input']>;
+  bannerUrl?: InputMaybe<Scalars['String']['input']>;
+  bio?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type User = {
   __typename?: 'User';
-  /** User avatar URL */
   avatarUrl?: Maybe<Scalars['String']['output']>;
-  /** User bio */
+  bannerUrl?: Maybe<Scalars['String']['output']>;
   bio?: Maybe<Scalars['String']['output']>;
-  /** Comments by this user */
   comments: Array<Comment>;
-  /** Account creation timestamp */
   createdAt: Scalars['DateTime']['output'];
-  /** Email address (unique) */
   email: Scalars['String']['output'];
-  /** Unique identifier for the user */
   id: Scalars['ID']['output'];
-  /** Full name for Google auth users (optional) */
   name?: Maybe<Scalars['String']['output']>;
-  /** Posts by this user */
   posts: Array<Post>;
-  /** Username (unique, 3-50 characters) */
+  socialLinks: Array<SocialLink>;
   username: Scalars['String']['output'];
 };
 
 
-/** Represents a user in the system */
 export type UserCommentsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
-/** Represents a user in the system */
 export type UserPostsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
-/** Vote type for posts and comments */
 export enum VoteType {
-  /** Downvote */
   Downvote = 'downvote',
-  /** Upvote */
   Upvote = 'upvote'
 }
 
 export type AutoGeneratedQueriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AutoGeneratedQueriesQuery = { __typename?: 'Query', users: Array<User>, searchUsers: Array<User>, user?: User | null, communities: Array<Community>, community?: Community | null, communityByName?: Community | null, popularCommunities: Array<Community>, posts: Array<Post>, post?: Post | null, feed: Array<Post>, topStories: Array<Post>, postsByCommunity: Array<Post>, comments: Array<Comment>, comment?: Comment | null, savedPosts: Array<Post>, flairsByCommunity: Array<Flair>, userPosts: Array<Post>, userComments: Array<Comment>, searchCommunities: Array<Community>, searchPosts: Array<Post>, reports: Array<Report>, report?: Report | null };
+export type AutoGeneratedQueriesQuery = { __typename?: 'Query', users: Array<User>, searchUsers: Array<User>, user?: User | null, userByUsername?: User | null, me?: User | null, communities: Array<Community>, community?: Community | null, communityByName?: Community | null, popularCommunities: Array<Community>, searchCommunities: Array<Community>, posts: Array<Post>, post?: Post | null, feed: Array<Post>, topStories: Array<Post>, postsByCommunity: Array<Post>, searchPosts: Array<Post>, savedPosts: Array<Post>, userPosts: Array<Post>, userComments: Array<Comment>, comments: Array<Comment>, comment?: Comment | null, flairsByCommunity: Array<Flair>, reports: Array<Report>, report?: Report | null };
 
 export type AutoGeneratedMutationsMutationVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AutoGeneratedMutationsMutation = { __typename?: 'Mutation', updateUser: User, deleteUser: boolean, joinCommunity: Community, leaveCommunity: boolean, createCommunity: Community, updateCommunity: Community, deleteCommunity: boolean, createFlair: Flair, updateFlair: Flair, deleteFlair: boolean, createReport: Report, createPost: Post, votePost: Post, savePost: boolean, unsavePost: boolean, updatePost: Post, deletePost: boolean, createComment: Comment, voteComment: Comment, updateComment: Comment, deleteComment: boolean, resolveReport: Report, addModerator: Community, removeModerator: boolean };
+export type AutoGeneratedMutationsMutation = { __typename?: 'Mutation', updateUser: User, deleteUser: boolean, addSocialLink: SocialLink, updateSocialLink: SocialLink, removeSocialLink: boolean, joinCommunity: Community, leaveCommunity: boolean, createCommunity: Community, updateCommunity: Community, deleteCommunity: boolean, addModerator: Community, removeModerator: boolean, createPost: Post, updatePost: Post, deletePost: boolean, savePost: boolean, unsavePost: boolean, createComment: Comment, updateComment: Comment, deleteComment: boolean, votePost: Post, voteComment: Comment, createFlair: Flair, updateFlair: Flair, deleteFlair: boolean, createReport: Report, resolveReport: Report };
 
 
 export const AutoGeneratedQueriesDocument = gql`
@@ -1841,23 +859,25 @@ export const AutoGeneratedQueriesDocument = gql`
   users
   searchUsers
   user
+  userByUsername
+  me
   communities
   community
   communityByName
   popularCommunities
+  searchCommunities
   posts
   post
   feed
   topStories
   postsByCommunity
-  comments
-  comment
+  searchPosts
   savedPosts
-  flairsByCommunity
   userPosts
   userComments
-  searchCommunities
-  searchPosts
+  comments
+  comment
+  flairsByCommunity
   reports
   report
 }
@@ -1870,28 +890,31 @@ export const AutoGeneratedMutationsDocument = gql`
     mutation AutoGeneratedMutations {
   updateUser
   deleteUser
+  addSocialLink
+  updateSocialLink
+  removeSocialLink
   joinCommunity
   leaveCommunity
   createCommunity
   updateCommunity
   deleteCommunity
+  addModerator
+  removeModerator
+  createPost
+  updatePost
+  deletePost
+  savePost
+  unsavePost
+  createComment
+  updateComment
+  deleteComment
+  votePost
+  voteComment
   createFlair
   updateFlair
   deleteFlair
   createReport
-  createPost
-  votePost
-  savePost
-  unsavePost
-  updatePost
-  deletePost
-  createComment
-  voteComment
-  updateComment
-  deleteComment
   resolveReport
-  addModerator
-  removeModerator
 }
     `;
 

@@ -190,8 +190,7 @@ function ProfileSettings({ user }: { user: { username: string; email?: string } 
   const addLink = () =>
     setSocialLinks((prev) => [...prev, { id: crypto.randomUUID(), label: "", url: "" }]);
 
-  const removeLink = (id: string) =>
-    setSocialLinks((prev) => prev.filter((l) => l.id !== id));
+  const removeLink = (id: string) => setSocialLinks((prev) => prev.filter((l) => l.id !== id));
 
   const updateLink = (id: string, field: "label" | "url", value: string) =>
     setSocialLinks((prev) => prev.map((l) => (l.id === id ? { ...l, [field]: value } : l)));
@@ -303,10 +302,7 @@ function ProfileSettings({ user }: { user: { username: string; email?: string } 
 
           <div className="space-y-2">
             {socialLinks.map((link) => (
-              <div
-                key={link.id}
-                className="grid grid-cols-[1fr_1.6fr_auto] items-center gap-2"
-              >
+              <div key={link.id} className="grid grid-cols-[1fr_1.6fr_auto] items-center gap-2">
                 <Input
                   placeholder="Twitter"
                   value={link.label}

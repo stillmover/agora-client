@@ -18,9 +18,7 @@
     "prepare": "lefthook install && bun scripts/setup-dev.ts",
     "preinstall": "npx only-allow bun",
     "type-check": "tsc --noEmit",
-    "codegen:gql": "node scripts/generate-all-operations.js && graphql-codegen --config codegen.graphql.yml",
-    "codegen:rest": "orval --config orval.config.ts",
-    "codegen": "bun run codegen:gql && bun run codegen:rest"
+    "codegen": "node scripts/generate-all-operations.js && graphql-codegen --config codegen.graphql.yml"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",
@@ -81,7 +79,6 @@
     "lefthook": "^2.0.12",
     "node-fetch": "^3.3.2",
     "npm-run-all2": "^8.0.4",
-    "orval": "^7.17.0",
     "oxfmt": "^0.18.0",
     "oxlint": "^1.33.0",
     "oxlint-tsgolint": "^0.9.1",
