@@ -117,7 +117,7 @@ export const RadioCardGroup = <T extends string = string>({
             whileHover={isDisabled ? undefined : { scale: 1.01 }}
             whileTap={isDisabled ? undefined : { scale: 0.99 }}
             className={cn(
-              "relative flex w-full items-start gap-3 text-left",
+              "relative flex w-full items-start gap-3 text-left cursor-pointer",
               "rounded-xl border-2 transition-all duration-200",
               "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
               config.card,

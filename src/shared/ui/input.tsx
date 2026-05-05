@@ -10,7 +10,6 @@ const inputVariants = cva(
     "flex w-full min-w-0 rounded-lg border bg-background px-3 text-sm",
     "placeholder:text-muted-foreground/70",
     "transition-all duration-150 ease-out",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:border-ring",
     "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted",
     "aria-invalid:border-destructive aria-invalid:ring-destructive/20",
     "file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground",
