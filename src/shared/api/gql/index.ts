@@ -48,56 +48,29 @@ export type Comment = {
   userVote?: Maybe<VoteType>;
 };
 
-/** Represents a community (subreddit) */
 export type Community = {
   __typename?: 'Community';
-  /** Community banner URL */
   bannerUrl?: Maybe<Scalars['String']['output']>;
-  /** Community visibility type */
-  communityType: CommunityType;
-  /** Community creation timestamp */
   createdAt: Scalars['DateTime']['output'];
-  /** Community creator */
   creator?: Maybe<User>;
-  /** Community description */
   description?: Maybe<Scalars['String']['output']>;
-  /** Display name (e.g., 'Programming') */
   displayName: Scalars['String']['output'];
-  /** Community icon URL */
   iconUrl?: Maybe<Scalars['String']['output']>;
-  /** Unique identifier for the community */
   id: Scalars['ID']['output'];
-  /** Whether the authenticated user has joined this community */
-  isJoined?: Maybe<Scalars['Boolean']['output']>;
-  /** Whether the authenticated user is a moderator of this community */
+  isJoined: Scalars['Boolean']['output'];
   isModerator?: Maybe<Scalars['Boolean']['output']>;
-  /** Number of members */
   memberCount: Scalars['Int']['output'];
-  /** List of community members */
   members: Array<User>;
-  /** List of community moderators */
   moderators: Array<Moderator>;
-  /** URL-friendly name (e.g., 'programming') */
   name: Scalars['String']['output'];
-  /** Community topic / category */
-  topic: Scalars['String']['output'];
-  /** Last update timestamp */
   updatedAt: Scalars['DateTime']['output'];
 };
 
 
-/** Represents a community (subreddit) */
 export type CommunityMembersArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
-
-/** Community visibility type */
-export enum CommunityType {
-  Private = 'private',
-  Public = 'public',
-  Restricted = 'restricted'
-}
 
 /** Input for creating a comment */
 export type CreateCommentInput = {
@@ -109,22 +82,12 @@ export type CreateCommentInput = {
   postId: Scalars['ID']['input'];
 };
 
-/** Input for creating a new community */
 export type CreateCommunityInput = {
-  /** Community banner URL */
   bannerUrl?: InputMaybe<Scalars['String']['input']>;
-  /** Community visibility (default: public) */
-  communityType?: InputMaybe<CommunityType>;
-  /** Community description */
   description?: InputMaybe<Scalars['String']['input']>;
-  /** Display name (e.g., 'Programming') */
   displayName: Scalars['String']['input'];
-  /** Community icon URL */
   iconUrl?: InputMaybe<Scalars['String']['input']>;
-  /** URL-friendly name (e.g., 'programming') */
   name: Scalars['String']['input'];
-  /** Community topic / category */
-  topic: Scalars['String']['input'];
 };
 
 /** Input for creating a new flair */
@@ -200,6 +163,10 @@ export type Mutation = {
   /** Add a moderator to a community (auth required, must be owner) */
   addModerator: Community;
   addSocialLink: SocialLink;
+  /** Delete all notifications (auth required) */
+  clearAllNotifications: Scalars['Boolean']['output'];
+  /** Delete a notification (auth required) */
+  clearNotification: Scalars['Boolean']['output'];
   /** Create a comment on a post (auth required) */
   createComment: Comment;
   /** Create a new community (auth required) */
@@ -223,6 +190,10 @@ export type Mutation = {
   joinCommunity: Community;
   /** Leave a community (auth required) */
   leaveCommunity: Scalars['Boolean']['output'];
+  /** Mark all notifications as read (auth required) */
+  markAllNotificationsAsRead: Scalars['Boolean']['output'];
+  /** Mark a notification as read (auth required) */
+  markNotificationAsRead: Notification;
   /** Remove a moderator from a community (auth required, must be owner) */
   removeModerator: Scalars['Boolean']['output'];
   removeSocialLink: Scalars['Boolean']['output'];
@@ -257,6 +228,11 @@ export type MutationAddModeratorArgs = {
 
 export type MutationAddSocialLinkArgs = {
   input: AddSocialLinkInput;
+};
+
+
+export type MutationClearNotificationArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -317,6 +293,11 @@ export type MutationJoinCommunityArgs = {
 
 export type MutationLeaveCommunityArgs = {
   communityId: Scalars['ID']['input'];
+};
+
+
+export type MutationMarkNotificationAsReadArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -393,6 +374,35 @@ export type MutationVotePostArgs = {
   postId: Scalars['ID']['input'];
   voteType: VoteType;
 };
+
+/** A notification for the authenticated user */
+export type Notification = {
+  __typename?: 'Notification';
+  /** User who triggered the notification */
+  actor?: Maybe<User>;
+  /** Related comment (if applicable) */
+  comment?: Maybe<Comment>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  /** Whether the notification has been read */
+  isRead: Scalars['Boolean']['output'];
+  /** Human-readable notification message */
+  message: Scalars['String']['output'];
+  /** Related post (if applicable) */
+  post?: Maybe<Post>;
+  /** What triggered this notification */
+  type: NotificationType;
+};
+
+/** Type of notification event */
+export enum NotificationType {
+  Award = 'award',
+  Comment = 'comment',
+  Follow = 'follow',
+  Mention = 'mention',
+  Reply = 'reply',
+  Upvote = 'upvote'
+}
 
 /** Represents a post in the system */
 export type Post = {
@@ -495,6 +505,8 @@ export type Query = {
   /** Get flairs for a community */
   flairsByCommunity: Array<Flair>;
   me?: Maybe<User>;
+  /** Get the authenticated user's notifications (auth required) */
+  notifications: Array<Notification>;
   /** Get popular communities sorted by member count */
   popularCommunities: Array<Community>;
   /** Get a specific post by ID */
@@ -516,6 +528,8 @@ export type Query = {
   searchUsers: Array<User>;
   /** Get top stories from the last 24 hours */
   topStories: Array<Post>;
+  /** Count of unread notifications for the authenticated user (auth required) */
+  unreadNotificationsCount: Scalars['Int']['output'];
   user?: Maybe<User>;
   userByUsername?: Maybe<User>;
   /** Get comments by a specific user */
@@ -563,6 +577,12 @@ export type QueryFeedArgs = {
 
 export type QueryFlairsByCommunityArgs = {
   communityId: Scalars['ID']['input'];
+};
+
+
+export type QueryNotificationsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -734,6 +754,8 @@ export type Subscription = {
   commentAdded: Comment;
   /** Subscribe to comment vote changes in real-time */
   commentVoted: Comment;
+  /** Receive new notifications in real-time (auth required) */
+  notificationReceived: Notification;
   /** Subscribe to new posts in real-time */
   postAdded: Post;
   /** Subscribe to post updates in real-time */
@@ -767,15 +789,10 @@ export type SubscriptionPostVotedArgs = {
   postId: Scalars['ID']['input'];
 };
 
-/** Input for updating a community */
 export type UpdateCommunityInput = {
-  /** New banner URL */
   bannerUrl?: InputMaybe<Scalars['String']['input']>;
-  /** New description */
   description?: InputMaybe<Scalars['String']['input']>;
-  /** New display name */
   displayName?: InputMaybe<Scalars['String']['input']>;
-  /** New icon URL */
   iconUrl?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -846,12 +863,12 @@ export enum VoteType {
 export type AutoGeneratedQueriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AutoGeneratedQueriesQuery = { __typename?: 'Query', users: Array<User>, searchUsers: Array<User>, user?: User | null, userByUsername?: User | null, me?: User | null, communities: Array<Community>, community?: Community | null, communityByName?: Community | null, popularCommunities: Array<Community>, searchCommunities: Array<Community>, posts: Array<Post>, post?: Post | null, feed: Array<Post>, topStories: Array<Post>, postsByCommunity: Array<Post>, searchPosts: Array<Post>, savedPosts: Array<Post>, userPosts: Array<Post>, userComments: Array<Comment>, comments: Array<Comment>, comment?: Comment | null, flairsByCommunity: Array<Flair>, reports: Array<Report>, report?: Report | null };
+export type AutoGeneratedQueriesQuery = { __typename?: 'Query', users: Array<User>, searchUsers: Array<User>, user?: User | null, userByUsername?: User | null, me?: User | null, communities: Array<Community>, community?: Community | null, communityByName?: Community | null, popularCommunities: Array<Community>, searchCommunities: Array<Community>, posts: Array<Post>, post?: Post | null, feed: Array<Post>, topStories: Array<Post>, postsByCommunity: Array<Post>, searchPosts: Array<Post>, savedPosts: Array<Post>, userPosts: Array<Post>, userComments: Array<Comment>, comments: Array<Comment>, comment?: Comment | null, flairsByCommunity: Array<Flair>, reports: Array<Report>, report?: Report | null, notifications: Array<Notification>, unreadNotificationsCount: number };
 
 export type AutoGeneratedMutationsMutationVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AutoGeneratedMutationsMutation = { __typename?: 'Mutation', updateUser: User, deleteUser: boolean, addSocialLink: SocialLink, updateSocialLink: SocialLink, removeSocialLink: boolean, joinCommunity: Community, leaveCommunity: boolean, createCommunity: Community, updateCommunity: Community, deleteCommunity: boolean, addModerator: Community, removeModerator: boolean, createPost: Post, updatePost: Post, deletePost: boolean, savePost: boolean, unsavePost: boolean, createComment: Comment, updateComment: Comment, deleteComment: boolean, votePost: Post, voteComment: Comment, createFlair: Flair, updateFlair: Flair, deleteFlair: boolean, createReport: Report, resolveReport: Report };
+export type AutoGeneratedMutationsMutation = { __typename?: 'Mutation', updateUser: User, deleteUser: boolean, addSocialLink: SocialLink, updateSocialLink: SocialLink, removeSocialLink: boolean, joinCommunity: Community, leaveCommunity: boolean, createCommunity: Community, updateCommunity: Community, deleteCommunity: boolean, addModerator: Community, removeModerator: boolean, createPost: Post, updatePost: Post, deletePost: boolean, savePost: boolean, unsavePost: boolean, createComment: Comment, updateComment: Comment, deleteComment: boolean, votePost: Post, voteComment: Comment, createFlair: Flair, updateFlair: Flair, deleteFlair: boolean, createReport: Report, resolveReport: Report, markNotificationAsRead: Notification, markAllNotificationsAsRead: boolean, clearNotification: boolean, clearAllNotifications: boolean };
 
 
 export const AutoGeneratedQueriesDocument = gql`
@@ -880,6 +897,8 @@ export const AutoGeneratedQueriesDocument = gql`
   flairsByCommunity
   reports
   report
+  notifications
+  unreadNotificationsCount
 }
     `;
 
@@ -915,6 +934,10 @@ export const AutoGeneratedMutationsDocument = gql`
   deleteFlair
   createReport
   resolveReport
+  markNotificationAsRead
+  markAllNotificationsAsRead
+  clearNotification
+  clearAllNotifications
 }
     `;
 

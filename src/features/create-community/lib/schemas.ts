@@ -20,7 +20,6 @@ const communityNameSchema = z
   .regex(/^[a-zA-Z0-9_]+$/, "Community name can only contain letters, numbers, and underscores.");
 
 const createCommunitySchema = z.object({
-  communityType: z.enum(["public", "restricted", "private"]),
   description: z
     .string()
     .trim()

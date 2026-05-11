@@ -1,16 +1,7 @@
 import { useState, useCallback } from "react";
-import { Globe, Eye, Lock, Users, Sparkles } from "lucide-react";
-
+import { Sparkles } from "lucide-react";
 import { useCreateCommunityForm, COMMUNITY_LIMITS } from "@/features/create-community";
-import {
-  Modal,
-  Button,
-  Input,
-  Textarea,
-  ImageUpload,
-  RadioCardGroup,
-  FormField,
-} from "@/shared/ui";
+import { Modal, Button, Input, Textarea, ImageUpload, FormField } from "@/shared/ui";
 import { cn } from "@/shared/lib/utils";
 
 const getErrorMessage = (error: unknown): string | undefined => {
@@ -25,73 +16,15 @@ const getErrorMessage = (error: unknown): string | undefined => {
   }
   return undefined;
 };
-
-type CommunityType = "public" | "restricted" | "private";
-
-const COMMUNITY_TOPICS = [
-  "Gaming",
-  "Sports",
-  "Movies",
-  "Television",
-  "Music",
-  "Books",
-  "Humor",
-  "Podcasts & Streamers",
-  "Food & Drink",
-  "Fashion & Beauty",
-  "Travel",
-  "Fitness & Health",
-  "Programming",
-  "Technology",
-  "Crypto & Blockchain",
-  "Science & Nature",
-  "Business & Finance",
-  "News & Politics",
-  "World News",
-  "Education",
-  "Religion & Spirituality",
-  "Culture & Identity",
-  "Ethics & Philosophy",
-  "Gender & Sexuality",
-  "Trauma Support",
-] as const;
-
 interface CreateCommunityModalProps {
   trigger?: React.ReactNode;
   onSuccess?: (communityName: string) => void;
 }
 
-const VISIBILITY_OPTIONS: {
-  value: CommunityType;
-  label: string;
-  description: string;
-  icon: React.ElementType;
-}[] = [
-  {
-    description: "Anyone can view, post, and comment",
-    icon: Globe,
-    label: "Public",
-    value: "public",
-  },
-  {
-    description: "Anyone can view, but only approved users can post",
-    icon: Eye,
-    label: "Restricted",
-    value: "restricted",
-  },
-  {
-    description: "Only approved users can view and participate",
-    icon: Lock,
-    label: "Private",
-    value: "private",
-  },
-];
-
 export const CreateCommunityModal = ({ trigger, onSuccess }: CreateCommunityModalProps) => {
   const [open, setOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string>();
   const [bannerUrl, setBannerUrl] = useState<string>();
-  const [topic, setTopic] = useState<string>("");
 
   const { form, isSubmitting, reset } = useCreateCommunityForm({
     navigateOnSuccess: false,
@@ -108,7 +41,6 @@ export const CreateCommunityModal = ({ trigger, onSuccess }: CreateCommunityModa
     setOpen(false);
     setAvatarUrl(undefined);
     setBannerUrl(undefined);
-    setTopic("");
     reset();
   }, [reset, isSubmitting]);
 
@@ -232,31 +164,6 @@ export const CreateCommunityModal = ({ trigger, onSuccess }: CreateCommunityModa
               }}
             </form.Field>
 
-            <FormField
-              label="Topic"
-              hint="Help people find your community by choosing a topic."
-              required
-            >
-              <div className="flex flex-wrap gap-2">
-                {COMMUNITY_TOPICS.map((t) => (
-                  <button
-                    key={t}
-                    type="button"
-                    disabled={isSubmitting}
-                    onClick={() => setTopic(topic === t ? "" : t)}
-                    className={cn(
-                      "rounded-full border px-3 py-1 text-sm transition-colors cursor-pointer",
-                      topic === t
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-transparent text-foreground hover:border-primary hover:text-primary"
-                    )}
-                  >
-                    {t}
-                  </button>
-                ))}
-              </div>
-            </FormField>
-
             <form.Field name="displayName">
               {(field) => {
                 const hasBeenTouched = field.state.meta.isTouched;
@@ -325,24 +232,6 @@ export const CreateCommunityModal = ({ trigger, onSuccess }: CreateCommunityModa
                 );
               }}
             </form.Field>
-
-            <section className="space-y-3">
-              <h3 className="text-sm font-medium text-foreground flex items-center gap-2">
-                <Users className="h-4 w-4 text-primary" />
-                Community type
-              </h3>
-              <form.Field name="communityType">
-                {(field) => (
-                  <RadioCardGroup
-                    value={field.state.value}
-                    onChange={field.handleChange}
-                    options={VISIBILITY_OPTIONS}
-                    size="md"
-                    disabled={isSubmitting}
-                  />
-                )}
-              </form.Field>
-            </section>
           </Modal.Body>
 
           <Modal.Footer>
