@@ -150,24 +150,29 @@ export const Sidebar = () => {
                       ))}
                     </div>
                   ) : (
-                    filteredCommunities.slice(0, 8).map((community: Community) => (
+                    filteredCommunities.slice(0, 5).map((community: Community) => (
                       <CommunityInfoModal
                         key={community.id}
                         communityName={community.name}
                         trigger={
                           <button
                             className={cn(
-                              "flex items-center gap-3 w-full rounded-lg px-2 py-2",
+                              "flex items-center gap-3 w-full rounded-lg px-4 py-2",
                               "text-sm transition-colors cursor-pointer",
                               "hover:bg-accent"
                             )}
                           >
                             <Avatar className="h-8 w-8">
-                              <AvatarImage src={community.iconUrl} alt={community.name} />
+                              <AvatarImage
+                                src={community.iconUrl?.trim() || undefined}
+                                alt={community.name}
+                              />
+
                               <AvatarFallback className="text-xs font-semibold bg-gradient-to-br from-brand to-orange-400 text-white">
                                 {community.name.slice(0, 2).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
+
                             <div className="flex-1 text-left min-w-0">
                               <p className="font-medium text-foreground truncate">
                                 r/{community.name}
@@ -180,7 +185,7 @@ export const Sidebar = () => {
                   )}
                 </div>
 
-                {communities.length > 8 && (
+                {communities.length > 5 && (
                   <Link
                     to={ROUTES.SEARCH}
                     search={{ q: "", type: "communities" }}

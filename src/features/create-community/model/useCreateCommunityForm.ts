@@ -13,7 +13,6 @@ interface UseCreateCommunityFormOptions {
 }
 
 const DEFAULT_VALUES: CreateCommunityValues = {
-  communityType: "public",
   description: "",
   displayName: "",
   name: "",

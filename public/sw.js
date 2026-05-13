@@ -1,5 +1,5 @@
-const CACHE_NAME = 'reddit-client-v1';
-const STATIC_CACHE_NAME = 'reddit-client-static-v1';
+const CACHE_NAME = 'agora-client-v1';
+const STATIC_CACHE_NAME = 'agora-client-static-v1';
 
 self.addEventListener('install', (event) => {
   console.log('Service Worker installing.');

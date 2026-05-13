@@ -1,7 +1,7 @@
 {
-  "name": "Reddit Client",
-  "short_name": "Reddit",
-  "description": "A modern Reddit client built with React and TypeScript",
+  "name": "Agora Client",
+  "short_name": "Agora",
+  "description": "A modern Agora client built with React and TypeScript",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
