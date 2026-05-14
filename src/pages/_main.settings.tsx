@@ -1,6 +1,6 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, Suspense } from "react";
-import { ROUTES } from "@/shared/config";
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useState, Suspense } from 'react';
+import { ROUTES } from '@/shared/config';
 import {
   User,
   Bell,
@@ -11,13 +11,14 @@ import {
   Settings,
   Lock,
   Mail,
-  Moon,
-  Sun,
-  Monitor,
   X,
   Plus,
-} from "lucide-react";
-import { useIsAuthenticated, useSessionUser, useLogout } from "@/entities/session";
+} from 'lucide-react';
+import {
+  useIsAuthenticated,
+  useSessionUser,
+  useLogout,
+} from '@/entities/session';
 import {
   Card,
   CardContent,
@@ -31,45 +32,53 @@ import {
   FormField,
   Badge,
   Spinner,
-} from "@/shared/ui";
-import { cn } from "@/shared/lib/utils";
+} from '@/shared/ui';
+import { cn } from '@/shared/lib/utils';
+import {
+  ThemeSelect,
+} from '@/features/theme-toggle/ui/ThemeSelect';
 
-export const Route = createFileRoute("/_main/settings")({
+export const Route = createFileRoute('/_main/settings')({
   component: SettingsPage,
 });
 
-type SettingsSection = "profile" | "account" | "notifications" | "privacy" | "appearance";
+type SettingsSection =
+  | 'profile'
+  | 'account'
+  | 'notifications'
+  | 'privacy'
+  | 'appearance';
 
 const settingsSections = [
   {
-    description: "Manage your public profile",
+    description: 'Manage your public profile',
     icon: User,
-    id: "profile" as const,
-    label: "Profile",
+    id: 'profile' as const,
+    label: 'Profile',
   },
   {
-    description: "Email, password, and security",
+    description: 'Email, password, and security',
     icon: Settings,
-    id: "account" as const,
-    label: "Account",
+    id: 'account' as const,
+    label: 'Account',
   },
   {
-    description: "Email and push notifications",
+    description: 'Email and push notifications',
     icon: Bell,
-    id: "notifications" as const,
-    label: "Notifications",
+    id: 'notifications' as const,
+    label: 'Notifications',
   },
   {
-    description: "Control your visibility",
+    description: 'Control your visibility',
     icon: Shield,
-    id: "privacy" as const,
-    label: "Privacy & Safety",
+    id: 'privacy' as const,
+    label: 'Privacy & Safety',
   },
   {
-    description: "Theme and display settings",
+    description: 'Theme and display settings',
     icon: Palette,
-    id: "appearance" as const,
-    label: "Appearance",
+    id: 'appearance' as const,
+    label: 'Appearance',
   },
 ];
 
@@ -86,7 +95,8 @@ function SettingsPageContent() {
   const isAuthenticated = useIsAuthenticated();
   const user = useSessionUser();
   const { logout } = useLogout();
-  const [activeSection, setActiveSection] = useState<SettingsSection>("profile");
+  const [activeSection, setActiveSection] =
+    useState<SettingsSection>('profile');
 
   if (!isAuthenticated || !user) {
     return (
@@ -95,7 +105,9 @@ function SettingsPageContent() {
           <div className="mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
             <Settings className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h2 className="text-xl font-semibold mb-2">Sign in to access settings</h2>
+          <h2 className="text-xl font-semibold mb-2">
+            Sign in to access settings
+          </h2>
           <p className="text-muted-foreground mb-6">
             You need to be logged in to manage your settings.
           </p>
@@ -125,22 +137,24 @@ function SettingsPageContent() {
         <Card className="h-fit">
           <CardContent className="p-2">
             <nav className="space-y-1">
-              {settingsSections.map((section) => (
+              {settingsSections.map(section => (
                 <button
                   key={section.id}
                   onClick={() => setActiveSection(section.id)}
                   className={cn(
-                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left cursor-pointer",
-                    "transition-colors duration-150",
+                    'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left cursor-pointer',
+                    'transition-colors duration-150',
                     activeSection === section.id
-                      ? "bg-accent text-foreground"
-                      : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                      ? 'bg-accent text-foreground'
+                      : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground',
                   )}
                 >
                   <section.icon className="h-5 w-5" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium">{section.label}</p>
-                    <p className="text-xs text-muted-foreground truncate">{section.description}</p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {section.description}
+                    </p>
                   </div>
                   <ChevronRight className="h-4 w-4 opacity-50" />
                 </button>
@@ -151,9 +165,9 @@ function SettingsPageContent() {
               <button
                 onClick={handleLogout}
                 className={cn(
-                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left cursor-pointer",
-                  "text-destructive hover:bg-destructive/10",
-                  "transition-colors duration-150"
+                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left cursor-pointer',
+                  'text-destructive hover:bg-destructive/10',
+                  'transition-colors duration-150',
                 )}
               >
                 <LogOut className="h-5 w-5" />
@@ -164,11 +178,11 @@ function SettingsPageContent() {
         </Card>
 
         <div className="space-y-6">
-          {activeSection === "profile" && <ProfileSettings user={user} />}
-          {activeSection === "account" && <AccountSettings user={user} />}
-          {activeSection === "notifications" && <NotificationSettings />}
-          {activeSection === "privacy" && <PrivacySettings />}
-          {activeSection === "appearance" && <AppearanceSettings />}
+          {activeSection === 'profile' && <ProfileSettings user={user} />}
+          {activeSection === 'account' && <AccountSettings user={user} />}
+          {activeSection === 'notifications' && <NotificationSettings />}
+          {activeSection === 'privacy' && <PrivacySettings />}
+          {activeSection === 'appearance' && <AppearanceSettings />}
         </div>
       </div>
     </div>
@@ -177,28 +191,38 @@ function SettingsPageContent() {
 
 type SocialLink = { id: string; label: string; url: string };
 
-function ProfileSettings({ user }: { user: { username: string; email?: string } }) {
+function ProfileSettings({
+  user,
+}: {
+  user: { username: string; email?: string };
+}) {
   const [avatarUrl, setAvatarUrl] = useState<string>();
   const [bannerUrl, setBannerUrl] = useState<string>();
   const [displayName, setDisplayName] = useState(user.username);
-  const [bio, setBio] = useState("");
+  const [bio, setBio] = useState('');
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>(() => [
-    { id: crypto.randomUUID(), label: "", url: "" },
+    { id: crypto.randomUUID(), label: '', url: '' },
   ]);
   const [socialError, setSocialError] = useState<string | null>(null);
 
   const addLink = () =>
-    setSocialLinks((prev) => [...prev, { id: crypto.randomUUID(), label: "", url: "" }]);
+    setSocialLinks(prev => [
+      ...prev,
+      { id: crypto.randomUUID(), label: '', url: '' },
+    ]);
 
-  const removeLink = (id: string) => setSocialLinks((prev) => prev.filter((l) => l.id !== id));
+  const removeLink = (id: string) =>
+    setSocialLinks(prev => prev.filter(l => l.id !== id));
 
-  const updateLink = (id: string, field: "label" | "url", value: string) =>
-    setSocialLinks((prev) => prev.map((l) => (l.id === id ? { ...l, [field]: value } : l)));
+  const updateLink = (id: string, field: 'label' | 'url', value: string) =>
+    setSocialLinks(prev =>
+      prev.map(l => (l.id === id ? { ...l, [field]: value } : l)),
+    );
 
   const saveSocialLinks = () => {
-    const hasUrl = socialLinks.some((l) => l.url.trim() !== "");
+    const hasUrl = socialLinks.some(l => l.url.trim() !== '');
     if (socialLinks.length > 0 && !hasUrl) {
-      setSocialError("At least one link must have a URL.");
+      setSocialError('At least one link must have a URL.');
       return;
     }
     setSocialError(null);
@@ -243,7 +267,7 @@ function ProfileSettings({ user }: { user: { username: string; email?: string } 
             <Input
               id="displayName"
               value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
+              onChange={e => setDisplayName(e.target.value)}
               placeholder="Your display name"
               maxLength={30}
             />
@@ -258,7 +282,12 @@ function ProfileSettings({ user }: { user: { username: string; email?: string } 
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                 u/
               </span>
-              <Input id="username" value={user.username} disabled className="pl-8 bg-muted" />
+              <Input
+                id="username"
+                value={user.username}
+                disabled
+                className="pl-8 bg-muted"
+              />
             </div>
           </FormField>
 
@@ -272,7 +301,7 @@ function ProfileSettings({ user }: { user: { username: string; email?: string } 
             <Textarea
               id="bio"
               value={bio}
-              onChange={(e) => setBio(e.target.value)}
+              onChange={e => setBio(e.target.value)}
               placeholder="Tell us about yourself..."
               rows={4}
               maxLength={200}
@@ -289,7 +318,9 @@ function ProfileSettings({ user }: { user: { username: string; email?: string } 
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Social links</CardTitle>
-          <CardDescription>Add links to your other social profiles.</CardDescription>
+          <CardDescription>
+            Add links to your other social profiles.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {socialLinks.length > 0 && (
@@ -301,17 +332,20 @@ function ProfileSettings({ user }: { user: { username: string; email?: string } 
           )}
 
           <div className="space-y-2">
-            {socialLinks.map((link) => (
-              <div key={link.id} className="grid grid-cols-[1fr_1.6fr_auto] items-center gap-2">
+            {socialLinks.map(link => (
+              <div
+                key={link.id}
+                className="grid grid-cols-[1fr_1.6fr_auto] items-center gap-2"
+              >
                 <Input
                   placeholder="Twitter"
                   value={link.label}
-                  onChange={(e) => updateLink(link.id, "label", e.target.value)}
+                  onChange={e => updateLink(link.id, 'label', e.target.value)}
                 />
                 <Input
                   placeholder="https://twitter.com/username"
                   value={link.url}
-                  onChange={(e) => updateLink(link.id, "url", e.target.value)}
+                  onChange={e => updateLink(link.id, 'url', e.target.value)}
                 />
                 <Button
                   variant="ghost"
@@ -325,10 +359,17 @@ function ProfileSettings({ user }: { user: { username: string; email?: string } 
             ))}
           </div>
 
-          {socialError && <p className="text-sm text-destructive">{socialError}</p>}
+          {socialError && (
+            <p className="text-sm text-destructive">{socialError}</p>
+          )}
 
           <div className="flex items-center justify-between">
-            <Button variant="outline" size="sm" className="px-4 py-2" onClick={addLink}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="px-4 py-2"
+              onClick={addLink}
+            >
               <Plus className="h-4 w-4 mr-1" />
               Add social link
             </Button>
@@ -344,13 +385,19 @@ function ProfileSettings({ user }: { user: { username: string; email?: string } 
   );
 }
 
-function AccountSettings({ user }: { user: { username: string; email?: string } }) {
+function AccountSettings({
+  user,
+}: {
+  user: { username: string; email?: string };
+}) {
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle>Email</CardTitle>
-          <CardDescription>Manage your email address and verification status.</CardDescription>
+          <CardDescription>
+            Manage your email address and verification status.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <FormField label="Email address" htmlFor="email">
@@ -359,7 +406,7 @@ function AccountSettings({ user }: { user: { username: string; email?: string } 
               <Input
                 id="email"
                 type="email"
-                value={user.email || ""}
+                value={user.email || ''}
                 placeholder="your@email.com"
                 className="pl-10"
               />
@@ -369,7 +416,9 @@ function AccountSettings({ user }: { user: { username: string; email?: string } 
             <Badge variant="outline" className="text-success border-success">
               Verified
             </Badge>
-            <span className="text-sm text-muted-foreground">Your email is verified</span>
+            <span className="text-sm text-muted-foreground">
+              Your email is verified
+            </span>
           </div>
         </CardContent>
       </Card>
@@ -377,7 +426,9 @@ function AccountSettings({ user }: { user: { username: string; email?: string } 
       <Card>
         <CardHeader>
           <CardTitle>Password</CardTitle>
-          <CardDescription>Update your password to keep your account secure.</CardDescription>
+          <CardDescription>
+            Update your password to keep your account secure.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <FormField label="Current password" htmlFor="currentPassword">
@@ -413,7 +464,9 @@ function AccountSettings({ user }: { user: { username: string; email?: string } 
       <Card className="border-destructive/30">
         <CardHeader>
           <CardTitle className="text-destructive">Danger zone</CardTitle>
-          <CardDescription>Irreversible actions that affect your account.</CardDescription>
+          <CardDescription>
+            Irreversible actions that affect your account.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between p-4 rounded-lg bg-destructive/5 border border-destructive/20">
@@ -438,7 +491,9 @@ function NotificationSettings() {
     <Card>
       <CardHeader>
         <CardTitle>Notification preferences</CardTitle>
-        <CardDescription>Choose what notifications you want to receive.</CardDescription>
+        <CardDescription>
+          Choose what notifications you want to receive.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <NotificationToggle
@@ -456,7 +511,10 @@ function NotificationSettings() {
           description="Get notified when someone mentions you."
           defaultChecked
         />
-        <NotificationToggle title="Upvotes" description="Get notified about upvote milestones." />
+        <NotificationToggle
+          title="Upvotes"
+          description="Get notified about upvote milestones."
+        />
         <NotificationToggle
           title="Followers"
           description="Get notified when someone follows you."
@@ -493,14 +551,14 @@ function NotificationToggle({
         aria-checked={checked}
         onClick={() => setChecked(!checked)}
         className={cn(
-          "relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer",
-          checked ? "bg-brand" : "bg-muted"
+          'relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer',
+          checked ? 'bg-brand' : 'bg-muted',
         )}
       >
         <span
           className={cn(
-            "inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm",
-            checked ? "translate-x-6" : "translate-x-1"
+            'inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm',
+            checked ? 'translate-x-6' : 'translate-x-1',
           )}
         />
       </button>
@@ -513,7 +571,9 @@ function PrivacySettings() {
     <Card>
       <CardHeader>
         <CardTitle>Privacy settings</CardTitle>
-        <CardDescription>Control who can see your content and interact with you.</CardDescription>
+        <CardDescription>
+          Control who can see your content and interact with you.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <NotificationToggle
@@ -547,51 +607,16 @@ function PrivacySettings() {
 }
 
 function AppearanceSettings() {
-  const [theme, setTheme] = useState<"light" | "dark" | "system">("system");
-
   return (
     <Card>
       <CardHeader>
         <CardTitle>Appearance</CardTitle>
-        <CardDescription>Customize how the app looks on your device.</CardDescription>
+        <CardDescription>
+          Customize how the app looks on your device.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div>
-          <p className="font-medium mb-3">Theme</p>
-          <div className="grid grid-cols-3 gap-3">
-            {[
-              { icon: Sun, label: "Light", value: "light" as const },
-              { icon: Moon, label: "Dark", value: "dark" as const },
-              { icon: Monitor, label: "System", value: "system" as const },
-            ].map((option) => (
-              <button
-                key={option.value}
-                onClick={() => setTheme(option.value)}
-                className={cn(
-                  "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all cursor-pointer",
-                  theme === option.value
-                    ? "border-brand bg-brand/5"
-                    : "border-border hover:border-muted-foreground/30"
-                )}
-              >
-                <option.icon
-                  className={cn(
-                    "h-6 w-6",
-                    theme === option.value ? "text-brand" : "text-muted-foreground"
-                  )}
-                />
-                <span
-                  className={cn(
-                    "text-sm font-medium",
-                    theme === option.value ? "text-foreground" : "text-muted-foreground"
-                  )}
-                >
-                  {option.label}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
+        <ThemeSelect />
 
         <NotificationToggle
           title="Reduce motion"

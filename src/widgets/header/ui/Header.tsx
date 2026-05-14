@@ -38,7 +38,6 @@ export const Header = () => {
           <Menu className="h-5 w-5" />
         </Button>
 
-        {/* Logo */}
         <div className="flex items-center lg:col-start-1 lg:justify-start lg:gap-4">
           <Link
             to={ROUTES.HOME}
@@ -67,11 +66,9 @@ export const Header = () => {
           </div>
         </div>
 
-        {/* Right Section - Actions */}
         <div className="absolute right-4 flex items-center gap-1 lg:relative lg:col-start-3 lg:justify-end">
           {isAuthenticated && (
             <>
-              {/* Create Post Button - Desktop */}
               <Button variant="ghost" size="sm" className="hidden sm:flex gap-2" asChild>
                 <Link to={ROUTES.CREATE_POST}>
                   <Plus className="h-4 w-4" />
@@ -79,7 +76,6 @@ export const Header = () => {
                 </Link>
               </Button>
 
-              {/* Notifications */}
               <Button
                 variant="ghost"
                 size="icon-sm"
@@ -87,26 +83,21 @@ export const Header = () => {
                 aria-label="Notifications"
               >
                 <Bell className="h-5 w-5" />
-                {/* Notification badge */}
                 <span className="absolute top-1 right-1 h-2 w-2 bg-brand rounded-full" />
               </Button>
             </>
           )}
 
-          {/* Theme Toggle */}
           <ThemeToggle />
 
-          {/* User Menu or Auth */}
           {isAuthenticated ? <UserMenuWidget /> : <AuthTrigger />}
         </div>
       </div>
 
-      {/* Mobile Search Bar */}
       <div className="block md:hidden px-4 pb-3">
         <HeaderSearchWidget />
       </div>
 
-      {/* Mobile menu drawer */}
       <DialogPrimitive.Root open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
         <DialogPrimitive.Portal>
           <DialogPrimitive.Overlay className="fixed inset-0 bg-black/60 z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0" />

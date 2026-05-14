@@ -1,36 +1,39 @@
-import type { PropsWithChildren } from "react";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "sonner";
-import { queryClient } from "@/shared/utils";
-import { TanStackDevtools } from "@tanstack/react-devtools";
-import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import type { PropsWithChildren } from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { ThemeProvider } from '@/features/theme-toggle/model/theme-provider';
+import { Toaster } from 'sonner';
+import { queryClient } from '@/shared/utils';
+import { TanStackDevtools } from '@tanstack/react-devtools';
+import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools';
+import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 
 const isDev = import.meta.env.DEV;
 
 export const AppProviders = ({ children }: PropsWithChildren) => (
   <QueryClientProvider client={queryClient}>
-    {children}
-    <Toaster
-      position="top-right"
-      expand={false}
-      richColors
-      closeButton
-      toastOptions={{
-        className: "font-sans",
-      }}
-    />
+    <ThemeProvider>
+      {children}
+      <Toaster
+        position="top-right"
+        expand={false}
+        richColors
+        closeButton
+        toastOptions={{
+          className: 'font-sans',
+        }}
+      />
+    </ThemeProvider>
     {isDev && (
       <TanStackDevtools
         config={{
           defaultOpen: false,
           requireUrlFlag: true,
-          urlFlag: "devtools",
+          urlFlag: 'devtools',
         }}
         plugins={[
-          { name: "TanStack Query", render: <ReactQueryDevtoolsPanel /> },
+          { name: 'TanStack Query', render: <ReactQueryDevtoolsPanel /> },
           {
-            name: "TanStack Router",
+            name: 'TanStack Router',
             render: <TanStackRouterDevtoolsPanel />,
           },
         ]}
