@@ -72,6 +72,7 @@ type PopularCommunitiesQueryResult = { popularCommunities: Community[] };
 type CommentsQueryResult = { comments: Comment[] };
 type CommentQueryResult = { comment: Comment | null };
 type UserQueryResult = { user: User | null };
+type UserByUsernameQueryResult = { userByUsername: User | null };
 type UserPostsQueryResult = { userPosts: Post[] };
 type UserCommentsQueryResult = { userComments: Comment[] };
 type SavedPostsQueryResult = { savedPosts: Post[] };
@@ -433,13 +434,13 @@ export const useUserQuery = (
 
 export const useUserByUsernameQuery = (
   username: string,
-  options?: Omit<UseQueryOptions<UserQueryResult, Error, User | null>, "queryKey" | "queryFn">,
+  options?: Omit<UseQueryOptions<UserByUsernameQueryResult, Error, User | null>, "queryKey" | "queryFn">,
 ) => {
   return useQuery({
     queryKey: queryKeys.users.byUsername(username),
     queryFn: () =>
-      graphqlRequest<UserQueryResult>(getQueryString(UserByUsernameDocument), { username }),
-    select: (data) => data.user,
+      graphqlRequest<UserByUsernameQueryResult>(getQueryString(UserByUsernameDocument), { username }),
+    select: (data) => data.userByUsername,
     staleTime: STALE_TIMES.users,
     enabled: Boolean(username),
     ...options,
@@ -874,7 +875,7 @@ export const prefetchQueries = {
     queryClient.prefetchQuery({
       queryKey: queryKeys.users.byUsername(username),
       queryFn: () =>
-        graphqlRequest<UserQueryResult>(getQueryString(UserByUsernameDocument), { username }),
+        graphqlRequest<UserByUsernameQueryResult>(getQueryString(UserByUsernameDocument), { username }),
       staleTime: STALE_TIMES.users,
     }),
 };

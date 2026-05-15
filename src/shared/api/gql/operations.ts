@@ -306,7 +306,7 @@ export const UserDocument = gql`
 
 export const UserByUsernameDocument = gql`
   query UserByUsername($username: String!) {
-    user(username: $username) {
+    userByUsername(username: $username) {
       ...UserFragment
     }
   }
